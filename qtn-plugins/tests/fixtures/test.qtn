@@ -1,0 +1,47 @@
+// 캐릭터 상태
+enum CharacterState {
+    Idle,       // 대기
+    Moving,     // 이동 중
+    Airborne    // 공중
+}
+
+component Crystal {
+    FP Health;
+    FP MaxHealth;   
+    FP WWW; 
+    byte CrystalLevel; 
+    byte Worker;    
+    
+} 
+
+
+// 캐릭터 컴포넌트
+component Character {
+    CharacterState State;          // 현재 상태 (애니메이션 동기화용)
+    FP MoveSpeed;                  // 이동 속도
+    FP JumpForce;                  // 점프 힘
+    FP GroundCheckRadius;          // 지면 체크 반경
+    FP GroundCheckOffsetY;         // 지면 체크 Y 오프셋
+    FP CoyoteTimeDuration;         // 코요테 타임 허용 시간
+    FP JumpBufferDuration;         // 점프 버퍼 허용 시간
+    FP MaxHealth;                  // 최대 체력 
+    [ExcludeFromPrototype] FP CurrentHealth;       // 현재 체력
+    [ExcludeFromPrototype] Boolean IsGrounded;     // 지면 접촉 여부
+    [ExcludeFromPrototype] FP CoyoteTimer;         // 코요테 타이머
+    [ExcludeFromPrototype] FP JumpBufferTimer;     // 점프 버퍼 타이머
+}
+ 
+
+// 게임 참가 플레이어 컴포넌트 (캐릭터 엔티티에 부착)
+component GamePlayer {
+    player_ref Player;             // 소유 플레이어
+}
+
+// 플레이어 연결 컴포넌트
+component PlayerLink {
+    player_ref Player;
+}
+
+// 플레이어 스폰 포인트
+component PlayerSpawnPoint {
+}

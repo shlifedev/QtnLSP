@@ -7,7 +7,7 @@ on:
     paths: ["qtn-plugins/**"]
 
 jobs:
-  test:
+  build-vscode:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -15,6 +15,11 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            qtn-plugins/package-lock.json
+            qtn-plugins/language-server/package-lock.json
+            qtn-plugins/vscode-extension/package-lock.json
 
       - name: Install root workspace dependencies
         working-directory: qtn-plugins
@@ -39,31 +44,6 @@ jobs:
         working-directory: qtn-plugins/vscode-extension
         run: npm test
 
-  build-vscode:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      - name: Install root workspace dependencies
-        working-directory: qtn-plugins
-        run: npm ci
-
-      - name: Install language-server dependencies
-        working-directory: qtn-plugins/language-server
-        run: npm ci
-
-      - name: Install vscode-extension dependencies
-        working-directory: qtn-plugins/vscode-extension
-        run: npm ci
-
-      - name: Sync grammar
-        run: cp qtn-plugins/shared/syntaxes/qtn.tmLanguage.json qtn-plugins/vscode-extension/syntaxes/qtn.tmLanguage.json
-
       - name: Package VSIX
         working-directory: qtn-plugins/vscode-extension
         run: npx vsce package --no-dependencies
@@ -74,7 +54,6 @@ jobs:
           path: qtn-plugins/vscode-extension/*.vsix
 
   build-jetbrains:
-    needs: test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -82,11 +61,16 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            qtn-plugins/language-server/package-lock.json
 
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
 
       - name: Install & build language-server
         working-directory: qtn-plugins/language-server
@@ -105,7 +89,6 @@ jobs:
           path: qtn-plugins/jetbrains-plugin/build/distributions/*.zip
 
   build-vs:
-    needs: test
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -113,6 +96,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
+          cache-dependency-path: |
+            qtn-plugins/language-server/package-lock.json
 
       - uses: actions/setup-dotnet@v4
         with:
