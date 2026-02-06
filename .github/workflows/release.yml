@@ -2,6 +2,7 @@ name: Release
 
 on:
   push:
+    branches: [main]
     tags: ["v*"]
 
 jobs:
@@ -153,12 +154,27 @@ jobs:
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.ref_name }}
+          REF_NAME: ${{ github.ref_name }}
+          SHA: ${{ github.sha }}
         run: |
-          gh release create "$TAG" \
-            --repo "$GITHUB_REPOSITORY" \
-            --title "$TAG" \
-            --generate-notes \
-            artifacts/QtnLSP-vscode.vsix \
-            artifacts/QtnLSP-jetbrains.zip \
-            artifacts/QtnLSP-vs.vsix
+          if [[ "$REF_NAME" == v* ]]; then
+            gh release create "$REF_NAME" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$REF_NAME" \
+              --generate-notes \
+              artifacts/QtnLSP-vscode.vsix \
+              artifacts/QtnLSP-jetbrains.zip \
+              artifacts/QtnLSP-vs.vsix
+          else
+            gh release delete latest --repo "$GITHUB_REPOSITORY" --yes 2>/dev/null || true
+            git push --delete origin latest 2>/dev/null || true
+            gh release create latest \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "Latest (${SHA::7})" \
+              --target "$SHA" \
+              --prerelease \
+              --generate-notes \
+              artifacts/QtnLSP-vscode.vsix \
+              artifacts/QtnLSP-jetbrains.zip \
+              artifacts/QtnLSP-vs.vsix
+          fi

@@ -37,6 +37,9 @@ intellijPlatform {
 }
 
 tasks {
+    buildPlugin {
+        archiveVersion.set("")
+    }
     prepareSandbox {
         from("src/main/resources/bundles") {
             into("${intellijPlatform.projectName.get()}/bundles")

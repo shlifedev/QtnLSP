@@ -3,25 +3,25 @@
 component TypesTest
 {
   bool BoolField;
-//^^^^ support.type.primitive.qtn
+//^^^^ support.type.qtn
 
   byte ByteField;
-//^^^^ support.type.primitive.qtn
+//^^^^ support.type.qtn
 
   int IntField;
-//^^^ support.type.primitive.qtn
+//^^^ support.type.qtn
 
   uint UIntField;
-//^^^^ support.type.primitive.qtn
+//^^^^ support.type.qtn
 
   long LongField;
-//^^^^ support.type.primitive.qtn
+//^^^^ support.type.qtn
 
   short ShortField;
-//^^^^^ support.type.primitive.qtn
+//^^^^^ support.type.qtn
 
   Boolean BooleanField;
-//^^^^^^^ support.type.primitive.qtn
+//^^^^^^^ support.type.qtn
 
   FP FPField;
 //^^ support.type.qtn

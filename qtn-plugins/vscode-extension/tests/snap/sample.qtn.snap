@@ -240,7 +240,7 @@
 #                             ^^^ source.qtn
 >  int RoundNumber;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^^^^^^^^ source.qtn
 >  FP MatchTime;
 #^^ source.qtn
@@ -248,7 +248,7 @@
 #    ^^^^^^^^^^^^ source.qtn
 >  int AlivePlayerCount;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -272,7 +272,7 @@
 #    ^^^^^^^^ source.qtn
 >  int Ammo;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^ source.qtn
 >  asset_ref<WeaponConfig> Config;
 #^^ source.qtn
@@ -309,7 +309,7 @@
 #^^ source.qtn
 #  ^^^^^ source.qtn support.type.generic.qtn
 #       ^ source.qtn punctuation.definition.generic.begin.qtn
-#        ^^^ source.qtn support.type.primitive.qtn
+#        ^^^ source.qtn support.type.qtn
 #           ^ source.qtn punctuation.definition.generic.end.qtn
 #            ^ source.qtn
 #             ^^ source.qtn constant.numeric.integer.qtn
@@ -320,14 +320,14 @@
 #            ^ source.qtn punctuation.definition.generic.begin.qtn
 #             ^^^^^^^^^ source.qtn support.type.qtn
 #                      ^^ source.qtn
-#                        ^^^ source.qtn support.type.primitive.qtn
+#                        ^^^ source.qtn support.type.qtn
 #                           ^ source.qtn punctuation.definition.generic.end.qtn
 #                            ^^^^^^^^^^^^^ source.qtn
 >  hash_set<int> UnlockedAbilities;
 #^^ source.qtn
 #  ^^^^^^^^ source.qtn support.type.generic.qtn
 #          ^ source.qtn punctuation.definition.generic.begin.qtn
-#           ^^^ source.qtn support.type.primitive.qtn
+#           ^^^ source.qtn support.type.qtn
 #              ^ source.qtn punctuation.definition.generic.end.qtn
 #               ^^^^^^^^^^^^^^^^^^^^ source.qtn
 >}
@@ -502,7 +502,7 @@
 #^^^^^^^^^^^^^^^^^^^^^ source.qtn
 >  int Quantity;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -560,7 +560,7 @@
 #      ^^^ source.qtn
 >  int RoundNumber;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^^^^^^^^ source.qtn
 >  FP MatchTime;
 #^^ source.qtn
@@ -568,11 +568,11 @@
 #    ^^^^^^^^^^^^ source.qtn
 >  int AlivePlayerCount;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^^^^^^^^^^^^^ source.qtn
 >  bool GameStarted;
 #^^ source.qtn
-#  ^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^ source.qtn support.type.qtn
 #      ^^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -621,7 +621,7 @@
 #           ^ source.qtn
 #            ^^^^^^^^^^^ source.qtn entity.name.type.qtn
 #                       ^ source.qtn
-#                        ^^^^ source.qtn support.type.primitive.qtn
+#                        ^^^^ source.qtn support.type.qtn
 #                            ^ source.qtn
 #                             ^^ source.qtn
 >import struct Foo(8);
@@ -670,7 +670,7 @@
 #^^ source.qtn
 #  ^^^^^^^^^^ source.qtn support.type.generic.qtn
 #            ^ source.qtn punctuation.definition.generic.begin.qtn
-#             ^^^ source.qtn support.type.primitive.qtn
+#             ^^^ source.qtn support.type.qtn
 #                ^^ source.qtn
 #                  ^^^^ source.qtn support.type.generic.qtn
 #                      ^ source.qtn punctuation.definition.generic.begin.qtn
@@ -715,43 +715,43 @@
 #                    ^^^ source.qtn
 >  bool BoolField;
 #^^ source.qtn
-#  ^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^ source.qtn support.type.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  byte ByteField;
 #^^ source.qtn
-#  ^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^ source.qtn support.type.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  sbyte SByteField;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  short ShortField;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  ushort UShortField;
 #^^ source.qtn
-#  ^^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^^^^^^ source.qtn
 >  int IntField;
 #^^ source.qtn
-#  ^^^ source.qtn support.type.primitive.qtn
+#  ^^^ source.qtn support.type.qtn
 #     ^^^^^^^^^^^ source.qtn
 >  uint UIntField;
 #^^ source.qtn
-#  ^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^ source.qtn support.type.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  long LongField;
 #^^ source.qtn
-#  ^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^ source.qtn support.type.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  ulong ULongField;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  Boolean BooleanField;
 #^^ source.qtn
-#  ^^^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^^^ source.qtn support.type.qtn
 #         ^^^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -887,7 +887,7 @@
 #^^ source.qtn
 #  ^^^^^ source.qtn keyword.control.qtn
 #       ^ source.qtn
-#        ^^^ source.qtn support.type.primitive.qtn
+#        ^^^ source.qtn support.type.qtn
 #           ^^^^^^^^^^^^^^^ source.qtn
 >  remote FPVector3 RemotePosition;
 #^^ source.qtn
@@ -936,7 +936,7 @@
 #                        ^^^ source.qtn
 >  Int32 Common;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -1085,35 +1085,35 @@
 #                    ^^^ source.qtn
 >  Byte ByteAlias;
 #^^ source.qtn
-#  ^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^ source.qtn support.type.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  SByte SByteAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  Int16 ShortAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  UInt16 UShortAlias;
 #^^ source.qtn
-#  ^^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^^^^^^ source.qtn
 >  Int32 IntAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^ source.qtn
 >  UInt32 UIntAlias;
 #^^ source.qtn
-#  ^^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^^^^ source.qtn
 >  Int64 LongAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.qtn
 #       ^^^^^^^^^^^^ source.qtn
 >  UInt64 ULongAlias;
 #^^ source.qtn
-#  ^^^^^^ source.qtn support.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -1294,7 +1294,7 @@
 #           ^ source.qtn
 #            ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
 #                        ^ source.qtn
-#                         ^^^^ source.qtn support.type.primitive.qtn
+#                         ^^^^ source.qtn support.type.qtn
 #                             ^ source.qtn
 #                              ^^ source.qtn
 >import singleton SingletonComp;
@@ -1367,7 +1367,7 @@
 #^^ source.qtn
 #  ^^^ source.qtn support.type.generic.qtn
 #     ^ source.qtn punctuation.definition.generic.begin.qtn
-#      ^^^ source.qtn support.type.primitive.qtn
+#      ^^^ source.qtn support.type.qtn
 #         ^ source.qtn punctuation.definition.generic.end.qtn
 #          ^^^^^^^^^ source.qtn
 >}

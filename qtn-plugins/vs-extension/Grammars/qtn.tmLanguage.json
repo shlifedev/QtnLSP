@@ -147,7 +147,7 @@
     "types-primitive": {
       "patterns": [
         {
-          "name": "support.type.primitive.qtn",
+          "name": "support.type.qtn",
           "match": "\\b(bool|Boolean|byte|Byte|sbyte|SByte|short|Int16|ushort|UInt16|int|Int32|uint|UInt32|long|Int64|ulong|UInt64|void)\\b"
         }
       ]
@@ -342,7 +342,7 @@
               "name": "entity.name.type.qtn"
             },
             "4": {
-              "name": "support.type.primitive.qtn"
+              "name": "support.type.qtn"
             }
           }
         },
