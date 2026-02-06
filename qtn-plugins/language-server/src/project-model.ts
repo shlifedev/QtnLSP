@@ -34,8 +34,22 @@ export class ProjectModel {
    * @param text - Full document text
    */
   updateDocument(uri: string, text: string): void {
-    // Parse the document
-    const doc = parse(text, uri);
+    let doc: QtnDocument;
+    try {
+      doc = parse(text, uri);
+    } catch (e) {
+      // If the parser throws unexpectedly, store an empty document with an error
+      // so the LSP server doesn't crash.
+      doc = {
+        uri,
+        version: 0,
+        definitions: [],
+        parseErrors: [{
+          message: `Internal parser error: ${e instanceof Error ? e.message : String(e)}`,
+          range: { start: { line: 0, character: 0 }, end: { line: 0, character: 0 } },
+        }],
+      };
+    }
 
     // Store in documents map
     this.documents.set(uri, doc);

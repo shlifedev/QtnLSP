@@ -30,6 +30,8 @@ import {
 
 // ── Recovery anchors ───────────────────────────────────────────────
 
+const MAX_GENERIC_DEPTH = 32;
+
 const TOP_LEVEL_KEYWORDS = new Set([
   'component', 'struct', 'enum', 'flags', 'union', 'event', 'signal',
   'input', 'global', 'asset', 'import', 'using', 'singleton', 'abstract',
@@ -129,8 +131,8 @@ class Parser {
   /**
    * Panic-mode recovery: skip tokens until we reach a recovery anchor.
    * Recovery anchors are: `}`, `;`, top-level keyword, or EOF.
-   * If we land on `}` or `;` we consume them so the next parse iteration
-   * starts clean.
+   * If we land on `;` we consume it. If we land on `}` we stop *before*
+   * it so the block parser can close properly.
    *
    * Safety guarantee: Always advances at least one token if not at EOF.
    */
@@ -160,9 +162,12 @@ class Parser {
         this.advance();
         return;
       }
-      // `}` — consume and stop
+      // `}` — stop *before* consuming so the block parser can close properly.
       if (tok.type === TokenType.punctuation && tok.value === '}') {
-        this.advance();
+        // Ensure we advanced at least once
+        if (this.pos === startPos) {
+          this.advance();
+        }
         return;
       }
       this.advance();
@@ -887,6 +892,7 @@ class Parser {
 
   /**
    * Skip to `,`, `}`, or identifier inside an enum block.
+   * `,` is consumed, `}` is NOT consumed (caller handles block close).
    * Safety guarantee: Always advances at least one token if not at EOF.
    */
   private skipToEnumRecoveryPoint(): void {
@@ -894,10 +900,13 @@ class Parser {
 
     while (!this.isEof()) {
       const tok = this.current();
-      if (tok.type === TokenType.punctuation && (tok.value === ',' || tok.value === '}')) {
-        if (tok.value === ',') this.advance();
-        // Ensure we advanced at least once
-        if (this.pos === startPos && tok.value === '}') {
+      if (tok.type === TokenType.punctuation && tok.value === ',') {
+        this.advance();
+        return;
+      }
+      // `}` — stop *before* consuming so the enum block parser can close.
+      if (tok.type === TokenType.punctuation && tok.value === '}') {
+        if (this.pos === startPos) {
           this.advance();
         }
         return;
@@ -934,6 +943,13 @@ class Parser {
       const typeRef = this.parseTypeRef();
       if (!typeRef) {
         this.addError('Expected parameter type', this.current().range);
+        // Recovery: skip to ')' or ',' so caller can continue
+        while (!this.isEof() && !this.check(TokenType.punctuation, ')') && !this.check(TokenType.punctuation, ',')) {
+          this.advance();
+        }
+        if (this.match(TokenType.punctuation, ',')) {
+          continue;
+        }
         break;
       }
 
@@ -957,7 +973,7 @@ class Parser {
 
   // ── Type reference ─────────────────────────────────────────────
 
-  private parseTypeRef(): TypeReference | null {
+  private parseTypeRef(depth: number = 0): TypeReference | null {
     const tok = this.current();
 
     if (tok.type !== TokenType.identifier && tok.type !== TokenType.keyword) {
@@ -981,7 +997,19 @@ class Parser {
     // Generic args: <T>, <K,V>, <T>[N]
     let genericArgs: TypeReference[] = [];
     if (this.match(TokenType.punctuation, '<')) {
-      genericArgs = this.parseGenericArgs();
+      if (depth >= MAX_GENERIC_DEPTH) {
+        this.addError('Generic type nesting too deep', this.current().range);
+        // Skip to matching '>' to recover
+        let angleDepth = 1;
+        while (!this.isEof() && angleDepth > 0) {
+          const t = this.current();
+          if (t.type === TokenType.punctuation && t.value === '<') angleDepth++;
+          if (t.type === TokenType.punctuation && t.value === '>') angleDepth--;
+          if (angleDepth > 0) this.advance();
+        }
+      } else {
+        genericArgs = this.parseGenericArgs(depth);
+      }
       this.expect(TokenType.punctuation, '>');
     }
 
@@ -1021,7 +1049,7 @@ class Parser {
   }
 
   /** Parse comma-separated type references inside < > */
-  private parseGenericArgs(): TypeReference[] {
+  private parseGenericArgs(depth: number = 0): TypeReference[] {
     const args: TypeReference[] = [];
 
     // Empty generic args (shouldn't happen in valid QTN but handle gracefully)
@@ -1030,7 +1058,7 @@ class Parser {
     }
 
     while (!this.isEof()) {
-      const ref = this.parseTypeRef();
+      const ref = this.parseTypeRef(depth + 1);
       if (!ref) {
         this.addError('Expected type argument', this.current().range);
         break;
