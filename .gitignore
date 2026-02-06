@@ -17,8 +17,6 @@ out/
 .DS_Store
 Thumbs.db
 
-# Package lock
-package-lock.json
 
 # Worktrees
 .worktrees/
