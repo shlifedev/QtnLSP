@@ -92,9 +92,11 @@ jobs:
           cp -r qtn-plugins/language-server/out/* qtn-plugins/vs-extension/LanguageServer/
           cp -r qtn-plugins/language-server/node_modules qtn-plugins/vs-extension/LanguageServer/
 
-      - name: Sync grammar
+      - name: Sync grammar + LICENSE
         shell: bash
-        run: cp qtn-plugins/shared/syntaxes/qtn.tmLanguage.json qtn-plugins/vs-extension/Grammars/qtn.tmLanguage.json
+        run: |
+          cp qtn-plugins/shared/syntaxes/qtn.tmLanguage.json qtn-plugins/vs-extension/Grammars/qtn.tmLanguage.json
+          cp LICENSE qtn-plugins/vs-extension/LICENSE
 
       - name: Build VS extension
         working-directory: qtn-plugins/vs-extension
