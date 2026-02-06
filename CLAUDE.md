@@ -136,10 +136,10 @@ sh build.sh all
 
 | 분류 | 스코프 | 타입 |
 |------|--------|------|
-| 기본 타입 | `storage.type.primitive.qtn` | `bool` `Boolean` `byte` `Byte` `sbyte` `SByte` `short` `Int16` `ushort` `UInt16` `int` `Int32` `uint` `UInt32` `long` `Int64` `ulong` `UInt64` |
+| 기본 타입 | `support.type.primitive.qtn` | `bool` `Boolean` `byte` `Byte` `sbyte` `SByte` `short` `Int16` `ushort` `UInt16` `int` `Int32` `uint` `UInt32` `long` `Int64` `ulong` `UInt64` |
 | Quantum 내장 | `support.type.qtn` | `FP` `FPVector2` `FPVector3` `FPQuaternion` `FPMatrix` `FPBounds2` `FPBounds3` `EntityRef` `PlayerRef` `AssetRef` `QString` `QStringUtf8` `LayerMask` `NullableFP` `NullableFPVector2` `NullableFPVector3` `Hit` `Hit3D` `Shape2D` `Shape3D` `Joint` `DistanceJoint` `SpringJoint` `HingeJoint` |
-| 제네릭/컬렉션 | `storage.type.generic.qtn` | `list` `array` `dictionary` `hash_set` `set` `bitset` `entity_ref` `player_ref` `asset_ref` |
-| 특수 타입 | `storage.type.qtn` | `button` (input 블록 전용) |
+| 제네릭/컬렉션 | `support.type.generic.qtn` | `list` `array` `dictionary` `hash_set` `set` `bitset` `entity_ref` `player_ref` `asset_ref` |
+| 특수 타입 | `support.type.qtn` | `button` (input 블록 전용) |
 
 ### 리터럴 & 주석
 

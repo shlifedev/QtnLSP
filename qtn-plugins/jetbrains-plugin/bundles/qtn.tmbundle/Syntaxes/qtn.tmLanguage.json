@@ -95,14 +95,51 @@
       "patterns": [
         {
           "name": "meta.annotation.qtn",
-          "begin": "\\[(?=[A-Za-z_])",
-          "end": "\\]",
+          "begin": "(\\[)(?=[A-Za-z_])",
+          "end": "(\\])",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.annotation.begin.qtn" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.annotation.end.qtn" }
+          },
           "patterns": [
             {
-              "name": "entity.other.attribute-name.qtn",
-              "match": "[A-Za-z_]\\w*"
+              "name": "support.type.attribute.qtn",
+              "match": "(?<=\\[)[A-Za-z_]\\w*"
             },
-            { "include": "#strings" }
+            {
+              "match": ",\\s*([A-Za-z_]\\w*)",
+              "captures": {
+                "1": { "name": "support.type.attribute.qtn" }
+              }
+            },
+            {
+              "begin": "(\\()",
+              "end": "(\\))",
+              "beginCaptures": {
+                "1": { "name": "punctuation.definition.annotation.begin.qtn" }
+              },
+              "endCaptures": {
+                "1": { "name": "punctuation.definition.annotation.end.qtn" }
+              },
+              "patterns": [
+                { "include": "#strings" },
+                { "include": "#numbers" },
+                {
+                  "name": "variable.parameter.attribute.qtn",
+                  "match": "[A-Za-z_]\\w*"
+                },
+                {
+                  "name": "punctuation.separator.comma.qtn",
+                  "match": ","
+                }
+              ]
+            },
+            {
+              "name": "punctuation.separator.comma.qtn",
+              "match": ","
+            }
           ]
         }
       ]
@@ -110,7 +147,7 @@
     "types-primitive": {
       "patterns": [
         {
-          "name": "storage.type.primitive.qtn",
+          "name": "support.type.primitive.qtn",
           "match": "\\b(bool|Boolean|byte|Byte|sbyte|SByte|short|Int16|ushort|UInt16|int|Int32|uint|UInt32|long|Int64|ulong|UInt64|void)\\b"
         }
       ]
@@ -130,7 +167,7 @@
           "end": "(>)",
           "beginCaptures": {
             "1": {
-              "name": "storage.type.generic.qtn"
+              "name": "support.type.generic.qtn"
             },
             "2": {
               "name": "punctuation.definition.generic.begin.qtn"
@@ -152,7 +189,7 @@
           "match": "\\b(bitset)\\s*(\\[)(\\d+)(\\])",
           "captures": {
             "1": {
-              "name": "storage.type.generic.qtn"
+              "name": "support.type.generic.qtn"
             },
             "2": {
               "name": "punctuation.definition.array.begin.qtn"
@@ -173,7 +210,7 @@
         { "include": "#types-primitive" },
         { "include": "#types-quantum" },
         {
-          "name": "storage.type.qtn",
+          "name": "support.type.qtn",
           "match": "\\b(button|Button)\\b"
         }
       ]
@@ -305,7 +342,7 @@
               "name": "entity.name.type.qtn"
             },
             "4": {
-              "name": "storage.type.primitive.qtn"
+              "name": "support.type.primitive.qtn"
             }
           }
         },

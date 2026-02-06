@@ -240,7 +240,7 @@
 #                             ^^^ source.qtn
 >  int RoundNumber;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^^^^^^^^ source.qtn
 >  FP MatchTime;
 #^^ source.qtn
@@ -248,7 +248,7 @@
 #    ^^^^^^^^^^^^ source.qtn
 >  int AlivePlayerCount;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -272,11 +272,11 @@
 #    ^^^^^^^^ source.qtn
 >  int Ammo;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^ source.qtn
 >  asset_ref<WeaponConfig> Config;
 #^^ source.qtn
-#  ^^^^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^^^^ source.qtn support.type.generic.qtn
 #           ^ source.qtn punctuation.definition.generic.begin.qtn
 #            ^^^^^^^^^^^^ source.qtn
 #                        ^ source.qtn punctuation.definition.generic.end.qtn
@@ -300,34 +300,34 @@
 #                   ^^^ source.qtn
 >  list<EntityRef> Items;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^ source.qtn support.type.generic.qtn
 #      ^ source.qtn punctuation.definition.generic.begin.qtn
 #       ^^^^^^^^^ source.qtn support.type.qtn
 #                ^ source.qtn punctuation.definition.generic.end.qtn
 #                 ^^^^^^^^ source.qtn
 >  array<int>[10] QuickSlots;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^ source.qtn support.type.generic.qtn
 #       ^ source.qtn punctuation.definition.generic.begin.qtn
-#        ^^^ source.qtn storage.type.primitive.qtn
+#        ^^^ source.qtn support.type.primitive.qtn
 #           ^ source.qtn punctuation.definition.generic.end.qtn
 #            ^ source.qtn
 #             ^^ source.qtn constant.numeric.integer.qtn
 #               ^^^^^^^^^^^^^^ source.qtn
 >  dictionary<EntityRef, int> ItemCounts;
 #^^ source.qtn
-#  ^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^^^^^ source.qtn support.type.generic.qtn
 #            ^ source.qtn punctuation.definition.generic.begin.qtn
 #             ^^^^^^^^^ source.qtn support.type.qtn
 #                      ^^ source.qtn
-#                        ^^^ source.qtn storage.type.primitive.qtn
+#                        ^^^ source.qtn support.type.primitive.qtn
 #                           ^ source.qtn punctuation.definition.generic.end.qtn
 #                            ^^^^^^^^^^^^^ source.qtn
 >  hash_set<int> UnlockedAbilities;
 #^^ source.qtn
-#  ^^^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^^^ source.qtn support.type.generic.qtn
 #          ^ source.qtn punctuation.definition.generic.begin.qtn
-#           ^^^ source.qtn storage.type.primitive.qtn
+#           ^^^ source.qtn support.type.primitive.qtn
 #              ^ source.qtn punctuation.definition.generic.end.qtn
 #               ^^^^^^^^^^^^^^^^^^^^ source.qtn
 >}
@@ -394,7 +394,7 @@
 #                           ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
 >  list<EntityRef> Targets;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^ source.qtn support.type.generic.qtn
 #      ^ source.qtn punctuation.definition.generic.begin.qtn
 #       ^^^^^^^^^ source.qtn support.type.qtn
 #                ^ source.qtn punctuation.definition.generic.end.qtn
@@ -451,15 +451,15 @@
 #           ^^^^^^^ source.qtn
 >  button Fire;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^ source.qtn
 >  button Reload;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^ source.qtn
 >  button Jump;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -502,7 +502,7 @@
 #^^^^^^^^^^^^^^^^^^^^^ source.qtn
 >  int Quantity;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -560,7 +560,7 @@
 #      ^^^ source.qtn
 >  int RoundNumber;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^^^^^^^^ source.qtn
 >  FP MatchTime;
 #^^ source.qtn
@@ -568,11 +568,11 @@
 #    ^^^^^^^^^^^^ source.qtn
 >  int AlivePlayerCount;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^^^^^^^^^^^^^ source.qtn
 >  bool GameStarted;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^ source.qtn support.type.primitive.qtn
 #      ^^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -621,7 +621,7 @@
 #           ^ source.qtn
 #            ^^^^^^^^^^^ source.qtn entity.name.type.qtn
 #                       ^ source.qtn
-#                        ^^^^ source.qtn storage.type.primitive.qtn
+#                        ^^^^ source.qtn support.type.primitive.qtn
 #                            ^ source.qtn
 #                             ^^ source.qtn
 >import struct Foo(8);
@@ -658,9 +658,9 @@
 #                      ^^^ source.qtn
 >  list<asset_ref<WeaponConfig>> WeaponConfigs;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^ source.qtn support.type.generic.qtn
 #      ^ source.qtn punctuation.definition.generic.begin.qtn
-#       ^^^^^^^^^ source.qtn storage.type.generic.qtn
+#       ^^^^^^^^^ source.qtn support.type.generic.qtn
 #                ^ source.qtn punctuation.definition.generic.begin.qtn
 #                 ^^^^^^^^^^^^ source.qtn
 #                             ^ source.qtn punctuation.definition.generic.end.qtn
@@ -668,11 +668,11 @@
 #                               ^^^^^^^^^^^^^^^^ source.qtn
 >  dictionary<int, list<EntityRef>> GroupedEntities;
 #^^ source.qtn
-#  ^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^^^^^ source.qtn support.type.generic.qtn
 #            ^ source.qtn punctuation.definition.generic.begin.qtn
-#             ^^^ source.qtn storage.type.primitive.qtn
+#             ^^^ source.qtn support.type.primitive.qtn
 #                ^^ source.qtn
-#                  ^^^^ source.qtn storage.type.generic.qtn
+#                  ^^^^ source.qtn support.type.generic.qtn
 #                      ^ source.qtn punctuation.definition.generic.begin.qtn
 #                       ^^^^^^^^^ source.qtn support.type.qtn
 #                                ^ source.qtn punctuation.definition.generic.end.qtn
@@ -680,7 +680,7 @@
 #                                  ^^^^^^^^^^^^^^^^^^ source.qtn
 >  array<FPVector3>[100] Waypoints;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^ source.qtn support.type.generic.qtn
 #       ^ source.qtn punctuation.definition.generic.begin.qtn
 #        ^^^^^^^^^ source.qtn support.type.qtn
 #                 ^ source.qtn punctuation.definition.generic.end.qtn
@@ -689,7 +689,7 @@
 #                      ^^^^^^^^^^^^^ source.qtn
 >  bitset[64] Flags;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^ source.qtn support.type.generic.qtn
 #        ^ source.qtn punctuation.definition.array.begin.qtn
 #         ^^ source.qtn constant.numeric.integer.qtn
 #           ^ source.qtn punctuation.definition.array.end.qtn
@@ -715,43 +715,43 @@
 #                    ^^^ source.qtn
 >  bool BoolField;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^ source.qtn support.type.primitive.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  byte ByteField;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^ source.qtn support.type.primitive.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  sbyte SByteField;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  short ShortField;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  ushort UShortField;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.primitive.qtn
 #        ^^^^^^^^^^^^^^ source.qtn
 >  int IntField;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.primitive.qtn
+#  ^^^ source.qtn support.type.primitive.qtn
 #     ^^^^^^^^^^^ source.qtn
 >  uint UIntField;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^ source.qtn support.type.primitive.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  long LongField;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^ source.qtn support.type.primitive.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  ulong ULongField;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  Boolean BooleanField;
 #^^ source.qtn
-#  ^^^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^^^ source.qtn support.type.primitive.qtn
 #         ^^^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -887,7 +887,7 @@
 #^^ source.qtn
 #  ^^^^^ source.qtn keyword.control.qtn
 #       ^ source.qtn
-#        ^^^ source.qtn storage.type.primitive.qtn
+#        ^^^ source.qtn support.type.primitive.qtn
 #           ^^^^^^^^^^^^^^^ source.qtn
 >  remote FPVector3 RemotePosition;
 #^^ source.qtn
@@ -936,7 +936,7 @@
 #                        ^^^ source.qtn
 >  Int32 Common;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -1085,35 +1085,35 @@
 #                    ^^^ source.qtn
 >  Byte ByteAlias;
 #^^ source.qtn
-#  ^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^ source.qtn support.type.primitive.qtn
 #      ^^^^^^^^^^^^ source.qtn
 >  SByte SByteAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  Int16 ShortAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^^^ source.qtn
 >  UInt16 UShortAlias;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.primitive.qtn
 #        ^^^^^^^^^^^^^^ source.qtn
 >  Int32 IntAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^ source.qtn
 >  UInt32 UIntAlias;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.primitive.qtn
 #        ^^^^^^^^^^^^ source.qtn
 >  Int64 LongAlias;
 #^^ source.qtn
-#  ^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^ source.qtn support.type.primitive.qtn
 #       ^^^^^^^^^^^^ source.qtn
 >  UInt64 ULongAlias;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#  ^^^^^^ source.qtn support.type.primitive.qtn
 #        ^^^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
@@ -1294,7 +1294,7 @@
 #           ^ source.qtn
 #            ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
 #                        ^ source.qtn
-#                         ^^^^ source.qtn storage.type.primitive.qtn
+#                         ^^^^ source.qtn support.type.primitive.qtn
 #                             ^ source.qtn
 #                              ^^ source.qtn
 >import singleton SingletonComp;
@@ -1351,23 +1351,23 @@
 #                             ^^^ source.qtn
 >  entity_prototype_ref<MyPrototype> ProtoRef;
 #^^ source.qtn
-#  ^^^^^^^^^^^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^^^^^^^^^^^^^^^ source.qtn support.type.generic.qtn
 #                      ^ source.qtn punctuation.definition.generic.begin.qtn
 #                       ^^^^^^^^^^^ source.qtn
 #                                  ^ source.qtn punctuation.definition.generic.end.qtn
 #                                   ^^^^^^^^^^^ source.qtn
 >  component_prototype_ref<MyComponent> CompRef;
 #^^ source.qtn
-#  ^^^^^^^^^^^^^^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^ source.qtn support.type.generic.qtn
 #                         ^ source.qtn punctuation.definition.generic.begin.qtn
 #                          ^^^^^^^^^^^ source.qtn
 #                                     ^ source.qtn punctuation.definition.generic.end.qtn
 #                                      ^^^^^^^^^^ source.qtn
 >  set<int> IntSet;
 #^^ source.qtn
-#  ^^^ source.qtn storage.type.generic.qtn
+#  ^^^ source.qtn support.type.generic.qtn
 #     ^ source.qtn punctuation.definition.generic.begin.qtn
-#      ^^^ source.qtn storage.type.primitive.qtn
+#      ^^^ source.qtn support.type.primitive.qtn
 #         ^ source.qtn punctuation.definition.generic.end.qtn
 #          ^^^^^^^^^ source.qtn
 >}
@@ -1387,11 +1387,11 @@
 #     ^^^ source.qtn
 >  Button Action;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^ source.qtn
 >  button Interact;
 #^^ source.qtn
-#  ^^^^^^ source.qtn storage.type.qtn
+#  ^^^^^^ source.qtn support.type.qtn
 #        ^^^^^^^^^^^ source.qtn
 >}
 #^^ source.qtn
