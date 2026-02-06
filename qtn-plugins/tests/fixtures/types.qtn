@@ -1,0 +1,220 @@
+// QTN Type Coverage Test Fixture
+// All primitive, Quantum built-in, and DSL alias types
+
+// ============================================
+// Primitive Types
+// ============================================
+struct PrimitiveTypes {
+  bool IsActive;
+  Boolean IsEnabled;
+  Byte SmallValue;
+  SByte SignedSmall;
+  Int16 ShortSigned;
+  UInt16 ShortUnsigned;
+  Int32 IntSigned;
+  UInt32 IntUnsigned;
+  Int64 LongSigned;
+  UInt64 LongUnsigned;
+}
+
+
+ 
+
+
+// ============================================
+// Quantum Core Types
+// ============================================
+struct QuantumCoreTypes {
+  FP FixedPoint;
+  FPVector2 Position2D;
+  FPVector3 Position3D;
+  FPMatrix TransformMatrix;
+  FPQuaternion Rotation;
+}
+
+// ============================================
+// Reference Types
+// ============================================
+struct ReferenceTypes {
+  PlayerRef Owner;
+  EntityRef Target;
+  player_ref<PlayerData> TypedPlayer;
+  entity_ref<EnemyData> TypedEntity;
+}
+
+// ============================================
+// String Types
+// ============================================
+struct StringTypes {
+  QString DisplayName;
+  QStringUtf8 Identifier;
+}
+
+// ============================================
+// Nullable Types (FP? syntax)
+// ============================================
+struct NullableTypes {
+  NullableFP OptionalValue;
+  NullableFPVector2 OptionalPos2D;
+  NullableFPVector3 OptionalPos3D;
+}
+
+// ============================================
+// Layer & Collision
+// ============================================
+struct LayerTypes {
+  LayerMask CollisionMask;
+  LayerMask VisibilityMask;
+}
+
+// ============================================
+// Physics: Hit & Shape
+// ============================================
+struct PhysicsQueryTypes {
+  Hit LastHit2D;
+  Hit3D LastHit3D;
+  Shape2D ColliderShape2D;
+  Shape3D ColliderShape3D;
+}
+
+// ============================================
+// Physics: Joint Types
+// ============================================
+struct JointTypes {
+  Joint GenericJoint;
+  DistanceJoint DistJoint;
+  SpringJoint SprJoint;
+  HingeJoint HngJoint;
+}
+
+// ============================================
+// Comprehensive Component using all types
+// ============================================
+component AllTypesComponent {
+  // Primitives
+  bool Flag;
+  Boolean AltFlag;
+  Byte Level;
+  SByte Temperature;
+  Int16 Score;
+  UInt16 Health;
+  Int32 Experience;
+  UInt32 Gold;
+  Int64 UniqueId;
+  UInt64 Timestamp;
+
+  // Quantum core
+  FP Speed;
+  FPVector2 Velocity2D;
+  FPVector3 Velocity3D;
+  FPMatrix WorldTransform;
+  FPQuaternion Orientation;
+
+  // References
+  PlayerRef OwnerPlayer;
+  EntityRef TargetEntity;
+
+  // Strings
+  QString Name;
+  QStringUtf8 Tag;
+
+  // Nullable
+  NullableFP OptionalDamage;
+  NullableFPVector2 OptionalDirection2D;
+  NullableFPVector3 OptionalDirection3D;
+
+  // Layer
+  LayerMask PhysicsLayers;
+
+  // Physics queries
+  Hit CachedHit;
+  Hit3D CachedHit3D;
+  Shape2D BoundingShape;
+  Shape3D BoundingVolume;
+
+  // Joints
+  Joint AnyJoint;
+  DistanceJoint Tether;
+  SpringJoint Suspension;
+  HingeJoint Door;
+}
+
+// ============================================
+// DSL collection aliases with typed refs
+// ============================================
+component CollectionWithTypes {
+  list<EntityRef> Targets;
+  array<FP>[8] Waypoints;
+  dictionary<PlayerRef, Int32> PlayerScores;
+  hash_set<UInt32> UnlockedIds;
+  player_ref<PlayerData> MainPlayer;
+  entity_ref<BossData> CurrentBoss;
+  asset_ref<WeaponConfig> WeaponData;
+  bitset[128] FeatureFlags;
+}
+
+// ============================================
+// Signal with various param types
+// ============================================
+signal OnPhysicsHit(entity_ref source, entity_ref target, FPVector3 point, FP damage, Hit3D hitInfo);
+signal OnJointBreak(entity_ref body, Joint joint, FP force);
+signal OnPlayerAction(player_ref player, FPVector2 direction, bool isActive);
+
+// ============================================
+// Event with Quantum types
+// ============================================
+event DamageEvent {
+  entity_ref Source;
+  entity_ref Target;
+  FP Amount;
+  FPVector3 HitPoint;
+  Hit3D HitResult;
+  NullableFP CritMultiplier;
+  Boolean WasCritical;
+}
+
+synced event PhysicsEvent {
+  Shape3D Shape;
+  Joint JointData;
+  DistanceJoint DistData;
+  SpringJoint SpringData;
+  HingeJoint HingeData;
+  LayerMask AffectedLayers;
+}
+
+// ============================================
+// Input with button and typed fields
+// ============================================
+input {
+  FPVector2 Move;
+  FPVector2 Look;
+  button Fire;
+  button Jump;
+  button Interact;
+  Int32 SelectedSlot;
+}
+
+// ============================================
+// Global with mixed types
+// ============================================
+global {
+  FP GameTime;
+  Int32 RoundNumber;
+  bool MatchActive;
+  Boolean GameOver;
+  NullableFP Countdown;
+  PlayerRef LeadingPlayer;
+}
+
+component QWER{
+  dictionary<Int32, FP> testDict;
+  bitset[123] testBitset;
+  list<EntityRef> Enemies;
+  list<QWERTY> TestStructs;
+  
+}
+
+struct QWERTY{
+  button testButton;
+}
+

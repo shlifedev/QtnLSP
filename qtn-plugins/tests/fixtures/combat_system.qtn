@@ -1,0 +1,219 @@
+// Combat System - Complex attributes, abstract events, nested collections
+// Tests: multi-level event inheritance, complex attribute combinations, signals with pointers
+
+#pragma max_players 8
+#define MAX_COMBO_LENGTH 12
+#define CRIT_MULTIPLIER 1.5
+
+using Combat;
+using Combat.Stats;
+import struct DamageType(4);
+import enum WeaponCategory(byte);
+
+// Weapon flags with complex attributes
+[Header("Weapon System")]
+flags WeaponFlags : UInt32 {
+    None = 0x00,
+    TwoHanded = 0x01,
+    Ranged = 0x02,
+    Magic = 0x04,
+    Legendary = 0x08,
+    Soulbound = 0x10,
+    Throwable = 0x20,
+    DualWieldable = 0x40,
+    RequiresAmmo = 0x80
+}
+
+// Damage type enumeration
+enum DamageCategory : Byte {
+    Physical = 0,
+    Fire = 1,
+    Ice = 2,
+    Lightning = 3,
+    Poison = 4,
+    Holy = 5,
+    Dark = 6,
+    Arcane = 7
+}
+
+// Complex struct with multiple collections
+[Header("Combat Statistics")]
+struct CombatStats {
+    [Tooltip("Base health points\nmin = 1\nmax = 10000")]
+    [RangeEx(1, 10000)]
+    FP BaseHealth;
+
+    [Tooltip("Attack power")]
+    [Range(0, 999)]
+    FP AttackPower;
+
+    [DrawIf("HasShield", 1, Equal, Hide)]
+    FP ShieldStrength;
+
+    [DrawIf("WeaponType", 2, GreaterThan, Disable)]
+    FP MagicResistance;
+
+    [HideInInspector]
+    FP CriticalChance;
+
+    [ExcludeFromPrototype]
+    Int32 ComboCounter;
+}
+
+// Component with complex collection allocations
+[Header("Combat Entity")]
+component Fighter {
+    CombatStats Stats;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> TargetHistory;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, FP> DamageModifiers;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<DamageCategory> Immunities;
+
+    [Space]
+    [Layer]
+    LayerMask AttackLayers;
+
+    [Optional("Weapons/Default")]
+    asset_ref<WeaponAsset> CurrentWeapon;
+
+    WeaponFlags EquippedFlags;
+    bitset[32] ActiveBuffs;
+    array<FP>[8] ResistanceValues;
+}
+
+// Singleton combat manager
+[Header("Combat Management")]
+singleton component CombatManager {
+    [Tooltip("Global damage multiplier")]
+    FP GlobalDamageMultiplier;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> CombatParticipants;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, Int32> KillCounts;
+
+    Int32 ActiveCombats;
+    FP LastCombatTime;
+}
+
+// Multi-level abstract event inheritance
+abstract event BaseCombatEvent {
+    EntityRef Source;
+    FP Timestamp;
+}
+
+abstract event DamageEvent : BaseCombatEvent {
+    EntityRef Target;
+    FP Amount;
+    DamageCategory Category;
+}
+
+synced event PhysicalDamageEvent : DamageEvent {
+    FPVector3 ImpactPoint;
+    FPVector3 ImpactNormal;
+    nothashed Boolean IsCritical;
+    local player_ref InstigatingPlayer;
+}
+
+synced event MagicalDamageEvent : DamageEvent {
+    FPVector3 OriginPoint;
+    FP Radius;
+    nothashed array<EntityRef>[16] AffectedEntities;
+    remote player_ref CasterPlayer;
+}
+
+event HealingEvent : BaseCombatEvent {
+    EntityRef Target;
+    FP Amount;
+    Boolean OverHeal;
+}
+
+// Death event with complex data
+synced event DeathEvent : BaseCombatEvent {
+    EntityRef Killer;
+    DamageCategory KillingBlow;
+    FPVector3 DeathLocation;
+    nothashed FPQuaternion DeathRotation;
+    nothashed array<EntityRef>[8] AssistingEntities;
+    local player_ref VictimPlayer;
+}
+
+// Signals with various parameter types including pointers
+signal OnDamageDealt(EntityRef source, EntityRef target, FP amount, DamageCategory type);
+signal OnDamageTaken(EntityRef target, FP amount);
+signal OnCriticalHit(EntityRef attacker, EntityRef victim, FP multiplier);
+signal OnComboFinished(EntityRef entity, Int32 comboLength);
+signal OnWeaponEquipped(EntityRef entity, asset_ref<WeaponAsset> weapon);
+signal OnCombatStateChanged(CombatManager* manager, Boolean inCombat);
+signal OnBuffApplied(EntityRef target, Int32 buffId, FP duration);
+
+// Weapon asset definition
+[Header("Weapon Configuration")]
+asset WeaponAsset;
+
+// Combat ability struct
+[Header("Ability System")]
+struct CombatAbility {
+    [Tooltip("Ability cooldown in seconds")]
+    FP Cooldown;
+
+    [Tooltip("Mana cost")]
+    [Range(0, 100)]
+    Int32 ManaCost;
+
+    [DrawIf("RequiresTarget", true, Equal, Hide)]
+    FP MaxRange;
+
+    [DrawIf("IsAreaEffect", true, Equal, Show)]
+    FP EffectRadius;
+
+    DamageCategory PrimaryDamage;
+    DamageCategory SecondaryDamage;
+
+    [HideInInspector]
+    UInt64 AbilityHash;
+}
+
+// Component for ability tracking
+component AbilityCaster {
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<CombatAbility> KnownAbilities;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, FP> AbilityCooldowns;
+
+    FP CurrentMana;
+    FP MaxMana;
+    FP ManaRegenRate;
+}
+
+// Union for different attack types
+union AttackVariant {
+    MeleeAttackData Melee;
+    RangedAttackData Ranged;
+    SpellAttackData Spell;
+}
+
+struct MeleeAttackData {
+    FP SwingSpeed;
+    FP Range;
+    Int32 ComboStage;
+}
+
+struct RangedAttackData {
+    FP ProjectileSpeed;
+    FP Accuracy;
+    Int32 AmmoCount;
+}
+
+struct SpellAttackData {
+    FP CastTime;
+    FP ChannelDuration;
+    Boolean RequiresConcentration;
+}

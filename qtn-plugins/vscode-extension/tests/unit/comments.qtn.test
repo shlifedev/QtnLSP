@@ -1,0 +1,13 @@
+// SYNTAX TEST "source.qtn" "Comment highlighting"
+
+// This is a single line comment
+// <-- comment.line.double-slash.qtn
+
+/* This is a block comment */
+// <-- comment.block.qtn
+
+/*
+ * Multi-line
+ * block comment
+ */
+// <- comment.block.qtn

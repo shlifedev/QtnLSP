@@ -1,0 +1,67 @@
+// SYNTAX TEST "source.qtn" "Type highlighting"
+
+component TypesTest
+{
+  bool BoolField;
+//^^^^ storage.type.primitive.qtn
+
+  byte ByteField;
+//^^^^ storage.type.primitive.qtn
+
+  int IntField;
+//^^^ storage.type.primitive.qtn
+
+  uint UIntField;
+//^^^^ storage.type.primitive.qtn
+
+  long LongField;
+//^^^^ storage.type.primitive.qtn
+
+  short ShortField;
+//^^^^^ storage.type.primitive.qtn
+
+  Boolean BooleanField;
+//^^^^^^^ storage.type.primitive.qtn
+
+  FP FPField;
+//^^ support.type.qtn
+
+  FPVector2 Vec2Field;
+//^^^^^^^^^ support.type.qtn
+
+  FPVector3 Vec3Field;
+//^^^^^^^^^ support.type.qtn
+
+  FPQuaternion QuatField;
+//^^^^^^^^^^^^ support.type.qtn
+
+  EntityRef EntityField;
+//^^^^^^^^^ support.type.qtn
+
+  PlayerRef PlayerField;
+//^^^^^^^^^ support.type.qtn
+
+  AssetRef AssetField;
+//^^^^^^^^ support.type.qtn
+
+  QString StringField;
+//^^^^^^^ support.type.qtn
+
+  LayerMask MaskField;
+//^^^^^^^^^ support.type.qtn
+
+  Hit HitField;
+//^^^ support.type.qtn
+
+  Hit3D Hit3DField;
+//^^^^^ support.type.qtn
+
+  Shape2D Shape2DField;
+//^^^^^^^ support.type.qtn
+
+  Shape3D Shape3DField;
+//^^^^^^^ support.type.qtn
+
+  button Fire;
+//^^^^^^ storage.type.qtn
+}

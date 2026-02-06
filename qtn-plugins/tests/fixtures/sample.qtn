@@ -1,0 +1,381 @@
+// Quantum3 DSL (.qtn) Comprehensive Test Fixture
+// This file contains all QTN constructs for testing syntax highlighting
+
+// ============================================
+// Preprocessor Directives
+// ============================================
+#pragma max_players 16
+#pragma max_components 512
+#define MAX_HEALTH 100
+#define TEAM_SIZE 4
+
+// ============================================
+// Enums
+// ============================================
+enum WeaponType {
+  None,
+  Pistol,
+  Rifle,
+  Shotgun
+}
+
+enum EDamageType {
+  Physical,
+  Magic,
+  Fire,
+  Ice
+}
+
+// ============================================
+// Flags (bit flags enum)
+// ============================================
+flags PlayerState : Byte {
+  None = 0,
+  Idle = 1,
+  Moving = 2,
+  Jumping = 4,
+  Shooting = 8
+}
+
+flags ETeamStatus : Byte {
+  None = 0,
+  Winning = 1,
+  SafelyWinning = 2,
+  LowHealth = 4
+}
+
+// ============================================
+// Structs
+// ============================================
+struct Health {
+  FP Current;
+  FP Maximum;
+  FP RegenRate;
+}
+
+struct ResourceItem {
+  FP Value;
+  FP MaxValue;
+  FP RegenRate;
+}
+
+// ============================================
+// Components
+// ============================================
+component Player {
+  FPVector3 Position;
+  FPVector3 Velocity;
+  FP Speed;
+  Health HealthData;
+  WeaponType CurrentWeapon;
+  PlayerState State;
+  EntityRef Target;
+  PlayerRef Owner;
+}
+
+singleton component GameState {
+  int RoundNumber;
+  FP MatchTime;
+  int AlivePlayerCount;
+}
+
+component Weapon {
+  FP Damage;
+  FP FireRate;
+  FP Range;
+  int Ammo;
+  asset_ref<WeaponConfig> Config;
+}
+
+/*
+ * Multi-line comment block
+ * Component with collections
+ */
+component Inventory {
+  list<EntityRef> Items;
+  array<int>[10] QuickSlots;
+  dictionary<EntityRef, int> ItemCounts;
+  hash_set<int> UnlockedAbilities;
+}
+
+// ============================================
+// Component with attributes
+// ============================================
+component Advanced {
+  [Header("Movement Settings")]
+  FP MoveSpeed;
+
+  [Tooltip("Maximum jump height")]
+  FP JumpHeight;
+
+  [ExcludeFromPrototype]
+  FP RuntimeValue;
+
+  [AllocateOnComponentAdded]
+  list<EntityRef> Targets;
+}
+
+// ============================================
+// Abstract component
+// ============================================
+abstract component BaseUnit {
+  FP Health;
+  FP Armor;
+}
+
+// ============================================
+// Input
+// ============================================
+input {
+  FPVector2 Movement;
+  FPVector2 Look;
+  button Fire;
+  button Reload;
+  button Jump;
+}
+
+// ============================================
+// Events
+// ============================================
+event PlayerDamaged {
+  entity_ref Player;
+  FP Damage;
+  FPVector3 HitPosition;
+}
+
+event ItemPickedUp {
+  entity_ref Item;
+  player_ref Player;
+  int Quantity;
+}
+
+// ============================================
+// Signals
+// ============================================
+signal OnPlayerSpawn(entity_ref player, FPVector3 position);
+signal OnWeaponFired(entity_ref weapon, FP damage);
+signal OnDamage(FP damage, entity_ref entity);
+
+// ============================================
+// Global
+// ============================================
+global {
+  int RoundNumber;
+  FP MatchTime;
+  int AlivePlayerCount;
+  bool GameStarted;
+}
+
+// ============================================
+// Union
+// ============================================
+union AbilityData {
+  MeleeData Melee;
+  RangedData Ranged;
+  MagicData Magic;
+}
+
+// ============================================
+// Import statements
+// ============================================
+import MyNamespace.Utils;
+import enum Shape3DType(byte);
+import struct Foo(8);
+import singleton BarComponent;
+
+// ============================================
+// Nested generics
+// ============================================
+component ComplexTypes {
+  list<asset_ref<WeaponConfig>> WeaponConfigs;
+  dictionary<int, list<EntityRef>> GroupedEntities;
+  array<FPVector3>[100] Waypoints;
+  bitset[64] Flags;
+}
+
+
+
+// ============================================
+// All primitive types
+// ============================================
+struct AllPrimitives {
+  bool BoolField;
+  byte ByteField;
+  sbyte SByteField;
+  short ShortField;
+  ushort UShortField;
+  int IntField;
+  uint UIntField;
+  long LongField;
+  ulong ULongField;
+  Boolean BooleanField;
+}
+
+// ============================================
+// All Quantum types
+// ============================================
+struct AllQuantumTypes {
+  FP FPField;
+  FPVector2 Vec2Field;
+  FPVector3 Vec3Field;
+  FPQuaternion QuatField;
+  FPMatrix MatField;
+  FPBounds2 Bounds2Field;
+  FPBounds3 Bounds3Field;
+  EntityRef EntityField;
+  PlayerRef PlayerField;
+  AssetRef AssetField;
+  QString StringField;
+  QStringUtf8 Utf8Field;
+  LayerMask MaskField;
+  Hit HitField;
+  Hit3D Hit3DField;
+  Shape2D Shape2DField;
+  Shape3D Shape3DField;
+}
+
+// ============================================
+// Numeric literals
+// ============================================
+#define HEX_VALUE 0xFF
+#define INT_VALUE 42
+#define FLOAT_VALUE 3.14
+
+// ============================================
+// Synced / Local / Remote modifiers
+// ============================================
+component NetworkedData {
+  synced FP SyncedValue;
+  local int LocalCounter;
+  remote FPVector3 RemotePosition;
+}
+
+// ============================================
+// Asset declarations
+// ============================================
+asset CharacterData;
+asset WeaponConfig;
+
+// ============================================
+// Event inheritance
+// ============================================
+abstract event BaseEvent {
+  Int32 Common;
+}
+
+event DerivedEvent : BaseEvent {
+  FP Extra;
+}
+
+synced event MySyncedEvent {
+  FP Value;
+}
+
+// ============================================
+// Enum with base type
+// ============================================
+enum EDamageCategory : Byte {
+  None = 0,
+  Physical = 1,
+  Magical = 2,
+  Environmental = 3
+}
+
+flags EStatusFlags : UInt16 {
+  None = 0,
+  Poisoned = 1,
+  Stunned = 2,
+  Frozen = 4
+}
+
+// ============================================
+// Additional control keywords
+// ============================================
+component NetworkControl {
+  nothashed FP LocalOnlyValue;
+  client FP ClientSideValue;
+  server FP ServerSideValue;
+}
+
+// ============================================
+// C# type aliases
+// ============================================
+struct CSharpAliases {
+  Byte ByteAlias;
+  SByte SByteAlias;
+  Int16 ShortAlias;
+  UInt16 UShortAlias;
+  Int32 IntAlias;
+  UInt32 UIntAlias;
+  Int64 LongAlias;
+  UInt64 ULongAlias;
+}
+
+// ============================================
+// Additional Quantum built-in types
+// ============================================
+struct MoreQuantumTypes {
+  IntVector2 GridPos;
+  IntVector3 GridPos3D;
+  Transform2D Transform;
+  Transform3D Transform3;
+  CharacterController2D CC2D;
+  CharacterController3D CC3D;
+  PhysicsBody2D Body2D;
+  PhysicsCollider2D Collider2D;
+  PhysicsCallbacks2D Callbacks2D;
+  ColorRGBA Color;
+  NullableFP OptionalValue;
+  NullableNonNegativeFP PositiveOnly;
+  RNGSession Rng;
+  FrameTimer Timer;
+  NavMeshPathfinder Pathfinder;
+  NavMeshSteeringAgent SteeringAgent;
+  SpringJoint Spring;
+  HingeJoint Hinge;
+  MapEntityId MapId;
+  AssetGuid Guid;
+  QBoolean QBool;
+  Ptr Pointer;
+  InputButtons Buttons;
+  InputDirection Direction;
+}
+
+// ============================================
+// Signal with parameter types
+// ============================================
+signal OnBeforeDamage(FP damage, EntityRef target);
+signal OnHeal(NullableFP amount, PlayerRef healer);
+signal SimpleSignal;
+
+// ============================================
+// Import variations
+// ============================================
+import struct ExternalStruct(12);
+import enum ExternalEnum(byte);
+import singleton SingletonComp;
+import enum SimpleEnum;
+import struct SimpleStruct;
+import ExternalType;
+import MyNamespace.SubNamespace.DeepType;
+using MyNamespace;
+using AnotherNamespace;
+
+// ============================================
+// Generic collection types (extended)
+// ============================================
+component ExtendedCollections {
+  entity_prototype_ref<MyPrototype> ProtoRef;
+  component_prototype_ref<MyComponent> CompRef;
+  set<int> IntSet;
+}
+
+// ============================================
+// Button (capital)
+// ============================================
+input {
+  Button Action;
+  button Interact;
+}
+
+// End of test fixture

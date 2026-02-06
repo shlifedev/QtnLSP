@@ -1,0 +1,389 @@
+// MOBA Game - Complete game definition with cross-referencing structs,
+// multiple singletons, complex collections, unions, pragmas, imports
+
+#pragma max_players 10
+#pragma tick_rate 60
+#pragma snapshot_interval 5
+#define MAX_MINIONS 150
+#define MAX_TOWERS 11
+#define MAP_SIZE 1024
+#define GOLD_PER_SECOND 2.5
+#define RESPAWN_TIME 30.0
+#define NEXUS_HEALTH 5000
+
+using Game;
+using Game.MOBA;
+using Game.MOBA.Entities;
+using Game.MOBA.Items;
+import struct LaneType(1);
+import struct TeamSide(1);
+import enum HeroClass(byte);
+import singleton GameStateManager;
+import singleton ItemShop;
+
+// Team enumeration
+enum Team : Byte {
+    Neutral = 0,
+    Blue = 1,
+    Red = 2,
+    Spectator = 3
+}
+
+// Hero classes
+flags HeroClass : UInt16 {
+    None = 0x00,
+    Warrior = 0x01,
+    Mage = 0x02,
+    Assassin = 0x04,
+    Tank = 0x08,
+    Support = 0x10,
+    Marksman = 0x20,
+    Fighter = 0x40,
+    Jungler = 0x80
+}
+
+// Lane positions
+enum Lane : Byte {
+    Top = 0,
+    Middle = 1,
+    Bottom = 2,
+    Jungle = 3
+}
+
+// Hero statistics
+[Header("Hero Stats")]
+struct HeroStats {
+    [Tooltip("Base movement speed")]
+    [Range(250, 600)]
+    FP MovementSpeed;
+
+    [Range(1, 5000)]
+    FP Health;
+
+    [Range(0, 2000)]
+    FP Mana;
+
+    [Range(0, 500)]
+    FP AttackDamage;
+
+    [Range(0, 500)]
+    FP AbilityPower;
+
+    [Range(0, 300)]
+    FP Armor;
+
+    [Range(0, 300)]
+    FP MagicResist;
+
+    [Range(0.3, 2.5)]
+    FP AttackSpeed;
+
+    [Range(100, 850)]
+    FP AttackRange;
+}
+
+// Item slot data
+struct ItemSlot {
+    asset_ref<ItemAsset> Item;
+    Int32 StackCount;
+    FP CooldownRemaining;
+    Boolean IsActive;
+}
+
+// Hero component with complex collections
+[Header("MOBA Hero")]
+component Hero {
+    Team HeroTeam;
+    HeroClass Class;
+    Lane AssignedLane;
+    HeroStats BaseStats;
+    HeroStats CurrentStats;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    array<ItemSlot>[6] Inventory;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> VisibleEnemies;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, FP> ActiveBuffs;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> AttackedBy;
+
+    player_ref ControllingPlayer;
+    Int32 Level;
+    Int32 Experience;
+    Int32 Gold;
+    Int32 Kills;
+    Int32 Deaths;
+    Int32 Assists;
+
+    FP RespawnTime;
+    Boolean IsAlive;
+    Boolean IsRecalling;
+}
+
+// Tower structure
+[Header("Defensive Structures")]
+component Tower {
+    Team TowerTeam;
+    Lane TowerLane;
+    Int32 TowerTier;
+
+    [Range(1000, 5000)]
+    FP Health;
+
+    [Range(1000, 5000)]
+    FP MaxHealth;
+
+    [Range(50, 300)]
+    FP AttackDamage;
+
+    [Range(500, 1200)]
+    FP AttackRange;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> TargetPriority;
+
+    EntityRef CurrentTarget;
+    Boolean IsDestroyed;
+    FP LastAttackTime;
+}
+
+// Minion wave component
+[Header("Minion Waves")]
+component Minion {
+    Team MinionTeam;
+    Lane SpawnLane;
+    Int32 WaveNumber;
+
+    [Range(300, 800)]
+    FP Health;
+
+    [Range(10, 100)]
+    FP AttackDamage;
+
+    [Range(100, 600)]
+    FP MovementSpeed;
+
+    EntityRef CurrentTarget;
+    Boolean IsSiegeMinion;
+    Boolean IsSuperMinion;
+}
+
+// Jungle monster
+[Header("Neutral Monsters")]
+component JungleMonster {
+    [Range(500, 10000)]
+    FP Health;
+
+    [Range(500, 10000)]
+    FP MaxHealth;
+
+    [Range(20, 500)]
+    FP AttackDamage;
+
+    FP RespawnTimer;
+    Boolean IsElite;
+    Boolean GrantsTeamBuff;
+    Int32 GoldReward;
+    Int32 ExperienceReward;
+
+    FPVector3 SpawnPosition;
+    EntityRef Aggressor;
+}
+
+// Game state singleton
+[Header("Game Management")]
+singleton component GameState {
+    [Range(0, 3600)]
+    FP GameTime;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Team, Int32> TeamScores;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Team, Int32> TowerKills;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, EntityRef> PlayerHeroes;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> AllHeroes;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> AllTowers;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> AllMinions;
+
+    Team WinningTeam;
+    Boolean GameStarted;
+    Boolean GameEnded;
+    FP MatchDuration;
+}
+
+// Shop singleton
+[Header("Item Shop")]
+singleton component Shop {
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, asset_ref<ItemAsset>> AvailableItems;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, list<Int32>> PurchaseHistory;
+
+    Boolean ShopOpen;
+}
+
+// Matchmaking singleton
+[Header("Matchmaking")]
+singleton component MatchmakingState {
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, Int32> PlayerRatings;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<player_ref> QueuedPlayers;
+
+    Int32 AverageMMR;
+    FP QueueStartTime;
+}
+
+// Complex union for ability effects
+union AbilityEffect {
+    DamageEffect Damage;
+    HealEffect Heal;
+    BuffEffect Buff;
+    SummonEffect Summon;
+    TeleportEffect Teleport;
+}
+
+struct DamageEffect {
+    FP Amount;
+    FP Radius;
+    Boolean IsMagical;
+}
+
+struct HealEffect {
+    FP Amount;
+    FP Duration;
+    Boolean AffectsAllies;
+}
+
+struct BuffEffect {
+    FP StatModifier;
+    FP Duration;
+    Int32 BuffType;
+}
+
+struct SummonEffect {
+    asset_ref<UnitAsset> UnitToSummon;
+    Int32 Count;
+    FP Duration;
+}
+
+struct TeleportEffect {
+    FPVector3 Destination;
+    FP ChannelTime;
+    Boolean RequiresVision;
+}
+
+// Ability data
+[Header("Ability System")]
+struct Ability {
+    [Tooltip("Ability cooldown in seconds")]
+    [Range(0, 300)]
+    FP Cooldown;
+
+    [Range(0, 500)]
+    FP ManaCost;
+
+    [Range(0, 3000)]
+    FP CastRange;
+
+    AbilityEffect Effect;
+    Boolean IsSkillshot;
+    Boolean CanSelfCast;
+
+    [DrawIf("IsSkillshot", true, Equal, Show)]
+    FP ProjectileSpeed;
+
+    [DrawIf("IsSkillshot", true, Equal, Show)]
+    FP ProjectileWidth;
+}
+
+// Events
+synced event HeroKillEvent {
+    EntityRef Killer;
+    EntityRef Victim;
+    local player_ref KillerPlayer;
+    local player_ref VictimPlayer;
+    array<EntityRef>[4] Assists;
+    Int32 GoldBounty;
+    Boolean IsShutdown;
+}
+
+synced event TowerDestroyedEvent {
+    EntityRef Tower;
+    Team DestroyedTeam;
+    Lane TowerLane;
+    Int32 TowerTier;
+    EntityRef LastHitter;
+    FP Timestamp;
+}
+
+synced event GameEndEvent {
+    Team WinningTeam;
+    FP GameDuration;
+    dictionary<player_ref, Int32> FinalScores;
+}
+
+client event PlayerPingEvent {
+    remote player_ref Pinger;
+    FPVector3 PingLocation;
+    Int32 PingType;
+}
+
+server event MinionSpawnEvent {
+    Team SpawnTeam;
+    Lane SpawnLane;
+    Int32 WaveNumber;
+    Int32 MinionCount;
+}
+
+// Signals
+signal OnHeroLevelUp(EntityRef hero, Int32 newLevel);
+signal OnAbilityCast(EntityRef caster, Int32 abilityId, FPVector3 targetPosition);
+signal OnItemPurchased(player_ref player, asset_ref<ItemAsset> item, Int32 goldSpent);
+signal OnObjectiveSecured(Team team, Int32 objectiveType);
+signal OnGoldEarned(EntityRef hero, Int32 amount, Int32 source);
+signal OnExperienceGained(EntityRef hero, Int32 amount);
+
+// Asset definitions
+asset ItemAsset;
+asset HeroAsset;
+asset UnitAsset;
+asset AbilityAsset;
+asset MapAsset;
+
+// Input definition
+input {
+    FPVector2 Movement;
+    FPVector2 CameraDirection;
+    button Attack;
+    button Ability1;
+    button Ability2;
+    button Ability3;
+    button Ultimate;
+    button Recall;
+    button Shop;
+    button Ping;
+}
+
+// Global state
+global {
+    FP ServerTickRate;
+    Int32 ActivePlayers;
+    Boolean AllowSurrender;
+    FP SurrenderTimer;
+}

@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+*.vsix
+build/
+dist/
+out/
+
+# JetBrains
+.gradle/
+.idea/
+*.iml
+.intellijPlatform/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Package lock
+package-lock.json
+
+# Worktrees
+.worktrees/

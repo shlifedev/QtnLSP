@@ -1,0 +1,379 @@
+// Edge Cases - Boundary conditions, empty constructs, extreme values,
+// unusual syntax patterns, comment edge cases, import placement variations
+
+#pragma experimental_features on
+#pragma max_entity_count 65535
+#pragma debug_mode true
+#define EMPTY_VALUE
+#define MAX_INT32 0x7FFFFFFF
+#define MAX_UINT32 0xFFFFFFFF
+#define MAX_INT16 0x7FFF
+#define MIN_INT16 -0x8000
+#define HEX_BYTE_FF 0xFF
+#define LARGE_FLOAT 999999.999999
+#define TINY_FLOAT 0.000001
+
+using System;
+
+// Empty enum
+enum EmptyEnum : Byte {
+}
+
+// Single value enum
+enum SingleValueEnum : Byte {
+    OnlyValue = 0
+}
+
+// Enum with large hex values
+enum LargeValues : UInt32 {
+    None = 0x00000000,
+    Low = 0x00000001,
+    Medium = 0x80000000,
+    High = 0xFFFF0000,
+    Max = 0xFFFFFFFF
+}
+
+// Empty flags
+flags EmptyFlags : Byte {
+}
+
+// Single flag
+flags SingleFlag : UInt64 {
+    OnlyFlag = 0x01
+}
+
+// Flags with extreme values
+flags ExtremeFlags : UInt64 {
+    None = 0x0000000000000000,
+    Bit0 = 0x0000000000000001,
+    Bit32 = 0x0000000100000000,
+    Bit63 = 0x8000000000000000,
+    All = 0xFFFFFFFFFFFFFFFF
+}
+
+// Empty struct
+struct EmptyStruct {
+}
+
+// Single field struct
+struct SingleFieldStruct {
+    Int32 OnlyField;
+}
+
+// Struct with very long attribute
+[Header("This is a very long header text that spans multiple conceptual sections")]
+[Tooltip("This is an extremely long tooltip with newlines:\nLine 1: Description of the first aspect\nLine 2: Description of the second aspect with special characters: !@#$%^&*()\nLine 3: Even more text to test parser robustness\nLine 4: Unicode test: \u2713 \u2717 \u2022\nLine 5: Path example: C:\\Users\\Test\\File.txt")]
+[Space]
+[ExcludeFromPrototype]
+struct VeryLongAttributeStruct {
+    FP Field;
+}
+
+// Multiple attributes on multiple lines
+[Header("Combat")]
+[Tooltip("Health value")]
+[Range(0, 9999)]
+[DrawIf("IsAlive", true, Equal, Show)]
+[HideInInspector]
+[ExcludeFromPrototype]
+[OnlyInPrototype]
+[Space]
+struct MultiAttributeStruct {
+    FP Health;
+}
+
+// Empty component
+component EmptyComponent {
+}
+
+// Single field component
+component SingleFieldComponent {
+    Boolean Flag;
+}
+
+// Abstract component (edge case)
+abstract component AbstractBaseComponent {
+    Int32 BaseValue;
+}
+
+component DerivedFromAbstract : AbstractBaseComponent {
+    FP DerivedValue;
+}
+
+// Singleton with minimal content
+singleton component MinimalSingleton {
+    Boolean Active;
+}
+
+// Abstract singleton (unusual but valid)
+abstract singleton component AbstractSingleton {
+    FP Time;
+}
+
+// Empty union
+union EmptyUnion {
+}
+
+// Single variant union
+union SingleVariantUnion {
+    EmptyStruct Variant;
+}
+
+// Union with many variants
+union ManyVariantsUnion {
+    EmptyStruct A;
+    SingleFieldStruct B;
+    VeryLongAttributeStruct C;
+    MultiAttributeStruct D;
+    ExtremeValueStruct E;
+    CommentTestStruct F;
+}
+
+// Struct with extreme numeric values
+struct ExtremeValueStruct {
+    // Signed extremes
+    Int16 MinInt16;  // -32768
+    Int16 MaxInt16;  // 32767
+    Int32 MinInt32;  // -2147483648
+    Int32 MaxInt32;  // 2147483647
+    Int64 MinInt64;  // -9223372036854775808
+    Int64 MaxInt64;  // 9223372036854775807
+
+    // Unsigned extremes
+    Byte MaxByte;    // 255
+    UInt16 MaxUInt16;  // 65535
+    UInt32 MaxUInt32;  // 4294967295
+    UInt64 MaxUInt64;  // 18446744073709551615
+}
+
+// Comments edge cases
+/*
+ * Multi-line block comment with code-like content
+ * component FakeComponent { Int32 Field; }
+ * This should not be parsed as actual code
+ */
+struct CommentTestStruct {
+    // Single line comment
+    Int32 Field1;
+
+    /* Inline block comment */ Int32 Field2;
+
+    // Comment with special chars: /* */ // \\
+    Int32 Field3;
+
+    /*
+     * Nested-looking comment (but not really nested)
+     * /* This looks nested but QTN doesn't support true nesting */
+     * End of comment
+     */
+    Int32 Field4;
+}
+
+// Empty input block
+input {
+}
+
+// Single input field
+input {
+    button OnlyButton;
+}
+
+// Empty global block
+global {
+}
+
+// Single global field
+global {
+    FP OnlyGlobal;
+}
+
+// Import statements in unusual places (usually at top, but valid anywhere)
+using System.Collections;
+
+component BeforeImport {
+    Int32 Value;
+}
+
+import struct MiddleImport(8);
+
+component AfterImport {
+    FP Value;
+}
+
+import enum LateImport(byte);
+import singleton LateSingleton;
+
+// Signal with no parameters
+signal NoParamSignal();
+
+// Signal with many parameters (5+)
+signal ManyParamSignal(
+    EntityRef entity,
+    player_ref player,
+    FP value1,
+    FP value2,
+    Int32 count,
+    Boolean flag,
+    FPVector3 position
+);
+
+// Signal with pointer parameters
+signal PointerSignal(EmptyStruct* ptr1, SingleFieldStruct* ptr2);
+
+// Empty event
+event EmptyEvent {
+}
+
+// Single field event
+event SingleFieldEvent {
+    FP Timestamp;
+}
+
+// Event chain with 4+ levels of inheritance
+abstract event Level0Event {
+    Int32 Level0Field;
+}
+
+abstract event Level1Event : Level0Event {
+    Int32 Level1Field;
+}
+
+abstract event Level2Event : Level1Event {
+    Int32 Level2Field;
+}
+
+event Level3Event : Level2Event {
+    Int32 Level3Field;
+}
+
+synced event Level4Event : Level3Event {
+    Int32 Level4Field;
+}
+
+// Client event with nothashed fields
+client event ClientEdgeCaseEvent {
+    remote player_ref Player;
+    nothashed UInt64 ClientTimestamp;
+    nothashed QString<256> ClientInfo;
+    nothashed array<Byte>[512] RawData;
+}
+
+// Server event with local fields
+server event ServerEdgeCaseEvent {
+    local player_ref ServerPlayer;
+    nothashed FP ServerTime;
+    nothashed Boolean ServerFlag;
+}
+
+// Event with all modifier keywords
+synced event ModifierKitchenSink {
+    EntityRef Target;
+    local player_ref LocalPlayer;
+    remote player_ref RemotePlayer;
+    nothashed FP NotHashedValue;
+    nothashed Boolean NotHashedFlag;
+}
+
+// Arrays with unusual sizes
+struct UnusualArraySizes {
+    array<Byte>[1] SingleElement;
+    array<Int32>[3] ThreeElements;
+    array<FP>[7] SevenElements;
+    array<FPVector3>[13] ThirteenElements;
+    array<EntityRef>[255] MaxByteSize;
+}
+
+// Bitsets with power-of-two and non-power-of-two sizes
+struct UnusualBitsetSizes {
+    bitset[1] Single;
+    bitset[7] Seven;
+    bitset[9] Nine;
+    bitset[15] Fifteen;
+    bitset[17] Seventeen;
+    bitset[31] ThirtyOne;
+    bitset[33] ThirtyThree;
+    bitset[100] Hundred;
+    bitset[200] TwoHundred;
+    bitset[1000] Thousand;
+    bitset[2048] TwoKay;
+}
+
+// Component with mix of everything
+component KitchenSinkComponent {
+    // Primitives
+    Boolean Bool;
+    Byte ByteVal;
+    SByte SByteVal;
+    Int16 ShortVal;
+    UInt16 UShortVal;
+    Int32 IntVal;
+    UInt32 UIntVal;
+    Int64 LongVal;
+    UInt64 ULongVal;
+
+    // Quantum types
+    FP FPVal;
+    FPVector2 Vec2;
+    FPVector3 Vec3;
+    FPQuaternion Quat;
+    FPMatrix Matrix;
+    FPBounds2 Bounds2;
+    FPBounds3 Bounds3;
+    EntityRef Entity;
+    PlayerRef Player;
+    AssetRef Asset;
+    LayerMask Mask;
+    NullableFP NFP;
+    NullableFPVector2 NVec2;
+    NullableFPVector3 NVec3;
+
+    // Physics
+    Hit Hit2D;
+    Hit3D Hit3DVal;
+    Shape2D Shape2DVal;
+    Shape3D Shape3DVal;
+    Joint JointVal;
+    DistanceJoint DistJoint;
+    SpringJoint SpringJoint;
+    HingeJoint HingeJoint;
+
+    // Strings
+    QString<8> Str8;
+    QString<256> Str256;
+    QStringUtf8<64> Utf8Str;
+
+    // Collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Int32> IntList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, FP> IntFPDict;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> EntitySet;
+
+    array<FP>[16] FPArray;
+    bitset[64] Bitset64;
+}
+
+// Asset declarations
+asset EmptyAsset;
+asset SingleAsset;
+asset MultiAsset;
+
+// Continuous pragma/define block
+#pragma feature1 on
+#pragma feature2 off
+#pragma feature3 enabled
+#define CONST1 1
+#define CONST2 2
+#define CONST3 0xFF
+#define CONST4 9999.99
+#pragma feature4 123
+#pragma feature5 0xABC
+#define CONST5 -1
+#define CONST6 -0x7F
+
+// Final import at end of file (unusual placement)
+import struct FinalImport(4);
+using Final.Namespace;

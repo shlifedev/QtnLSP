@@ -1,0 +1,64 @@
+{
+  "name": "qtn-syntax-highlighting",
+  "displayName": "Quantum DSL (QTN) Syntax Highlighting",
+  "description": "Syntax highlighting for Photon Quantum3 DSL (.qtn) files",
+  "version": "1.0.0",
+  "publisher": "qtn-tools",
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onLanguage:qtn"
+  ],
+  "engines": {
+    "vscode": "^1.50.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/shlifedev/QtnLSP"
+  },
+  "contributes": {
+    "languages": [
+      {
+        "id": "qtn",
+        "aliases": [
+          "QTN",
+          "Quantum DSL"
+        ],
+        "extensions": [
+          ".qtn"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "qtn",
+        "scopeName": "source.qtn",
+        "path": "./syntaxes/qtn.tmLanguage.json"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile && npm run webpack",
+    "compile": "cd .. && npm run compile",
+    "webpack": "cd .. && npm run webpack",
+    "test": "vscode-tmgrammar-test -g syntaxes/qtn.tmLanguage.json 'tests/unit/*.test'",
+    "test:snap": "vscode-tmgrammar-snap -g syntaxes/qtn.tmLanguage.json 'tests/snap/*.qtn'",
+    "sync-grammar": "cp ../shared/syntaxes/qtn.tmLanguage.json syntaxes/qtn.tmLanguage.json",
+    "build": "tsc -p .",
+    "watch": "tsc -watch -p ."
+  },
+  "dependencies": {
+    "vscode-languageclient": "^9.0.1"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.7.0",
+    "vscode-tmgrammar-test": "^0.1.3",
+    "typescript": "^5.3.3",
+    "@types/vscode": "^1.50.0",
+    "@types/node": "^20.11.0"
+  }
+}

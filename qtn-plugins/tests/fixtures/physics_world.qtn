@@ -1,0 +1,389 @@
+// Physics World - Comprehensive physics types, nullable vectors, bounds,
+// matrix transforms, joints, shapes, hits, bitsets of various sizes
+
+#pragma fixed_point_precision 16
+#pragma physics_substeps 4
+#define GRAVITY_SCALE -9.81
+#define MAX_VELOCITY 50.0
+#define COLLISION_LAYERS 32
+
+using Physics;
+using Physics.Collision;
+using Physics.Dynamics;
+import struct PhysicsMaterial(16);
+
+/*
+   Physics Layer Configuration
+   Layer 0: Default
+   Layer 1: Player
+   Layer 2: Enemy
+   Layer 3: Projectile
+   Layer 4: Terrain
+   Layer 5: Trigger
+   Layer 6-31: Custom
+*/
+
+// Collision categories
+flags CollisionCategory : UInt32 {
+    None = 0x00000000,
+    Static = 0x00000001,
+    Dynamic = 0x00000002,
+    Kinematic = 0x00000004,
+    Trigger = 0x00000008,
+    Player = 0x00000010,
+    Enemy = 0x00000020,
+    Projectile = 0x00000040,
+    Terrain = 0x00000080,
+    Water = 0x00000100,
+    Debris = 0x00000200,
+    Vehicle = 0x00000400,
+    Character = 0x00000800
+}
+
+// Shape types enumeration
+enum ShapeType : Byte {
+    Box = 0,
+    Sphere = 1,
+    Capsule = 2,
+    Cylinder = 3,
+    Mesh = 4,
+    Compound = 5
+}
+
+// 2D Physics Body
+[Header("2D Physics")]
+component PhysicsBody2D {
+    // Basic transform
+    FPVector2 Position;
+    FP Rotation;
+    FPVector2 Scale;
+
+    // Dynamics
+    FPVector2 Velocity;
+    FP AngularVelocity;
+    FPVector2 Force;
+    FP Torque;
+
+    // Properties
+    [Range(0, 1000)]
+    FP Mass;
+
+    [Range(0, 1)]
+    FP LinearDamping;
+
+    [Range(0, 1)]
+    FP AngularDamping;
+
+    [Range(0, 2)]
+    FP GravityScale;
+
+    // Shape and collision
+    Shape2D CollisionShape;
+    FPBounds2 AABB;
+    LayerMask CollisionMask;
+    CollisionCategory Category;
+
+    // Flags
+    Boolean IsKinematic;
+    Boolean IsSensor;
+    Boolean IsEnabled;
+    Boolean IsSleeping;
+
+    // Collision tracking
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> CollidingBodies;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> TriggerContacts;
+
+    bitset[8] StateFlags;
+}
+
+// 3D Physics Body
+[Header("3D Physics")]
+component PhysicsBody3D {
+    // Transform
+    FPVector3 Position;
+    FPQuaternion Rotation;
+    FPVector3 Scale;
+    FPMatrix LocalToWorld;
+
+    // Dynamics
+    FPVector3 Velocity;
+    FPVector3 AngularVelocity;
+    FPVector3 Force;
+    FPVector3 Torque;
+
+    // Properties
+    [Range(0, 10000)]
+    FP Mass;
+
+    [Range(0, 1)]
+    FP LinearDamping;
+
+    [Range(0, 1)]
+    FP AngularDamping;
+
+    FPVector3 GravityScale;
+    FPVector3 CenterOfMass;
+
+    // Shape and collision
+    Shape3D CollisionShape;
+    FPBounds3 AABB;
+    LayerMask CollisionMask;
+    CollisionCategory Category;
+
+    // Material
+    [Range(0, 1)]
+    FP Friction;
+
+    [Range(0, 1)]
+    FP Restitution;
+
+    // Constraints
+    Boolean FreezePositionX;
+    Boolean FreezePositionY;
+    Boolean FreezePositionZ;
+    Boolean FreezeRotationX;
+    Boolean FreezeRotationY;
+    Boolean FreezeRotationZ;
+
+    // State
+    Boolean IsKinematic;
+    Boolean IsSensor;
+    Boolean UseGravity;
+    Boolean IsEnabled;
+    Boolean IsSleeping;
+
+    // Collision tracking
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, Hit3D> ActiveCollisions;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Hit3D> CollisionHistory;
+
+    bitset[64] CollisionFlags;
+}
+
+// Advanced collision component
+[Header("Collision Detection")]
+component CollisionDetector {
+    // Hit caching
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    array<Hit>[16] RecentHits2D;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    array<Hit3D>[16] RecentHits3D;
+
+    // Raycast data
+    NullableFPVector2 LastRayOrigin2D;
+    NullableFPVector2 LastRayDirection2D;
+    NullableFP LastRayDistance2D;
+
+    NullableFPVector3 LastRayOrigin3D;
+    NullableFPVector3 LastRayDirection3D;
+    NullableFP LastRayDistance3D;
+
+    // Overlap tracking
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> OverlappingBodies;
+
+    bitset[256] LayerHitMask;
+    Int32 HitCount;
+    FP LastCollisionTime;
+}
+
+// Joint component
+[Header("Physics Joints")]
+component JointConstraint {
+    Joint BaseJoint;
+    EntityRef ConnectedBody;
+
+    Boolean EnableCollision;
+    FP BreakForce;
+    FP BreakTorque;
+    Boolean IsBroken;
+}
+
+// Distance joint
+component DistanceJointData {
+    DistanceJoint Joint;
+    FP MinDistance;
+    FP MaxDistance;
+    FP Spring;
+    FP Damper;
+}
+
+// Spring joint
+component SpringJointData {
+    SpringJoint Joint;
+    FP SpringConstant;
+    FP DamperConstant;
+    FP RestLength;
+    FPVector3 Anchor;
+    FPVector3 ConnectedAnchor;
+}
+
+// Hinge joint
+component HingeJointData {
+    HingeJoint Joint;
+    FPVector3 Axis;
+    FP LowerLimit;
+    FP UpperLimit;
+    Boolean UseLimits;
+    Boolean UseMotor;
+    FP MotorSpeed;
+    FP MotorForce;
+}
+
+// Singleton physics world
+[Header("Physics World")]
+singleton component PhysicsWorld {
+    // World settings
+    FPVector3 Gravity;
+    FP TimeStep;
+    Int32 VelocityIterations;
+    Int32 PositionIterations;
+
+    // Entity tracking
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> ActiveBodies2D;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> ActiveBodies3D;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> SleepingBodies;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> ActiveJoints;
+
+    // Spatial partitioning
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, list<EntityRef>> SpatialGrid;
+
+    // Statistics
+    Int32 TotalCollisions;
+    Int32 TotalRaycasts;
+    FP SimulationTime;
+
+    bitset[1024] ActiveLayers;
+}
+
+// Complex struct with nullable physics types
+[Header("Physics State")]
+struct PhysicsSnapshot {
+    NullableFPVector2 Position2D;
+    NullableFPVector3 Position3D;
+    NullableFP Rotation2D;
+    FPQuaternion Rotation3D;
+
+    NullableFPVector2 Velocity2D;
+    NullableFPVector3 Velocity3D;
+
+    FPBounds2 Bounds2D;
+    FPBounds3 Bounds3D;
+
+    Boolean IsValid;
+    FP CaptureTime;
+}
+
+// Trigger zone component
+[Header("Trigger Zones")]
+component TriggerZone {
+    Shape3D TriggerShape;
+    FPBounds3 Bounds;
+    LayerMask TriggerMask;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> EntitiesInside;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> EnterQueue;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> ExitQueue;
+
+    Boolean IsActive;
+    Boolean OneTimeOnly;
+    Boolean HasTriggered;
+}
+
+// Projectile physics
+[Header("Projectile System")]
+component Projectile {
+    FPVector3 InitialVelocity;
+    FPVector3 CurrentVelocity;
+    FPVector3 Acceleration;
+
+    FP Drag;
+    FP GravityModifier;
+    FP LifeTime;
+    FP ElapsedTime;
+
+    Shape3D CollisionShape;
+    LayerMask HitMask;
+
+    EntityRef Owner;
+    Boolean HasHit;
+    Hit3D ImpactData;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    array<FPVector3>[64] TrajectoryPoints;
+
+    bitset[32] PierceableTargets;
+}
+
+// Events
+synced event CollisionEnterEvent {
+    EntityRef BodyA;
+    EntityRef BodyB;
+    Hit3D CollisionData;
+    FPVector3 RelativeVelocity;
+    FP ImpactForce;
+}
+
+synced event CollisionExitEvent {
+    EntityRef BodyA;
+    EntityRef BodyB;
+    FP ContactDuration;
+}
+
+event TriggerEnterEvent {
+    EntityRef Trigger;
+    EntityRef Entity;
+    FPVector3 EntryPoint;
+}
+
+event TriggerExitEvent {
+    EntityRef Trigger;
+    EntityRef Entity;
+    FPVector3 ExitPoint;
+    FP TimeInside;
+}
+
+event JointBreakEvent {
+    EntityRef BodyA;
+    EntityRef BodyB;
+    FP BreakForce;
+    FPVector3 BreakPoint;
+}
+
+// Signals
+signal OnPhysicsStep(FP deltaTime);
+signal OnBodyCreated(EntityRef body, Boolean is3D);
+signal OnBodyDestroyed(EntityRef body);
+signal OnRaycastHit(FPVector3 origin, FPVector3 direction, Hit3D hit);
+signal OnOverlapDetected(EntityRef detector, list<EntityRef>* overlapping);
+
+// Complex arrays and bitsets
+struct CollisionMatrix {
+    bitset[256] Layer0Mask;
+    bitset[256] Layer1Mask;
+    bitset[256] Layer2Mask;
+    bitset[256] Layer3Mask;
+    array<LayerMask>[32] LayerMasks;
+}
+
+// Asset
+asset PhysicsMaterialAsset;

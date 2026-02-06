@@ -1,0 +1,339 @@
+// Network Events - Multi-level event inheritance, client/server events,
+// synced/non-synced, local/remote player_ref, nothashed fields, complex signals
+
+#pragma network_tick_rate 30
+#pragma snapshot_send_rate 20
+#pragma max_event_size 1024
+#define MAX_PAYLOAD_SIZE 512
+#define EVENT_RELIABILITY_TIMEOUT 5.0
+
+using Network;
+using Network.Events;
+using Network.Replication;
+import struct NetworkTransform(24);
+import enum ReplicationMode(byte);
+
+// Network priority levels
+enum NetworkPriority : Byte {
+    Low = 0,
+    Normal = 1,
+    High = 2,
+    Critical = 3
+}
+
+// Replication flags
+flags ReplicationFlags : UInt16 {
+    None = 0x00,
+    Position = 0x01,
+    Rotation = 0x02,
+    Velocity = 0x04,
+    Health = 0x08,
+    State = 0x10,
+    Animation = 0x20,
+    Audio = 0x40,
+    Effects = 0x80,
+    Inventory = 0x100
+}
+
+// Base abstract network event
+abstract event NetworkEvent {
+    local player_ref Sender;
+    FP Timestamp;
+    NetworkPriority Priority;
+    nothashed UInt64 EventId;
+}
+
+// Second level abstract - state change events
+abstract event StateChangeEvent : NetworkEvent {
+    EntityRef Target;
+    Int32 OldState;
+    Int32 NewState;
+    nothashed FP TransitionDuration;
+}
+
+// Third level - player state changes
+abstract event PlayerStateEvent : StateChangeEvent {
+    remote player_ref Player;
+    FPVector3 PlayerPosition;
+    nothashed Boolean IsInterrupted;
+}
+
+// Fourth level - specific player state (multi-level inheritance)
+synced event PlayerCombatStateEvent : PlayerStateEvent {
+    Boolean EnteringCombat;
+    EntityRef CombatTarget;
+    nothashed array<EntityRef>[8] NearbyEnemies;
+    local FP CombatStartTime;
+}
+
+synced event PlayerMovementStateEvent : PlayerStateEvent {
+    FPVector3 Velocity;
+    FP Speed;
+    Boolean IsGrounded;
+    nothashed FPQuaternion ViewRotation;
+}
+
+// Client-only events
+client event ClientInputEvent {
+    remote player_ref Player;
+    FPVector2 MoveInput;
+    FPVector2 LookInput;
+    nothashed UInt32 InputFlags;
+    nothashed Int32 SequenceNumber;
+}
+
+client event ClientPredictionCorrectionEvent {
+    remote player_ref Player;
+    FPVector3 ServerPosition;
+    FPVector3 ClientPosition;
+    nothashed FP PositionError;
+    nothashed Int32 CorrectedFrame;
+}
+
+client event ClientUIEvent {
+    remote player_ref Player;
+    Int32 UIElementId;
+    QString<64> Action;
+    nothashed QString<256> Payload;
+}
+
+// Server-only events
+server event ServerValidationEvent {
+    local player_ref ValidatedPlayer;
+    Boolean IsValid;
+    Int32 ValidationCode;
+    nothashed QString<128> ValidationMessage;
+}
+
+server event ServerSpawnEvent {
+    EntityRef SpawnedEntity;
+    FPVector3 SpawnPosition;
+    FPQuaternion SpawnRotation;
+    asset_ref<PrefabAsset> Prefab;
+    nothashed dictionary<QString<32>, FP> InitialProperties;
+}
+
+server event ServerDespawnEvent {
+    EntityRef DespawnedEntity;
+    Int32 DespawnReason;
+    nothashed FP LifeTime;
+    local player_ref ResponsiblePlayer;
+}
+
+// Synced events with complex data
+synced event EntitySpawnEvent : NetworkEvent {
+    EntityRef Entity;
+    asset_ref<PrefabAsset> Template;
+    FPVector3 Position;
+    FPQuaternion Rotation;
+    local player_ref SpawnedBy;
+    nothashed Boolean IsPooled;
+    nothashed UInt64 PoolId;
+}
+
+synced event EntityDestroyEvent : NetworkEvent {
+    EntityRef Entity;
+    EntityRef Destroyer;
+    remote player_ref DestroyerPlayer;
+    FPVector3 DestroyLocation;
+    nothashed Boolean SpawnDebris;
+    nothashed array<asset_ref<EffectAsset>>[4] DeathEffects;
+}
+
+synced event PropertySyncEvent : NetworkEvent {
+    EntityRef Entity;
+    QString<32> PropertyName;
+    nothashed QString<256> OldValue;
+    QString<256> NewValue;
+    ReplicationFlags AffectedFlags;
+}
+
+synced event OwnershipTransferEvent : NetworkEvent {
+    EntityRef Entity;
+    local player_ref OldOwner;
+    remote player_ref NewOwner;
+    Int32 TransferReason;
+    nothashed FP TransferTime;
+}
+
+// Chat and communication
+synced event ChatMessageEvent : NetworkEvent {
+    remote player_ref Speaker;
+    QString<256> Message;
+    Int32 Channel;
+    nothashed FPVector3 SpeakerPosition;
+    nothashed Boolean IsTeamChat;
+    local FP MessageTime;
+}
+
+client event VoiceChatEvent {
+    remote player_ref Speaker;
+    nothashed array<Byte>[512] AudioData;
+    nothashed Int32 DataLength;
+    nothashed FP Volume;
+}
+
+// RPCs as events
+synced event RpcCallEvent : NetworkEvent {
+    EntityRef TargetEntity;
+    QString<64> MethodName;
+    nothashed array<QString<64>>[8] Parameters;
+    local player_ref Caller;
+    Boolean RequiresResponse;
+}
+
+server event RpcResponseEvent {
+    UInt64 CallId;
+    local player_ref Responder;
+    QString<256> ReturnValue;
+    nothashed Boolean IsError;
+    nothashed QString<128> ErrorMessage;
+}
+
+// Inventory events
+synced event ItemTransferEvent : NetworkEvent {
+    EntityRef FromEntity;
+    EntityRef ToEntity;
+    asset_ref<ItemAsset> Item;
+    Int32 Quantity;
+    remote player_ref Initiator;
+    nothashed Boolean RequiresConfirmation;
+}
+
+client event InventoryUpdateEvent {
+    remote player_ref Player;
+    array<asset_ref<ItemAsset>>[32] Inventory;
+    nothashed array<Int32>[32] Quantities;
+    nothashed UInt64 InventoryHash;
+}
+
+// World events
+synced event WorldStateEvent : NetworkEvent {
+    FP TimeOfDay;
+    Int32 WeatherCondition;
+    nothashed FPVector3 WindDirection;
+    nothashed FP WindSpeed;
+    nothashed Boolean IsDayTime;
+}
+
+synced event ZoneChangeEvent : NetworkEvent {
+    EntityRef Entity;
+    local player_ref Player;
+    QString<64> OldZone;
+    QString<64> NewZone;
+    nothashed FPVector3 TransitionPoint;
+}
+
+// Animation events
+synced event AnimationTriggerEvent : NetworkEvent {
+    EntityRef Entity;
+    QString<32> AnimationName;
+    FP BlendTime;
+    nothashed Boolean Loop;
+    nothashed FP PlaybackSpeed;
+    local player_ref Triggerer;
+}
+
+// Audio events
+client event AudioPlayEvent {
+    EntityRef Source;
+    asset_ref<AudioAsset> Audio;
+    FPVector3 Position;
+    nothashed FP Volume;
+    nothashed FP Pitch;
+    nothashed Boolean Is3D;
+    remote player_ref Listener;
+}
+
+// Effect events
+synced event EffectSpawnEvent : NetworkEvent {
+    asset_ref<EffectAsset> Effect;
+    FPVector3 Position;
+    FPQuaternion Rotation;
+    FPVector3 Scale;
+    nothashed FP Duration;
+    nothashed EntityRef AttachTarget;
+    local player_ref SpawnedBy;
+}
+
+// Signals with various parameter combinations
+signal OnNetworkTick(FP deltaTime);
+signal OnPlayerConnected(player_ref player, QString<64>* playerName);
+signal OnPlayerDisconnected(player_ref player, Int32 reason);
+signal OnEntityReplicated(EntityRef entity, ReplicationFlags flags);
+signal OnReplicationError(EntityRef entity, QString<128>* errorMsg);
+signal OnEventSent(NetworkEvent* evt, Int32 size);
+signal OnEventReceived(NetworkEvent* evt, player_ref sender);
+signal OnLatencyMeasured(player_ref player, FP latency);
+signal OnPacketLoss(player_ref player, FP lossPercent);
+signal OnBandwidthUpdate(FP sendRate, FP receiveRate);
+signal OnSnapshotCreated(UInt64 snapshotId, Int32 entityCount);
+signal OnSnapshotApplied(UInt64 snapshotId);
+signal OnSyncError(EntityRef entity, QString<64>* propertyName, FP desyncAmount);
+
+// Component with network tracking
+[Header("Network Entity")]
+component NetworkEntity {
+    local player_ref Owner;
+    ReplicationFlags ReplicatedProperties;
+    NetworkPriority SyncPriority;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<32>, FP> SyncedFloats;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<32>, Int32> SyncedInts;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<32>, Boolean> SyncedBools;
+
+    nothashed FP LastSyncTime;
+    nothashed UInt64 LastSnapshotId;
+    nothashed Int32 MissedUpdates;
+
+    Boolean IsLocalOwner;
+    Boolean IsPredicted;
+}
+
+// Singleton network manager
+[Header("Network Management")]
+singleton component NetworkManager {
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, FP> PlayerLatencies;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, EntityRef> PlayerControlledEntities;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<player_ref> ConnectedPlayers;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> ReplicatedEntities;
+
+    FP ServerTime;
+    Int32 CurrentTick;
+    Int32 SnapshotRate;
+    FP AverageLatency;
+    FP TotalBytesSent;
+    FP TotalBytesReceived;
+}
+
+// Assets
+asset PrefabAsset;
+asset ItemAsset;
+asset AudioAsset;
+asset EffectAsset;
+
+// Input with network buttons
+input {
+    FPVector2 Move;
+    FPVector2 Look;
+    button Fire;
+    button AltFire;
+    button Jump;
+    button Crouch;
+    button Interact;
+    button Reload;
+    button Sprint;
+    button Menu;
+}

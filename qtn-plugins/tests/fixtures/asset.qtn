@@ -1,0 +1,10 @@
+asset CharacterData; 
+
+struct SpecialData
+{
+  player_ref Player;
+  entity_ref Character;
+  entity_ref AnotherEntity;
+  asset_ref<CharacterData> CharacterData;
+  array<FP>[10] TenNumbers;
+}

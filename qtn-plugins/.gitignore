@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Build output
+vscode-extension/dist/
+vscode-extension/out/
+vscode-extension/*.vsix
+language-server/out/
+jetbrains-plugin/build/
+jetbrains-plugin/.gradle/
+
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*

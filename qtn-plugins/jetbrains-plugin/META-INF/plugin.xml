@@ -1,0 +1,15 @@
+<idea-plugin>
+  <idea-version since-build="223" until-build="" />
+  <version>1.0.0</version>
+  <id>com.qtn.syntax-highlighting</id>
+  <name>Quantum DSL (QTN) Syntax Highlighting</name>
+  <vendor>qtn-tools</vendor>
+  <description><![CDATA[Syntax highlighting for Photon Quantum3 DSL (.qtn) files in JetBrains IDEs.
+        Supports all QTN constructs including components, structs, enums, flags, unions,
+        events, signals, and more.]]></description>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>org.jetbrains.plugins.textmate</depends>
+  <extensions defaultExtensionNs="org.jetbrains.plugins.textmate">
+    <bundleProvider implementation="com.qtn.plugin.QtnTextMateBundleProvider" />
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,272 @@
+// Complex Types Test Fixture
+// Tests deeply nested generics, nullable types, struct inheritance, large collections,
+// prototype refs, empty declarations, pointer params
+
+// ============================================================================
+// DEEPLY NESTED GENERIC COLLECTIONS (3+ levels)
+// ============================================================================
+
+component ComplexDataStructures {
+    // Level 3: dictionary of lists of asset refs
+    dictionary<Int32, list<asset_ref<ItemData>>> ItemCatalogByCategory;
+
+    // Level 3: list of dictionaries
+    list<dictionary<QString, entity_ref<QuestNPC>>> QuestGiversByRegion;
+
+    // Level 3: hash_set of lists
+    hash_set<list<FPVector3>> UniquePathCollections;
+
+    // Level 4: dictionary of dictionaries of lists
+    dictionary<Int32, dictionary<Byte, list<EntityRef>>> ComplexHierarchy;
+
+    // Level 3: array of lists
+    array<list<FP>>[16] DamageHistoryPerSlot;
+
+    // Level 3: list of hash_sets
+    list<hash_set<player_ref<PlayerData>>> TeamsByMatchId;
+
+    // Level 4: dictionary of lists of dictionaries
+    dictionary<QString, list<dictionary<Int32, FPVector2>>> MapRegionData;
+}
+
+// ============================================================================
+// NULLABLE TYPES WITH ? SYNTAX
+// ============================================================================
+
+struct OptionalTransform {
+    FP? OptionalScale;
+    FPVector2? OptionalOffset2D;
+    FPVector3? OptionalPosition;
+    FPVector3? OptionalRotation;
+    FP? OptionalAlpha;
+    FPVector2? OptionalPivot;
+    FPVector3? OptionalVelocity;
+}
+
+component NullableStats {
+    FP? OverrideMovementSpeed;
+    FP? OverrideJumpHeight;
+    FPVector2? CustomGravity2D;
+    FPVector3? CustomGravity3D;
+    FP? TemporaryDamageMultiplier;
+    FPVector3? RespawnPosition;
+}
+
+// ============================================================================
+// STRUCT INHERITANCE CHAINS
+// ============================================================================
+
+struct BaseEntity {
+    EntityRef Id;
+    FPVector3 Position;
+    FPQuaternion Rotation;
+}
+
+struct DynamicEntity : BaseEntity {
+    FPVector3 Velocity;
+    FPVector3 Acceleration;
+    FP Mass;
+}
+
+struct CharacterEntity : DynamicEntity {
+    FP Health;
+    FP MaxHealth;
+    FP MovementSpeed;
+}
+
+struct PlayerCharacter : CharacterEntity {
+    PlayerRef PlayerId;
+    Int32 Level;
+    Int32 Experience;
+    QString PlayerName;
+}
+
+struct BossCharacter : CharacterEntity {
+    Int32 Phase;
+    list<EntityRef> Minions;
+    FP EnrageTimer;
+}
+
+// ============================================================================
+// LARGE ARRAYS AND BITSETS
+// ============================================================================
+
+component MassiveDataStorage {
+    // Large fixed arrays
+    array<FP>[256] LargeFloatBuffer;
+    array<EntityRef>[512] EntityPool;
+    array<FPVector3>[128] WaypointCache;
+    array<Int32>[1024] IndexBuffer;
+
+    // Large bitsets
+    bitset[512] ActiveFlags;
+    bitset[256] VisibilityMask;
+    bitset[1024] CollisionMatrix;
+    bitset[2048] LargeStateBitfield;
+
+    // Nested with large sizes
+    list<array<FP>[64]> ChunkedData;
+    dictionary<Int32, array<FPVector2>[32]> SpatialGrid;
+}
+
+// ============================================================================
+// ENTITY_PROTOTYPE_REF AND COMPONENT_PROTOTYPE_REF
+// ============================================================================
+
+component PrototypeReferences {
+    // Entity prototype refs with type params
+    entity_prototype_ref<EnemyUnit> EnemyPrototype;
+    entity_prototype_ref<Projectile> ProjectilePrototype;
+    entity_prototype_ref<Vehicle> VehiclePrototype;
+
+    // Component prototype refs with type params
+    component_prototype_ref<WeaponStats> WeaponPrototype;
+    component_prototype_ref<ArmorStats> ArmorPrototype;
+    component_prototype_ref<AbilityConfig> AbilityPrototype;
+
+    // Collections of prototype refs
+    list<entity_prototype_ref<EnemyUnit>> EnemyVariants;
+    array<component_prototype_ref<StatusEffect>>[16] StatusEffectPrototypes;
+    dictionary<Int32, entity_prototype_ref<SpawnPoint>> SpawnPoints;
+    hash_set<component_prototype_ref<LootTable>> LootTables;
+}
+
+struct SpawnConfiguration {
+    entity_prototype_ref<Monster> MonsterPrototype;
+    component_prototype_ref<SpawnBehavior> BehaviorPrototype;
+    Int32 SpawnCount;
+    FP SpawnInterval;
+}
+
+// ============================================================================
+// EMPTY DECLARATIONS
+// ============================================================================
+
+struct EmptyMarker {
+}
+
+component EmptyComponent {
+}
+
+struct AnotherEmptyStruct {
+}
+
+component EmptyTag {
+}
+
+// ============================================================================
+// SIGNALS WITH POINTER PARAMS AND VARIATIONS
+// ============================================================================
+
+// Signal with no params
+signal OnPlayerConnected;
+
+// Signal with no params (alternate style)
+signal OnRoundStart;
+
+// Signal with pointer params (entity_ref* style)
+signal OnDamageDealt(entity_ref target, FP damage);
+
+// Signal with FP pointer
+signal OnPositionUpdate(FPVector3 position, FP timestamp);
+
+// Signal with multiple types
+signal OnAbilityUsed(player_ref caster, asset_ref<AbilityData> ability, entity_ref target);
+
+// Signal with complex params
+signal OnLootDropped(entity_ref source, list<asset_ref<ItemData>> items, FPVector3 position);
+
+// Signal with nullable params
+signal OnStatusChanged(entity_ref target, FP? oldValue, FP? newValue);
+
+// Signal with prototype refs
+signal OnEntitySpawned(entity_prototype_ref<Unit> prototype, FPVector3 spawnPosition);
+
+// ============================================================================
+// COMPLEX NESTED TYPED REFS
+// ============================================================================
+
+component TypedReferences {
+    // Basic typed refs
+    entity_ref<Player> PlayerRef;
+    player_ref<PlayerData> PlayerDataRef;
+    asset_ref<WeaponData> WeaponAssetRef;
+
+    // Collections of typed refs
+    list<entity_ref<Enemy>> EnemyList;
+    array<player_ref<TeamMember>>[4] TeamMembers;
+    hash_set<asset_ref<Texture>> LoadedTextures;
+    dictionary<Int32, entity_ref<Pickup>> PickupRegistry;
+
+    // Nested collections with typed refs
+    list<list<entity_ref<Minion>>> MinionWaves;
+    dictionary<QString, list<asset_ref<SoundEffect>>> SoundLibrary;
+    array<hash_set<player_ref<Spectator>>>[8] SpectatorGroups;
+
+    // Mixed with nullable
+    entity_ref<Boss>? OptionalBossRef;
+    list<asset_ref<Shader>?> OptionalShaders;
+}
+
+// ============================================================================
+// UNION WITH COMPLEX TYPES
+// ============================================================================
+
+union ComplexPayload {
+    dictionary<Int32, FPVector3> SpatialData;
+    list<entity_ref<NetworkNode>> NetworkTopology;
+    array<FP>[128] SignalBuffer;
+    hash_set<QString> StringSet;
+}
+
+union NestedUnion {
+    list<dictionary<Int32, FP>> NumericMap;
+    dictionary<QString, list<EntityRef>> EntityGroups;
+    array<FPVector3>[64] VectorBuffer;
+}
+
+// ============================================================================
+// COMPREHENSIVE GENERIC COMBINATIONS
+// ============================================================================
+
+struct GenericShowcase {
+    // Simple generics
+    list<FP> SimpleList;
+    dictionary<Int32, QString> SimpleDict;
+    hash_set<EntityRef> SimpleSet;
+    array<FPVector2>[32] SimpleArray;
+
+    // Double nested
+    list<list<Int32>> NestedLists;
+    dictionary<Int32, list<FP>> DictOfLists;
+    list<dictionary<Byte, QString>> ListOfDicts;
+    hash_set<list<EntityRef>> SetOfLists;
+
+    // Triple nested
+    dictionary<Int32, list<hash_set<QString>>> TripleNested1;
+    list<dictionary<Byte, list<FP>>> TripleNested2;
+    array<list<dictionary<Int32, FPVector2>>>[16] TripleNested3;
+
+    // Quadruple nested (extreme)
+    dictionary<Int32, dictionary<Byte, list<hash_set<FP>>>> QuadrupleNested;
+
+    // With typed refs nested
+    list<dictionary<Int32, entity_ref<Item>>> ItemsByCategory;
+    dictionary<QString, list<asset_ref<Texture>>> TextureAtlas;
+    hash_set<list<entity_prototype_ref<Particle>>> ParticleVariants;
+}
+
+// ============================================================================
+// BITSET AND ARRAY EDGE CASES
+// ============================================================================
+
+component EdgeCaseCollections {
+    bitset[1] SingleBit;
+    bitset[8] ByteBits;
+    bitset[64] CacheLine;
+    bitset[4096] HugeBitset;
+
+    array<Boolean>[1] SingleBoolArray;
+    array<FPVector3>[2] TinyArray;
+    array<dictionary<Int32, FP>>[8] ComplexArray;
+}

@@ -1,0 +1,1402 @@
+>// Quantum3 DSL (.qtn) Comprehensive Test Fixture
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// This file contains all QTN constructs for testing syntax highlighting
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Preprocessor Directives
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>#pragma max_players 16
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+#                    ^^ source.qtn constant.numeric.integer.qtn
+>#pragma max_components 512
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^^^^^^ source.qtn
+#                       ^^^ source.qtn constant.numeric.integer.qtn
+>#define MAX_HEALTH 100
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^^ source.qtn
+#                   ^^^ source.qtn constant.numeric.integer.qtn
+>#define TEAM_SIZE 4
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^ source.qtn
+#                  ^ source.qtn constant.numeric.integer.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Enums
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>enum WeaponType {
+#^^^^ source.qtn keyword.declaration.qtn
+#    ^ source.qtn
+#     ^^^^^^^^^^ source.qtn entity.name.type.qtn
+#               ^^^ source.qtn
+>  None,
+#^^^^^^^^ source.qtn
+>  Pistol,
+#^^^^^^^^^^ source.qtn
+>  Rifle,
+#^^^^^^^^^ source.qtn
+>  Shotgun
+#^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>enum EDamageType {
+#^^^^ source.qtn keyword.declaration.qtn
+#    ^ source.qtn
+#     ^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                ^^^ source.qtn
+>  Physical,
+#^^^^^^^^^^^^ source.qtn
+>  Magic,
+#^^^^^^^^^ source.qtn
+>  Fire,
+#^^^^^^^^ source.qtn
+>  Ice
+#^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Flags (bit flags enum)
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>flags PlayerState : Byte {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                 ^ source.qtn
+#                  ^ source.qtn punctuation.separator.inheritance.qtn
+#                   ^ source.qtn
+#                    ^^^^ source.qtn entity.other.inherited-class.qtn
+#                        ^^^ source.qtn
+>  None = 0,
+#^^^^^^^^^ source.qtn
+#         ^ source.qtn constant.numeric.integer.qtn
+#          ^^ source.qtn
+>  Idle = 1,
+#^^^^^^^^^ source.qtn
+#         ^ source.qtn constant.numeric.integer.qtn
+#          ^^ source.qtn
+>  Moving = 2,
+#^^^^^^^^^^^ source.qtn
+#           ^ source.qtn constant.numeric.integer.qtn
+#            ^^ source.qtn
+>  Jumping = 4,
+#^^^^^^^^^^^^ source.qtn
+#            ^ source.qtn constant.numeric.integer.qtn
+#             ^^ source.qtn
+>  Shooting = 8
+#^^^^^^^^^^^^^ source.qtn
+#             ^ source.qtn constant.numeric.integer.qtn
+>}
+#^^ source.qtn
+>
+>flags ETeamStatus : Byte {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                 ^ source.qtn
+#                  ^ source.qtn punctuation.separator.inheritance.qtn
+#                   ^ source.qtn
+#                    ^^^^ source.qtn entity.other.inherited-class.qtn
+#                        ^^^ source.qtn
+>  None = 0,
+#^^^^^^^^^ source.qtn
+#         ^ source.qtn constant.numeric.integer.qtn
+#          ^^ source.qtn
+>  Winning = 1,
+#^^^^^^^^^^^^ source.qtn
+#            ^ source.qtn constant.numeric.integer.qtn
+#             ^^ source.qtn
+>  SafelyWinning = 2,
+#^^^^^^^^^^^^^^^^^^ source.qtn
+#                  ^ source.qtn constant.numeric.integer.qtn
+#                   ^^ source.qtn
+>  LowHealth = 4
+#^^^^^^^^^^^^^^ source.qtn
+#              ^ source.qtn constant.numeric.integer.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Structs
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>struct Health {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^ source.qtn entity.name.type.qtn
+#             ^^^ source.qtn
+>  FP Current;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^ source.qtn
+>  FP Maximum;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^ source.qtn
+>  FP RegenRate;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>struct ResourceItem {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                   ^^^ source.qtn
+>  FP Value;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^ source.qtn
+>  FP MaxValue;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^ source.qtn
+>  FP RegenRate;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Components
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>component Player {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^ source.qtn entity.name.type.qtn
+#                ^^^ source.qtn
+>  FPVector3 Position;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^ source.qtn
+>  FPVector3 Velocity;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^ source.qtn
+>  FP Speed;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^ source.qtn
+>  Health HealthData;
+#^^^^^^^^^^^^^^^^^^^^^ source.qtn
+>  WeaponType CurrentWeapon;
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn
+>  PlayerState State;
+#^^^^^^^^^^^^^^^^^^^^^ source.qtn
+>  EntityRef Target;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^ source.qtn
+>  PlayerRef Owner;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>singleton component GameState {
+#^^^^^^^^^ source.qtn storage.modifier.qtn
+#         ^ source.qtn
+#          ^^^^^^^^^ source.qtn keyword.declaration.qtn
+#                   ^ source.qtn
+#                    ^^^^^^^^^ source.qtn entity.name.type.qtn
+#                             ^^^ source.qtn
+>  int RoundNumber;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^^^^^^^^ source.qtn
+>  FP MatchTime;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^ source.qtn
+>  int AlivePlayerCount;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>component Weapon {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^ source.qtn entity.name.type.qtn
+#                ^^^ source.qtn
+>  FP Damage;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^ source.qtn
+>  FP FireRate;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^ source.qtn
+>  FP Range;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^ source.qtn
+>  int Ammo;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^ source.qtn
+>  asset_ref<WeaponConfig> Config;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn storage.type.generic.qtn
+#           ^ source.qtn punctuation.definition.generic.begin.qtn
+#            ^^^^^^^^^^^^ source.qtn
+#                        ^ source.qtn punctuation.definition.generic.end.qtn
+#                         ^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>/*
+#^^ source.qtn comment.block.qtn punctuation.definition.comment.qtn
+> * Multi-line comment block
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.block.qtn
+> * Component with collections
+#^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.block.qtn
+> */
+#^ source.qtn comment.block.qtn
+# ^^ source.qtn comment.block.qtn punctuation.definition.comment.qtn
+>component Inventory {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^^^^ source.qtn entity.name.type.qtn
+#                   ^^^ source.qtn
+>  list<EntityRef> Items;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.generic.qtn
+#      ^ source.qtn punctuation.definition.generic.begin.qtn
+#       ^^^^^^^^^ source.qtn support.type.qtn
+#                ^ source.qtn punctuation.definition.generic.end.qtn
+#                 ^^^^^^^^ source.qtn
+>  array<int>[10] QuickSlots;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.generic.qtn
+#       ^ source.qtn punctuation.definition.generic.begin.qtn
+#        ^^^ source.qtn storage.type.primitive.qtn
+#           ^ source.qtn punctuation.definition.generic.end.qtn
+#            ^ source.qtn
+#             ^^ source.qtn constant.numeric.integer.qtn
+#               ^^^^^^^^^^^^^^ source.qtn
+>  dictionary<EntityRef, int> ItemCounts;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#            ^ source.qtn punctuation.definition.generic.begin.qtn
+#             ^^^^^^^^^ source.qtn support.type.qtn
+#                      ^^ source.qtn
+#                        ^^^ source.qtn storage.type.primitive.qtn
+#                           ^ source.qtn punctuation.definition.generic.end.qtn
+#                            ^^^^^^^^^^^^^ source.qtn
+>  hash_set<int> UnlockedAbilities;
+#^^ source.qtn
+#  ^^^^^^^^ source.qtn storage.type.generic.qtn
+#          ^ source.qtn punctuation.definition.generic.begin.qtn
+#           ^^^ source.qtn storage.type.primitive.qtn
+#              ^ source.qtn punctuation.definition.generic.end.qtn
+#               ^^^^^^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Component with attributes
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>component Advanced {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^^^ source.qtn entity.name.type.qtn
+#                  ^^^ source.qtn
+>  [Header("Movement Settings")]
+#^^ source.qtn
+#  ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.begin.qtn
+#   ^^^^^^ source.qtn meta.annotation.qtn support.type.attribute.qtn
+#         ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.begin.qtn
+#          ^ source.qtn meta.annotation.qtn string.quoted.double.qtn
+#           ^^^^^^^^^^^^^^^^^ source.qtn meta.annotation.qtn string.quoted.double.qtn
+#                            ^ source.qtn meta.annotation.qtn string.quoted.double.qtn
+#                             ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
+#                              ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
+>  FP MoveSpeed;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^ source.qtn
+>
+>  [Tooltip("Maximum jump height")]
+#^^ source.qtn
+#  ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.begin.qtn
+#   ^^^^^^^ source.qtn meta.annotation.qtn support.type.attribute.qtn
+#          ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.begin.qtn
+#           ^ source.qtn meta.annotation.qtn string.quoted.double.qtn
+#            ^^^^^^^^^^^^^^^^^^^ source.qtn meta.annotation.qtn string.quoted.double.qtn
+#                               ^ source.qtn meta.annotation.qtn string.quoted.double.qtn
+#                                ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
+#                                 ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
+>  FP JumpHeight;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^^ source.qtn
+>
+>  [ExcludeFromPrototype]
+#^^ source.qtn
+#  ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.begin.qtn
+#   ^^^^^^^^^^^^^^^^^^^^ source.qtn meta.annotation.qtn support.type.attribute.qtn
+#                       ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
+>  FP RuntimeValue;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^^^^ source.qtn
+>
+>  [AllocateOnComponentAdded]
+#^^ source.qtn
+#  ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.begin.qtn
+#   ^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn meta.annotation.qtn support.type.attribute.qtn
+#                           ^ source.qtn meta.annotation.qtn punctuation.definition.annotation.end.qtn
+>  list<EntityRef> Targets;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.generic.qtn
+#      ^ source.qtn punctuation.definition.generic.begin.qtn
+#       ^^^^^^^^^ source.qtn support.type.qtn
+#                ^ source.qtn punctuation.definition.generic.end.qtn
+#                 ^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Abstract component
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>abstract component BaseUnit {
+#^^^^^^^^ source.qtn storage.modifier.qtn
+#        ^ source.qtn
+#         ^^^^^^^^^ source.qtn keyword.declaration.qtn
+#                  ^ source.qtn
+#                   ^^^^^^^^ source.qtn entity.name.type.qtn
+#                           ^^^ source.qtn
+>  FP Health;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^ source.qtn
+>  FP Armor;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Input
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>input {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^^^ source.qtn
+>  FPVector2 Movement;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^ source.qtn
+>  FPVector2 Look;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^ source.qtn
+>  button Fire;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.qtn
+#        ^^^^^^^ source.qtn
+>  button Reload;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.qtn
+#        ^^^^^^^^^ source.qtn
+>  button Jump;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.qtn
+#        ^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Events
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>event PlayerDamaged {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                   ^^^ source.qtn
+>  entity_ref Player;
+#^^^^^^^^^^^^^^^^^^^^^ source.qtn
+>  FP Damage;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^ source.qtn
+>  FPVector3 HitPosition;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>event ItemPickedUp {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                  ^^^ source.qtn
+>  entity_ref Item;
+#^^^^^^^^^^^^^^^^^^^ source.qtn
+>  player_ref Player;
+#^^^^^^^^^^^^^^^^^^^^^ source.qtn
+>  int Quantity;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Signals
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>signal OnPlayerSpawn(entity_ref player, FPVector3 position);
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                    ^ source.qtn punctuation.definition.parameters.begin.qtn
+#                     ^^^^^^^^^^^^^^^^^^^ source.qtn
+#                                        ^^^^^^^^^ source.qtn support.type.qtn
+#                                                 ^^^^^^^^^ source.qtn
+#                                                          ^ source.qtn punctuation.definition.parameters.end.qtn
+#                                                           ^^ source.qtn
+>signal OnWeaponFired(entity_ref weapon, FP damage);
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                    ^ source.qtn punctuation.definition.parameters.begin.qtn
+#                     ^^^^^^^^^^^^^^^^^^^ source.qtn
+#                                        ^^ source.qtn support.type.qtn
+#                                          ^^^^^^^ source.qtn
+#                                                 ^ source.qtn punctuation.definition.parameters.end.qtn
+#                                                  ^^ source.qtn
+>signal OnDamage(FP damage, entity_ref entity);
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^ source.qtn entity.name.type.qtn
+#               ^ source.qtn punctuation.definition.parameters.begin.qtn
+#                ^^ source.qtn support.type.qtn
+#                  ^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn
+#                                            ^ source.qtn punctuation.definition.parameters.end.qtn
+#                                             ^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Global
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>global {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^^^ source.qtn
+>  int RoundNumber;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^^^^^^^^ source.qtn
+>  FP MatchTime;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^^^ source.qtn
+>  int AlivePlayerCount;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^^^^^^^^^^^^^ source.qtn
+>  bool GameStarted;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.primitive.qtn
+#      ^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Union
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>union AbilityData {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                 ^^^ source.qtn
+>  MeleeData Melee;
+#^^^^^^^^^^^^^^^^^^^ source.qtn
+>  RangedData Ranged;
+#^^^^^^^^^^^^^^^^^^^^^ source.qtn
+>  MagicData Magic;
+#^^^^^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Import statements
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>import MyNamespace.Utils;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                        ^^ source.qtn
+>import enum Shape3DType(byte);
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^ source.qtn keyword.declaration.qtn
+#           ^ source.qtn
+#            ^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                       ^ source.qtn
+#                        ^^^^ source.qtn storage.type.primitive.qtn
+#                            ^ source.qtn
+#                             ^^ source.qtn
+>import struct Foo(8);
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^ source.qtn keyword.declaration.qtn
+#             ^ source.qtn
+#              ^^^ source.qtn entity.name.type.qtn
+#                 ^ source.qtn
+#                  ^ source.qtn constant.numeric.integer.qtn
+#                   ^ source.qtn
+#                    ^^ source.qtn
+>import singleton BarComponent;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^ source.qtn storage.modifier.qtn
+#                ^ source.qtn
+#                 ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                             ^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Nested generics
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>component ComplexTypes {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                      ^^^ source.qtn
+>  list<asset_ref<WeaponConfig>> WeaponConfigs;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.generic.qtn
+#      ^ source.qtn punctuation.definition.generic.begin.qtn
+#       ^^^^^^^^^ source.qtn storage.type.generic.qtn
+#                ^ source.qtn punctuation.definition.generic.begin.qtn
+#                 ^^^^^^^^^^^^ source.qtn
+#                             ^ source.qtn punctuation.definition.generic.end.qtn
+#                              ^ source.qtn punctuation.definition.generic.end.qtn
+#                               ^^^^^^^^^^^^^^^^ source.qtn
+>  dictionary<int, list<EntityRef>> GroupedEntities;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#            ^ source.qtn punctuation.definition.generic.begin.qtn
+#             ^^^ source.qtn storage.type.primitive.qtn
+#                ^^ source.qtn
+#                  ^^^^ source.qtn storage.type.generic.qtn
+#                      ^ source.qtn punctuation.definition.generic.begin.qtn
+#                       ^^^^^^^^^ source.qtn support.type.qtn
+#                                ^ source.qtn punctuation.definition.generic.end.qtn
+#                                 ^ source.qtn punctuation.definition.generic.end.qtn
+#                                  ^^^^^^^^^^^^^^^^^^ source.qtn
+>  array<FPVector3>[100] Waypoints;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.generic.qtn
+#       ^ source.qtn punctuation.definition.generic.begin.qtn
+#        ^^^^^^^^^ source.qtn support.type.qtn
+#                 ^ source.qtn punctuation.definition.generic.end.qtn
+#                  ^ source.qtn
+#                   ^^^ source.qtn constant.numeric.integer.qtn
+#                      ^^^^^^^^^^^^^ source.qtn
+>  bitset[64] Flags;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.generic.qtn
+#        ^ source.qtn punctuation.definition.array.begin.qtn
+#         ^^ source.qtn constant.numeric.integer.qtn
+#           ^ source.qtn punctuation.definition.array.end.qtn
+#            ^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// All primitive types
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>struct AllPrimitives {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                    ^^^ source.qtn
+>  bool BoolField;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.primitive.qtn
+#      ^^^^^^^^^^^^ source.qtn
+>  byte ByteField;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.primitive.qtn
+#      ^^^^^^^^^^^^ source.qtn
+>  sbyte SByteField;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+>  short ShortField;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+>  ushort UShortField;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#        ^^^^^^^^^^^^^^ source.qtn
+>  int IntField;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.primitive.qtn
+#     ^^^^^^^^^^^ source.qtn
+>  uint UIntField;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.primitive.qtn
+#      ^^^^^^^^^^^^ source.qtn
+>  long LongField;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.primitive.qtn
+#      ^^^^^^^^^^^^ source.qtn
+>  ulong ULongField;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+>  Boolean BooleanField;
+#^^ source.qtn
+#  ^^^^^^^ source.qtn storage.type.primitive.qtn
+#         ^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// All Quantum types
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>struct AllQuantumTypes {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                      ^^^ source.qtn
+>  FP FPField;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^^^ source.qtn
+>  FPVector2 Vec2Field;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^ source.qtn
+>  FPVector3 Vec3Field;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^ source.qtn
+>  FPQuaternion QuatField;
+#^^ source.qtn
+#  ^^^^^^^^^^^^ source.qtn support.type.qtn
+#              ^^^^^^^^^^^^ source.qtn
+>  FPMatrix MatField;
+#^^ source.qtn
+#  ^^^^^^^^ source.qtn support.type.qtn
+#          ^^^^^^^^^^^ source.qtn
+>  FPBounds2 Bounds2Field;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^^ source.qtn
+>  FPBounds3 Bounds3Field;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^^ source.qtn
+>  EntityRef EntityField;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^ source.qtn
+>  PlayerRef PlayerField;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^ source.qtn
+>  AssetRef AssetField;
+#^^ source.qtn
+#  ^^^^^^^^ source.qtn support.type.qtn
+#          ^^^^^^^^^^^^^ source.qtn
+>  QString StringField;
+#^^ source.qtn
+#  ^^^^^^^ source.qtn support.type.qtn
+#         ^^^^^^^^^^^^^^ source.qtn
+>  QStringUtf8 Utf8Field;
+#^^ source.qtn
+#  ^^^^^^^^^^^ source.qtn support.type.qtn
+#             ^^^^^^^^^^^^ source.qtn
+>  LayerMask MaskField;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^ source.qtn
+>  Hit HitField;
+#^^ source.qtn
+#  ^^^ source.qtn support.type.qtn
+#     ^^^^^^^^^^^ source.qtn
+>  Hit3D Hit3DField;
+#^^ source.qtn
+#  ^^^^^ source.qtn support.type.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+>  Shape2D Shape2DField;
+#^^ source.qtn
+#  ^^^^^^^ source.qtn support.type.qtn
+#         ^^^^^^^^^^^^^^^ source.qtn
+>  Shape3D Shape3DField;
+#^^ source.qtn
+#  ^^^^^^^ source.qtn support.type.qtn
+#         ^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Numeric literals
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>#define HEX_VALUE 0xFF
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^ source.qtn
+#                  ^^^^ source.qtn constant.numeric.hex.qtn
+>#define INT_VALUE 42
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^ source.qtn
+#                  ^^ source.qtn constant.numeric.integer.qtn
+>#define FLOAT_VALUE 3.14
+#^^^^^^^ source.qtn keyword.control.directive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+#                    ^^^^ source.qtn constant.numeric.float.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Synced / Local / Remote modifiers
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>component NetworkedData {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                       ^^^ source.qtn
+>  synced FP SyncedValue;
+#^^ source.qtn
+#  ^^^^^^ source.qtn keyword.control.qtn
+#        ^ source.qtn
+#         ^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^ source.qtn
+>  local int LocalCounter;
+#^^ source.qtn
+#  ^^^^^ source.qtn keyword.control.qtn
+#       ^ source.qtn
+#        ^^^ source.qtn storage.type.primitive.qtn
+#           ^^^^^^^^^^^^^^^ source.qtn
+>  remote FPVector3 RemotePosition;
+#^^ source.qtn
+#  ^^^^^^ source.qtn keyword.control.qtn
+#        ^ source.qtn
+#         ^^^^^^^^^ source.qtn support.type.qtn
+#                  ^^^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Asset declarations
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>asset CharacterData;
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                   ^^ source.qtn
+>asset WeaponConfig;
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                  ^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Event inheritance
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>abstract event BaseEvent {
+#^^^^^^^^ source.qtn storage.modifier.qtn
+#        ^ source.qtn
+#         ^^^^^ source.qtn keyword.declaration.qtn
+#              ^ source.qtn
+#               ^^^^^^^^^ source.qtn entity.name.type.qtn
+#                        ^^^ source.qtn
+>  Int32 Common;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>event DerivedEvent : BaseEvent {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                  ^ source.qtn
+#                   ^ source.qtn punctuation.separator.inheritance.qtn
+#                    ^ source.qtn
+#                     ^^^^^^^^^ source.qtn entity.other.inherited-class.qtn
+#                              ^^^ source.qtn
+>  FP Extra;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>synced event MySyncedEvent {
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^ source.qtn keyword.declaration.qtn
+#            ^ source.qtn
+#             ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                          ^^^ source.qtn
+>  FP Value;
+#^^ source.qtn
+#  ^^ source.qtn support.type.qtn
+#    ^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Enum with base type
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>enum EDamageCategory : Byte {
+#^^^^ source.qtn keyword.declaration.qtn
+#    ^ source.qtn
+#     ^^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                    ^ source.qtn
+#                     ^ source.qtn punctuation.separator.inheritance.qtn
+#                      ^ source.qtn
+#                       ^^^^ source.qtn entity.other.inherited-class.qtn
+#                           ^^^ source.qtn
+>  None = 0,
+#^^^^^^^^^ source.qtn
+#         ^ source.qtn constant.numeric.integer.qtn
+#          ^^ source.qtn
+>  Physical = 1,
+#^^^^^^^^^^^^^ source.qtn
+#             ^ source.qtn constant.numeric.integer.qtn
+#              ^^ source.qtn
+>  Magical = 2,
+#^^^^^^^^^^^^ source.qtn
+#            ^ source.qtn constant.numeric.integer.qtn
+#             ^^ source.qtn
+>  Environmental = 3
+#^^^^^^^^^^^^^^^^^^ source.qtn
+#                  ^ source.qtn constant.numeric.integer.qtn
+>}
+#^^ source.qtn
+>
+>flags EStatusFlags : UInt16 {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^ source.qtn
+#      ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                  ^ source.qtn
+#                   ^ source.qtn punctuation.separator.inheritance.qtn
+#                    ^ source.qtn
+#                     ^^^^^^ source.qtn entity.other.inherited-class.qtn
+#                           ^^^ source.qtn
+>  None = 0,
+#^^^^^^^^^ source.qtn
+#         ^ source.qtn constant.numeric.integer.qtn
+#          ^^ source.qtn
+>  Poisoned = 1,
+#^^^^^^^^^^^^^ source.qtn
+#             ^ source.qtn constant.numeric.integer.qtn
+#              ^^ source.qtn
+>  Stunned = 2,
+#^^^^^^^^^^^^ source.qtn
+#            ^ source.qtn constant.numeric.integer.qtn
+#             ^^ source.qtn
+>  Frozen = 4
+#^^^^^^^^^^^ source.qtn
+#           ^ source.qtn constant.numeric.integer.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Additional control keywords
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>component NetworkControl {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                        ^^^ source.qtn
+>  nothashed FP LocalOnlyValue;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn keyword.control.qtn
+#           ^ source.qtn
+#            ^^ source.qtn support.type.qtn
+#              ^^^^^^^^^^^^^^^^^ source.qtn
+>  client FP ClientSideValue;
+#^^ source.qtn
+#  ^^^^^^ source.qtn keyword.control.qtn
+#        ^ source.qtn
+#         ^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^^^^^ source.qtn
+>  server FP ServerSideValue;
+#^^ source.qtn
+#  ^^^^^^ source.qtn keyword.control.qtn
+#        ^ source.qtn
+#         ^^ source.qtn support.type.qtn
+#           ^^^^^^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// C# type aliases
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>struct CSharpAliases {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                    ^^^ source.qtn
+>  Byte ByteAlias;
+#^^ source.qtn
+#  ^^^^ source.qtn storage.type.primitive.qtn
+#      ^^^^^^^^^^^^ source.qtn
+>  SByte SByteAlias;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+>  Int16 ShortAlias;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^^^ source.qtn
+>  UInt16 UShortAlias;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#        ^^^^^^^^^^^^^^ source.qtn
+>  Int32 IntAlias;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^ source.qtn
+>  UInt32 UIntAlias;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#        ^^^^^^^^^^^^ source.qtn
+>  Int64 LongAlias;
+#^^ source.qtn
+#  ^^^^^ source.qtn storage.type.primitive.qtn
+#       ^^^^^^^^^^^^ source.qtn
+>  UInt64 ULongAlias;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.primitive.qtn
+#        ^^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Additional Quantum built-in types
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>struct MoreQuantumTypes {
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                       ^^^ source.qtn
+>  IntVector2 GridPos;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn support.type.qtn
+#            ^^^^^^^^^^ source.qtn
+>  IntVector3 GridPos3D;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn support.type.qtn
+#            ^^^^^^^^^^^^ source.qtn
+>  Transform2D Transform;
+#^^ source.qtn
+#  ^^^^^^^^^^^ source.qtn support.type.qtn
+#             ^^^^^^^^^^^^ source.qtn
+>  Transform3D Transform3;
+#^^ source.qtn
+#  ^^^^^^^^^^^ source.qtn support.type.qtn
+#             ^^^^^^^^^^^^^ source.qtn
+>  CharacterController2D CC2D;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                       ^^^^^^^ source.qtn
+>  CharacterController3D CC3D;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                       ^^^^^^^ source.qtn
+>  PhysicsBody2D Body2D;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^ source.qtn support.type.qtn
+#               ^^^^^^^^^ source.qtn
+>  PhysicsCollider2D Collider2D;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                   ^^^^^^^^^^^^^ source.qtn
+>  PhysicsCallbacks2D Callbacks2D;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                    ^^^^^^^^^^^^^^ source.qtn
+>  ColorRGBA Color;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^^ source.qtn
+>  NullableFP OptionalValue;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn support.type.qtn
+#            ^^^^^^^^^^^^^^^^ source.qtn
+>  NullableNonNegativeFP PositiveOnly;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                       ^^^^^^^^^^^^^^^ source.qtn
+>  RNGSession Rng;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn support.type.qtn
+#            ^^^^^^ source.qtn
+>  FrameTimer Timer;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn support.type.qtn
+#            ^^^^^^^^ source.qtn
+>  NavMeshPathfinder Pathfinder;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                   ^^^^^^^^^^^^^ source.qtn
+>  NavMeshSteeringAgent SteeringAgent;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                      ^^^^^^^^^^^^^^^^ source.qtn
+>  SpringJoint Spring;
+#^^ source.qtn
+#  ^^^^^^^^^^^ source.qtn support.type.qtn
+#             ^^^^^^^^^ source.qtn
+>  HingeJoint Hinge;
+#^^ source.qtn
+#  ^^^^^^^^^^ source.qtn support.type.qtn
+#            ^^^^^^^^ source.qtn
+>  MapEntityId MapId;
+#^^ source.qtn
+#  ^^^^^^^^^^^ source.qtn support.type.qtn
+#             ^^^^^^^^ source.qtn
+>  AssetGuid Guid;
+#^^ source.qtn
+#  ^^^^^^^^^ source.qtn support.type.qtn
+#           ^^^^^^^ source.qtn
+>  QBoolean QBool;
+#^^ source.qtn
+#  ^^^^^^^^ source.qtn support.type.qtn
+#          ^^^^^^^^ source.qtn
+>  Ptr Pointer;
+#^^ source.qtn
+#  ^^^ source.qtn support.type.qtn
+#     ^^^^^^^^^^ source.qtn
+>  InputButtons Buttons;
+#^^ source.qtn
+#  ^^^^^^^^^^^^ source.qtn support.type.qtn
+#              ^^^^^^^^^^ source.qtn
+>  InputDirection Direction;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^ source.qtn support.type.qtn
+#                ^^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Signal with parameter types
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>signal OnBeforeDamage(FP damage, EntityRef target);
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                     ^ source.qtn punctuation.definition.parameters.begin.qtn
+#                      ^^ source.qtn support.type.qtn
+#                        ^^^^^^^^^ source.qtn
+#                                 ^^^^^^^^^ source.qtn support.type.qtn
+#                                          ^^^^^^^ source.qtn
+#                                                 ^ source.qtn punctuation.definition.parameters.end.qtn
+#                                                  ^^ source.qtn
+>signal OnHeal(NullableFP amount, PlayerRef healer);
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^ source.qtn entity.name.type.qtn
+#             ^ source.qtn punctuation.definition.parameters.begin.qtn
+#              ^^^^^^^^^^ source.qtn support.type.qtn
+#                        ^^^^^^^^^ source.qtn
+#                                 ^^^^^^^^^ source.qtn support.type.qtn
+#                                          ^^^^^^^ source.qtn
+#                                                 ^ source.qtn punctuation.definition.parameters.end.qtn
+#                                                  ^^ source.qtn
+>signal SimpleSignal;
+#^^^^^^ source.qtn keyword.declaration.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                   ^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Import variations
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>import struct ExternalStruct(12);
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^ source.qtn keyword.declaration.qtn
+#             ^ source.qtn
+#              ^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                            ^ source.qtn
+#                             ^^ source.qtn constant.numeric.integer.qtn
+#                               ^ source.qtn
+#                                ^^ source.qtn
+>import enum ExternalEnum(byte);
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^ source.qtn keyword.declaration.qtn
+#           ^ source.qtn
+#            ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                        ^ source.qtn
+#                         ^^^^ source.qtn storage.type.primitive.qtn
+#                             ^ source.qtn
+#                              ^^ source.qtn
+>import singleton SingletonComp;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^ source.qtn storage.modifier.qtn
+#                ^ source.qtn
+#                 ^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                              ^^ source.qtn
+>import enum SimpleEnum;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^ source.qtn keyword.declaration.qtn
+#           ^ source.qtn
+#            ^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                      ^^ source.qtn
+>import struct SimpleStruct;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^ source.qtn keyword.declaration.qtn
+#             ^ source.qtn
+#              ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                          ^^ source.qtn
+>import ExternalType;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                   ^^ source.qtn
+>import MyNamespace.SubNamespace.DeepType;
+#^^^^^^ source.qtn keyword.control.qtn
+#      ^ source.qtn
+#       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                                        ^^ source.qtn
+>using MyNamespace;
+#^^^^^ source.qtn keyword.control.qtn
+#     ^^^^^^^^^^^^^^ source.qtn
+>using AnotherNamespace;
+#^^^^^ source.qtn keyword.control.qtn
+#     ^^^^^^^^^^^^^^^^^^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Generic collection types (extended)
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>component ExtendedCollections {
+#^^^^^^^^^ source.qtn keyword.declaration.qtn
+#         ^ source.qtn
+#          ^^^^^^^^^^^^^^^^^^^ source.qtn entity.name.type.qtn
+#                             ^^^ source.qtn
+>  entity_prototype_ref<MyPrototype> ProtoRef;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#                      ^ source.qtn punctuation.definition.generic.begin.qtn
+#                       ^^^^^^^^^^^ source.qtn
+#                                  ^ source.qtn punctuation.definition.generic.end.qtn
+#                                   ^^^^^^^^^^^ source.qtn
+>  component_prototype_ref<MyComponent> CompRef;
+#^^ source.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^ source.qtn storage.type.generic.qtn
+#                         ^ source.qtn punctuation.definition.generic.begin.qtn
+#                          ^^^^^^^^^^^ source.qtn
+#                                     ^ source.qtn punctuation.definition.generic.end.qtn
+#                                      ^^^^^^^^^^ source.qtn
+>  set<int> IntSet;
+#^^ source.qtn
+#  ^^^ source.qtn storage.type.generic.qtn
+#     ^ source.qtn punctuation.definition.generic.begin.qtn
+#      ^^^ source.qtn storage.type.primitive.qtn
+#         ^ source.qtn punctuation.definition.generic.end.qtn
+#          ^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// Button (capital)
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>// ============================================
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>input {
+#^^^^^ source.qtn keyword.declaration.qtn
+#     ^^^ source.qtn
+>  Button Action;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.qtn
+#        ^^^^^^^^^ source.qtn
+>  button Interact;
+#^^ source.qtn
+#  ^^^^^^ source.qtn storage.type.qtn
+#        ^^^^^^^^^^^ source.qtn
+>}
+#^^ source.qtn
+>
+>// End of test fixture
+#^^ source.qtn comment.line.double-slash.qtn punctuation.definition.comment.qtn
+#  ^^^^^^^^^^^^^^^^^^^^ source.qtn comment.line.double-slash.qtn
+>

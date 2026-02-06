@@ -1,0 +1,210 @@
+// Advanced Attributes Test Fixture
+// Tests all known attributes, multiple attributes per field, complex DrawIf, escape sequences
+
+// ============================================================================
+// COMPONENT WITH ALL ATTRIBUTE TYPES
+// ============================================================================
+
+component PlayerStats {
+    [Header("Core Attributes")]
+    [Tooltip("Primary stat for physical damage\nRange: 10-100")]
+    [Range(10, 100)]
+    FP Strength;
+
+    [Tooltip("Determines spell power")]
+    [RangeEx(0, 200)]
+    FP Intelligence;
+
+    [Space(10)]
+    [Header("Combat Stats")]
+    [HideInInspector]
+    Int32 InternalDamageMultiplier;
+
+    [DrawIf("UseShield", 1, Equal, Hide)]
+    [Range(0, 100)]
+    FP ShieldStrength;
+
+    [DrawIf("HealthType", 0, NotEqual, Disable)]
+    [Tooltip("Regeneration per second")]
+    FP HealthRegen;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    [Tooltip("Dynamic ability list")]
+    list<EntityRef> ActiveAbilities;
+
+    [Optional]
+    [Tooltip("Passive effect reference\nCan be null")]
+    entity_ref<PassiveEffect> PassiveEffect;
+
+    [Layer]
+    Int32 TargetLayer;
+
+    [ExcludeFromPrototype]
+    [Tooltip("Runtime only - not serialized")]
+    FP CurrentCritChance;
+
+    [OnlyInPrototype]
+    [Header("Design Time Only")]
+    QString DesignerNotes;
+
+    [PreserveInPrototype]
+    Boolean UseShield;
+
+    [DrawIf("UseShield", 1, Equal, Show)]
+    [DrawIf("InCombat", 1, NotEqual, Disable)]
+    [Range(1, 5)]
+    Int32 ShieldTier;
+}
+
+// ============================================================================
+// STRUCT WITH MULTIPLE ATTRIBUTE STYLES
+// ============================================================================
+
+struct WeaponConfiguration {
+    [Header("Damage Profile")]
+    [Tooltip("Base damage before modifiers")]
+    [Range(1, 9999)]
+    FP BaseDamage;
+
+    [Tooltip("Damage type:\n0 = Physical\n1 = Magical\n2 = True")]
+    [Range(0, 2)]
+    Byte DamageType;
+
+    [Space(5)]
+    [Header("Advanced Settings")]
+    [DrawIf("DamageType", 1, Equal, Show)]
+    [AllocateOnComponentAdded]
+    array<FP>[8] ElementalMultipliers;
+
+    [DrawIf("HasAoE", 1, Equal, Show)]
+    [Tooltip("Area of effect radius in meters")]
+    [RangeEx(0.5, 50.0)]
+    FP AoERadius;
+
+    [HideInInspector]
+    UInt32 InternalWeaponHash;
+
+    [Optional]
+    asset_ref<WeaponSkin> CustomSkin;
+
+    Boolean HasAoE;
+}
+
+// ============================================================================
+// ENUM — attributes on the declaration, members are plain
+// ============================================================================
+
+enum ItemRarity : Byte {
+    Common = 0,
+    Uncommon = 1,
+    Rare = 2,
+    Epic = 3,
+    Legendary = 4,
+    Debug = 255
+}
+
+// ============================================================================
+// FLAGS WITH HEX VALUES
+// ============================================================================
+
+flags StatusEffectFlags : UInt32 {
+    None = 0,
+    Slowed = 1,
+    Stunned = 2,
+    Rooted = 4,
+    Burning = 8,
+    Regenerating = 16,
+    DebugInvulnerable = 0x80000000
+}
+
+// ============================================================================
+// COMPONENT WITH COMPLEX DRAWIIF CHAINS
+// ============================================================================
+
+component AbilitySystem {
+    [Header("Ability Configuration")]
+    Boolean UseCustomAbilities;
+
+    [DrawIf("UseCustomAbilities", 1, Equal, Show)]
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    [Tooltip("Custom ability definitions")]
+    list<asset_ref<AbilityData>> CustomAbilities;
+
+    [DrawIf("UseCustomAbilities", 0, Equal, Show)]
+    [Tooltip("Fallback to default abilities")]
+    asset_ref<AbilitySet> DefaultAbilitySet;
+
+    [Space(10)]
+    [Header("Cooldown Settings")]
+    [DrawIf("UseCustomCooldowns", 1, Equal, Show)]
+    [Range(0.1, 300.0)]
+    [Tooltip("Global cooldown in seconds")]
+    FP GlobalCooldown;
+
+    Boolean UseCustomCooldowns;
+
+    [DrawIf("UseCustomCooldowns", 1, Equal, Disable)]
+    [DrawIf("UseCustomAbilities", 0, Equal, Hide)]
+    [Tooltip("Only visible with specific config")]
+    FP FallbackCooldown;
+}
+
+// ============================================================================
+// NESTED ATTRIBUTE COMBINATIONS
+// ============================================================================
+
+struct InventorySlot {
+    [Header("Slot Configuration")]
+    [Tooltip("Slot index in inventory grid")]
+    [Range(0, 99)]
+    Byte SlotIndex;
+
+    [Tooltip("Item in this slot")]
+    [Optional]
+    entity_ref<InventoryItem> Item;
+
+    [DrawIf("Item", 0, NotEqual, Show)]
+    [Tooltip("Stack size\nmax = 999")]
+    [Range(1, 999)]
+    Int32 StackSize;
+
+    [Space(5)]
+    [Header("Slot Restrictions")]
+    [Layer]
+    [Tooltip("Allowed item categories")]
+    Int32 AllowedCategories;
+
+    [DrawIf("IsLocked", 1, Equal, Disable)]
+    [HideInInspector]
+    Boolean CanDrop;
+
+    [Tooltip("Slot locked by quest/level")]
+    Boolean IsLocked;
+}
+
+// ============================================================================
+// MULTIPLE ATTRIBUTE BLOCKS ON SAME FIELD
+// ============================================================================
+
+component AdvancedLootTable {
+    [Header("Loot Configuration")]
+    [Space(5)]
+    [Tooltip("Primary loot pool")]
+    [AllocateOnComponentAdded]
+    [FreeOnComponentRemoved]
+    list<asset_ref<LootEntry>> LootPool;
+
+    [Range(0.0, 1.0)]
+    [Tooltip("Drop chance multiplier\nAffects all entries")]
+    [DrawIf("UseDynamicDropRate", 0, Equal, Disable)]
+    FP DropRateMultiplier;
+
+    [Optional]
+    [Tooltip("Optional bonus pool for rare drops")]
+    [DrawIf("HasBonusPool", 1, Equal, Show)]
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<asset_ref<LootEntry>> BonusPool;
+
+    Boolean HasBonusPool;
+    Boolean UseDynamicDropRate;
+}

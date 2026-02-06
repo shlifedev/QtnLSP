@@ -1,0 +1,25 @@
+// SYNTAX TEST "source.qtn" "Import highlighting"
+
+import MyNamespace.Utils;
+// <--- keyword.control.qtn
+//     ^^^^^^^^^^^^^^^^^ entity.name.type.qtn
+
+import enum Shape3DType(byte);
+// <--- keyword.control.qtn
+//     ^^^^ keyword.declaration.qtn
+//          ^^^^^^^^^^^ entity.name.type.qtn
+//                      ^^^^ storage.type.primitive.qtn
+
+import struct Foo(8);
+// <--- keyword.control.qtn
+//     ^^^^^^ keyword.declaration.qtn
+//            ^^^ entity.name.type.qtn
+//                ^ constant.numeric.integer.qtn
+
+import singleton BarComponent;
+// <--- keyword.control.qtn
+//     ^^^^^^^^^ storage.modifier.qtn
+//               ^^^^^^^^^^^^ entity.name.type.qtn
+
+using MyNamespace;
+// <-- keyword.control.qtn

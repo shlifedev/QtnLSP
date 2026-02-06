@@ -1,0 +1,452 @@
+// Events, Signals, and Imports Test Fixture
+// Tests client/server events, abstract event hierarchies, synced events,
+// signals with various param counts, deeply nested imports, hex values,
+// block comments in declarations, mixed comment styles
+
+// ============================================================================
+// DEEPLY NESTED NAMESPACE IMPORTS
+// ============================================================================
+
+import System.Collections.Generic;
+import UnityEngine.Rendering.PostProcessing;
+import Photon.Deterministic.Quantum.Core;
+import Game.Entities.Characters.Players;
+import Game.Entities.Characters.NPCs.Vendors;
+import Game.Combat.Abilities.Active;
+import Game.Combat.Abilities.Passive;
+import Game.Items.Weapons.Melee;
+import Game.Items.Weapons.Ranged.Bows;
+import Network.Protocol.Messages.Gameplay;
+
+using System;
+using UnityEngine;
+using Quantum;
+using Game.Core;
+using Game.Utilities.Math;
+using Game.Networking.Sync;
+
+// Import with size/type hints
+import struct PlayerInventory(256);
+import enum DamageType(byte);
+import singleton GameSessionManager;
+import NetworkTransform;
+
+// ============================================================================
+// HEX VALUES IN #DEFINE AND ENUMS
+// ============================================================================
+
+#define MAX_PLAYERS 0x10
+#define NETWORK_VERSION 0x0102
+#define FEATURE_FLAGS 0xFF00FF00
+#define MAGIC_NUMBER 0xDEADBEEF
+#define BITMASK_ALL 0xFFFFFFFF
+
+enum NetworkPacketType : UInt32 {
+    None = 0x00,
+    Handshake = 0x01,
+    PlayerJoin = 0x02,
+    PlayerLeave = 0x03,
+    GameState = 0x10,
+    PlayerInput = 0x11,
+    EntityUpdate = 0x12,
+    AbilityTrigger = 0x20,
+    DamageEvent = 0x21,
+    HealEvent = 0x22,
+    Disconnect = 0xFF
+}
+
+flags DebugFlags : UInt32 {
+    None = 0x0,
+    ShowColliders = 0x1,
+    ShowPaths = 0x2,
+    ShowNetworkStats = 0x4,
+    LogInputs = 0x8,
+    LogEvents = 0x10,
+    SlowMotion = 0x20,
+    GodMode = 0x40,
+    AllFlags = 0xFFFFFFFF
+}
+
+// ============================================================================
+// ABSTRACT EVENT HIERARCHY (3-LEVEL)
+// ============================================================================
+
+// Level 1: Root abstract event
+abstract event GameEvent {
+    /* Common event data for all game events */
+    FP Timestamp;
+    EntityRef Source;
+    Int32 EventId;
+}
+
+// Level 2: Abstract combat event
+abstract event CombatEvent : GameEvent {
+    /* Combat-specific base data */
+    EntityRef Target;
+    FP Damage;
+    Byte DamageType; // 0=Physical, 1=Magical, 2=True
+}
+
+// Level 2: Abstract player event
+abstract event PlayerEvent : GameEvent {
+    /* Player action base */
+    PlayerRef Player;
+    Int32 ActionId;
+}
+
+// Level 3: Concrete combat events
+event MeleeAttackEvent : CombatEvent {
+    /* Melee attack with weapon info */
+    asset_ref<WeaponData> Weapon;
+    Boolean IsCritical;
+    FPVector3 HitPosition;
+}
+
+event SpellCastEvent : CombatEvent {
+    /* Spell casting event */
+    asset_ref<SpellData> Spell;
+    FP ManaCost;
+    list<EntityRef> AdditionalTargets; // For AoE spells
+}
+
+event DotTickEvent : CombatEvent {
+    /* Damage over time tick */
+    Int32 TickNumber;
+    Int32 RemainingTicks;
+    asset_ref<StatusEffect> Effect;
+}
+
+// Level 3: Concrete player events
+event PlayerMovementEvent : PlayerEvent {
+    /* Player movement */
+    FPVector3 OldPosition;
+    FPVector3 NewPosition;
+    FP MovementSpeed;
+}
+
+event PlayerAbilityUsedEvent : PlayerEvent {
+    /* Player ability usage */
+    asset_ref<AbilityData> Ability;
+    EntityRef Target;
+    FP Cooldown;
+}
+
+// ============================================================================
+// SYNCED EVENTS
+// ============================================================================
+
+synced event SyncedPlayerSpawnEvent {
+    PlayerRef Player;
+    FPVector3 SpawnPosition;
+    FPQuaternion SpawnRotation;
+    Int32 TeamId;
+    asset_ref<CharacterData> CharacterData;
+}
+
+synced event SyncedGameStateChangeEvent {
+    Byte OldState; /* 0=Lobby, 1=Playing, 2=Paused, 3=Ended */
+    Byte NewState;
+    FP TransitionTime;
+    Int32 RoundNumber;
+}
+
+synced event SyncedLootSpawnEvent {
+    EntityRef LootEntity;
+    FPVector3 Position;
+    list<asset_ref<ItemData>> Items;
+    FP DespawnTimer;
+}
+
+// ============================================================================
+// CLIENT AND SERVER EVENTS
+// ============================================================================
+
+client event ClientPredictedMovementEvent {
+    /* Client-side predicted movement */
+    PlayerRef LocalPlayer;
+    FPVector3 PredictedPosition;
+    FPVector2 InputVector;
+    UInt32 InputSequence;
+}
+
+client event ClientUIInteractionEvent {
+    /* UI interaction from client */
+    PlayerRef Player;
+    Int32 UIElementId;
+    QString InteractionType; // "click", "hover", "drag"
+}
+
+client event ClientChatMessageEvent {
+    PlayerRef Sender;
+    QString Message;
+    Byte Channel; // 0=All, 1=Team, 2=Whisper
+}
+
+server event ServerAuthoritativePositionEvent {
+    /* Server correction */
+    PlayerRef Player;
+    FPVector3 CorrectedPosition;
+    UInt32 AcknowledgedInput;
+}
+
+server event ServerValidationFailedEvent {
+    /* Anti-cheat validation */
+    PlayerRef Player;
+    Byte ViolationType; // 0=SpeedHack, 1=Teleport, 2=InvalidInput
+    QString Details;
+}
+
+server event ServerMatchmakingCompleteEvent {
+    list<PlayerRef> Players;
+    Int32 MatchId;
+    asset_ref<MapData> SelectedMap;
+}
+
+// ============================================================================
+// SIGNALS WITH VARIOUS PARAMETER COUNTS
+// ============================================================================
+
+// No parameters
+signal OnServerReady;
+signal OnClientConnected;
+signal OnGameStarted;
+
+// Single parameter
+signal OnPlayerDied(entity_ref player);
+signal OnRoundEnded(Int32 winningTeam);
+signal OnTimerExpired(FP duration);
+
+// Two parameters
+signal OnItemPickedUp(entity_ref player, asset_ref<ItemData> item);
+signal OnDoorOpened(entity_ref door, player_ref activator);
+signal OnCheckpointReached(player_ref player, FPVector3 position);
+
+// Three parameters
+signal OnDamageApplied(entity_ref source, entity_ref target, FP damage);
+signal OnAbilityCasted(player_ref caster, asset_ref<AbilityData> ability, entity_ref target);
+signal OnQuestUpdated(player_ref player, Int32 questId, Byte newState);
+
+// Many parameters (5+)
+signal OnCombatResolved(
+    entity_ref attacker,
+    entity_ref defender,
+    FP damage,
+    Boolean isCritical,
+    asset_ref<WeaponData> weapon,
+    FPVector3 hitPosition,
+    Byte damageType
+);
+
+// Complex types in params
+signal OnWaveSpawned(
+    Int32 waveNumber,
+    list<entity_ref<Enemy>> enemies,
+    FPVector3 spawnCenter,
+    FP difficultyMultiplier
+);
+
+// Nullable params
+signal OnBuffApplied(
+    entity_ref target,
+    asset_ref<BuffData> buff,
+    FP? duration,
+    FPVector3? originPosition
+);
+
+// Prototype ref params
+signal OnEntityInstantiated(
+    entity_prototype_ref<Unit> prototype,
+    FPVector3 position,
+    PlayerRef owner
+);
+
+// ============================================================================
+// BLOCK COMMENTS INSIDE DECLARATIONS
+// ============================================================================
+
+component CommentedComponent {
+    /* Primary identifier */
+    Int32 Id;
+
+    /* Position in world space
+       Uses fixed-point for determinism */
+    FPVector3 Position;
+
+    /*
+     * Multi-line comment
+     * explaining complex field
+     * with detailed notes
+     */
+    dictionary<Int32, list<FP>> ComplexData;
+
+    /* Inline comment */ Boolean IsActive; /* trailing comment */
+
+    /* Health: current HP
+       MaxHealth: maximum HP capacity */
+    FP Health;
+    FP MaxHealth;
+}
+
+struct CommentedStruct {
+    /* Core data */
+    EntityRef Entity; /* Entity reference */
+
+    /*
+       Velocity vector
+       - X: horizontal movement
+       - Y: vertical movement
+       - Z: depth movement
+    */
+    FPVector3 Velocity;
+
+    /* Force accumulator
+     * Cleared each frame */
+    FPVector3 AccumulatedForce;
+}
+
+// ============================================================================
+// MIXED COMMENT STYLES
+// ============================================================================
+
+// Line comment before event
+/* Block comment before event */
+event MixedCommentEvent {
+    // Line comment in event
+    Int32 Field1; // inline line comment
+
+    /* Block comment before field */
+    FP Field2; /* inline block comment */
+
+    /*
+     * Multi-line block
+     * comment
+     */
+    QString Field3;
+
+    // Another line comment
+    Boolean Field4;
+}
+
+// Alternating comments
+/* Block */ component MixedComments {
+    // Line
+    Int32 A;
+    /* Block */
+    FP B;
+    // Line
+    Boolean C;
+    /* Block */
+    EntityRef D;
+}
+
+// ============================================================================
+// ENUM WITH NO EXPLICIT VALUES VS ALL EXPLICIT VALUES
+// ============================================================================
+
+// No explicit values (auto-incremented)
+enum AutoIncrementedEnum {
+    First,
+    Second,
+    Third,
+    Fourth,
+    Fifth
+}
+
+// All explicit values
+enum ExplicitEnum : Int32 {
+    None = 0,
+    Low = 10,
+    Medium = 50,
+    High = 100,
+    Critical = 500,
+    Maximum = 1000
+}
+
+// Hex explicit values
+enum HexEnum : Byte {
+    Flag1 = 0x01,
+    Flag2 = 0x02,
+    Flag4 = 0x04,
+    Flag8 = 0x08,
+    Flag16 = 0x10,
+    Flag32 = 0x20,
+    Flag64 = 0x40,
+    Flag128 = 0x80
+}
+
+// ============================================================================
+// COMPLEX EVENT WITH EVERYTHING
+// ============================================================================
+
+/* Ultimate combat event
+ * Combines all features:
+ * - Synced across network
+ * - Inherits from abstract base
+ * - Multiple field types
+ * - Comments mixed in
+ */
+synced event UltimateCombatEvent : CombatEvent {
+    // Weapon info
+    asset_ref<WeaponData> Weapon;
+
+    /* Critical hit data */
+    Boolean IsCritical;
+    FP CritMultiplier; // 1.5x, 2.0x, etc
+
+    // Position tracking
+    FPVector3 AttackerPosition; /* Attacker world pos */
+    FPVector3 TargetPosition; /* Target world pos */
+    FPVector3 HitPosition; /* Exact hit location */
+
+    /*
+     * Status effects applied by this hit
+     * Can be empty list
+     */
+    list<asset_ref<StatusEffect>> AppliedEffects;
+
+    // Combo system
+    Int32 ComboCounter; /* Current combo count */
+    FP ComboDamageBonus; /* Bonus from combo */
+
+    /* Nullable fields for optional data */
+    FP? KnockbackForce;
+    FPVector3? KnockbackDirection;
+
+    // Network data
+    UInt32 EventSequence; /* For ordering */
+    PlayerRef Instigator; /* Who caused this */
+}
+
+// ============================================================================
+// COMPREHENSIVE SIGNAL SET
+// ============================================================================
+
+// Lifecycle signals
+signal OnGameInitialized;
+signal OnGameShutdown;
+
+// Player signals
+signal OnPlayerJoined(player_ref player, QString playerName);
+signal OnPlayerLeft(player_ref player, Byte reason);
+signal OnPlayerRespawned(entity_ref playerEntity, FPVector3 spawnPoint);
+
+// Combat signals
+signal OnAttackStarted(entity_ref attacker, entity_ref target);
+signal OnAttackCompleted(entity_ref attacker, entity_ref target, FP damage, Boolean hit);
+signal OnDefenseActivated(entity_ref defender, FP blockAmount);
+
+// World signals
+signal OnObjectiveCompleted(Int32 objectiveId, list<player_ref> contributors, FP completionTime);
+signal OnTriggerEntered(entity_ref trigger, entity_ref entering);
+signal OnTriggerExited(entity_ref trigger, entity_ref exiting);
+
+// Complex multi-param signal
+signal OnComplexInteraction(
+    player_ref actor,
+    entity_ref interactable,
+    Int32 interactionType,
+    dictionary<Int32, FP> contextData,
+    FPVector3 interactionPoint,
+    Boolean requiresConfirmation,
+    FP? cooldownOverride
+);

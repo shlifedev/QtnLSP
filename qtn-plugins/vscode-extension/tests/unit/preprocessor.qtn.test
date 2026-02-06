@@ -1,0 +1,10 @@
+// SYNTAX TEST "source.qtn" "Preprocessor highlighting"
+
+#pragma max_players 16
+// <---- keyword.control.directive.qtn
+
+#define MAX_HEALTH 100
+// <--- keyword.control.directive.qtn
+
+#define HEX_VALUE 0xFF
+// <--- keyword.control.directive.qtn

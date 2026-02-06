@@ -1,0 +1,17 @@
+// SYNTAX TEST "source.qtn" "Attribute highlighting"
+
+  [Header("Movement Settings")]
+//^ meta.annotation.qtn
+// ^^^^^^ support.type.attribute.qtn
+
+  [Tooltip("Maximum jump height")]
+//^ meta.annotation.qtn
+// ^^^^^^^ support.type.attribute.qtn
+
+  [ExcludeFromPrototype]
+//^ meta.annotation.qtn
+// ^^^^^^^^^^^^^^^^^^^^ support.type.attribute.qtn
+
+  [AllocateOnComponentAdded]
+//^ meta.annotation.qtn
+// ^^^^^^^^^^^^^^^^^^^^^^^^ support.type.attribute.qtn

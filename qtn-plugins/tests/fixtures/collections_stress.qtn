@@ -1,0 +1,394 @@
+// Collections Stress Test - Every collection type, nested generics,
+// QString with sizes, complex key/value pairs, allocation attributes
+
+#pragma collection_pool_size 4096
+#define MAX_LIST_SIZE 256
+#define MAX_DICT_SIZE 512
+#define MAX_SET_SIZE 128
+#define STRING_BUFFER_SIZE 1024
+
+using Collections;
+using Collections.Advanced;
+import struct GenericContainer(64);
+
+// Test all primitive collections
+[Header("Primitive Collections")]
+component PrimitiveCollections {
+    // Lists of primitives
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Boolean> BoolList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Byte> ByteList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Int16> ShortList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Int32> IntList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Int64> LongList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FP> FPList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPVector2> Vector2List;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPVector3> Vector3List;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPQuaternion> QuaternionList;
+
+    // Arrays of various sizes
+    array<Boolean>[8] BoolArray8;
+    array<Byte>[16] ByteArray16;
+    array<Int32>[32] IntArray32;
+    array<FP>[64] FPArray64;
+    array<FPVector3>[128] Vector3Array128;
+}
+
+// Test all reference collections
+[Header("Reference Collections")]
+component ReferenceCollections {
+    // Entity references
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> EntityList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> EntitySet;
+
+    array<EntityRef>[16] EntityArray;
+
+    // Player references
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<player_ref> PlayerList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    set<player_ref> PlayerSet;
+
+    array<player_ref>[10] PlayerArray;
+
+    // Asset references
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<asset_ref<ItemAsset>> ItemRefList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<asset_ref<WeaponAsset>> WeaponRefList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<asset_ref<MaterialAsset>> MaterialRefSet;
+
+    array<asset_ref<PrefabAsset>>[20] PrefabRefArray;
+}
+
+// Test dictionaries with various key/value types
+[Header("Dictionary Collections")]
+component DictionaryCollections {
+    // Primitive key -> primitive value
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, FP> IntToFP;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, Boolean> IntToBool;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Byte, Int32> ByteToInt;
+
+    // Reference key -> primitive value
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, FP> EntityToFP;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, Int32> EntityToInt;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, FP> PlayerToFP;
+
+    // Primitive key -> reference value
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, EntityRef> IntToEntity;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, player_ref> IntToPlayer;
+
+    // Reference key -> reference value
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, EntityRef> EntityToEntity;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, player_ref> EntityToPlayer;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, EntityRef> PlayerToEntity;
+
+    // Vector keys
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<FPVector2, Int32> Vector2ToInt;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<FPVector3, EntityRef> Vector3ToEntity;
+}
+
+// Test nested collections (complex generics)
+[Header("Nested Collections")]
+component NestedCollections {
+    // List of lists
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<list<Int32>> ListOfIntLists;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<list<FP>> ListOfFPLists;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<list<EntityRef>> ListOfEntityLists;
+
+    // List of asset refs (generic within generic)
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<asset_ref<ItemAsset>> ItemAssetRefList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<asset_ref<WeaponAsset>> WeaponAssetRefList;
+
+    // Dictionary with list values
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, list<FP>> IntToFPList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, list<Int32>> EntityToIntList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, list<EntityRef>> PlayerToEntityList;
+
+    // Dictionary with set values
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, hash_set<EntityRef>> IntToEntitySet;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, set<player_ref>> EntityToPlayerSet;
+
+    // Set of asset refs
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    set<asset_ref<MaterialAsset>> MaterialAssetRefSet;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<asset_ref<EffectAsset>> EffectAssetRefSet;
+}
+
+// Test QString with various sizes
+[Header("String Collections")]
+component StringCollections {
+    // Fixed-size QStrings
+    QString<16> SmallString;
+    QString<32> MediumString;
+    QString<64> LargeString;
+    QString<128> VeryLargeString;
+    QString<256> HugeString;
+    QString<512> MassiveString;
+
+    // UTF8 strings
+    QStringUtf8<32> Utf8Small;
+    QStringUtf8<64> Utf8Medium;
+    QStringUtf8<128> Utf8Large;
+    QStringUtf8<256> Utf8Huge;
+
+    // Lists of strings
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<QString<32>> StringList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<QStringUtf8<64>> Utf8StringList;
+
+    // String arrays
+    array<QString<16>>[8] SmallStringArray;
+    array<QString<64>>[16] MediumStringArray;
+    array<QStringUtf8<32>>[10] Utf8StringArray;
+
+    // Dictionaries with string keys/values
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<32>, Int32> StringToInt;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, QString<64>> IntToString;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<32>, QString<64>> StringToString;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, QString<128>> EntityToString;
+}
+
+// Test bitsets of various sizes
+[Header("Bitset Collections")]
+component BitsetCollections {
+    bitset[8] Tiny;
+    bitset[16] Small;
+    bitset[32] Medium;
+    bitset[64] Large;
+    bitset[128] VeryLarge;
+    bitset[256] Huge;
+    bitset[512] Massive;
+    bitset[1024] Enormous;
+
+    // Arrays of bitsets
+    array<bitset[8]>[4] TinyBitsetArray;
+    array<bitset[32]>[8] MediumBitsetArray;
+    array<bitset[64]>[16] LargeBitsetArray;
+}
+
+// Test all Quantum-specific types in collections
+[Header("Quantum Type Collections")]
+component QuantumCollections {
+    // Fixed-point collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FP> FPList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPVector2> FPVector2List;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPVector3> FPVector3List;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPQuaternion> FPQuaternionList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPMatrix> FPMatrixList;
+
+    // Nullable collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<NullableFP> NullableFPList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<NullableFPVector2> NullableFPVector2List;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<NullableFPVector3> NullableFPVector3List;
+
+    // Bounds collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPBounds2> FPBounds2List;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FPBounds3> FPBounds3List;
+
+    // Physics collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Hit> HitList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Hit3D> Hit3DList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Shape2D> Shape2DList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Shape3D> Shape3DList;
+
+    // Joint collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<Joint> JointList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<DistanceJoint> DistanceJointList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<SpringJoint> SpringJointList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<HingeJoint> HingeJointList;
+
+    // LayerMask collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<LayerMask> LayerMaskList;
+
+    array<LayerMask>[32] LayerMaskArray;
+}
+
+// Test complex mixed collections
+[Header("Complex Mixed Collections")]
+component ComplexCollections {
+    // Dictionary with nested collections as values
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, list<asset_ref<ItemAsset>>> IntToItemRefList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, hash_set<asset_ref<WeaponAsset>>> EntityToWeaponRefSet;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<player_ref, list<list<FP>>> PlayerToNestedFPLists;
+
+    // Lists with nested dictionaries
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<dictionary<Int32, FP>> ListOfIntToFPDicts;
+
+    // Multiple levels of nesting
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, list<asset_ref<PrefabAsset>>> EntityToAssetRefList;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, hash_set<player_ref>> IntToPlayerRefSet;
+
+    // Array of lists
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    array<list<EntityRef>>[16] ArrayOfEntityLists;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    array<list<FP>>[32] ArrayOfFPLists;
+}
+
+// Singleton with massive collections
+[Header("Collection Manager")]
+singleton component CollectionManager {
+    // Track all active collections
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<EntityRef, Int32> EntityCollectionCounts;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<EntityRef> EntitiesWithCollections;
+
+    // Memory tracking
+    Int32 TotalListCount;
+    Int32 TotalDictionaryCount;
+    Int32 TotalSetCount;
+    Int32 TotalArrayCount;
+
+    // Performance metrics
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<64>, FP> AllocationTimes;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<QString<64>, Int32> AllocationSizes;
+}
+
+// Struct with all collection types
+struct CollectionContainer {
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<FP> Values;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    dictionary<Int32, FP> Mapping;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    hash_set<EntityRef> Entities;
+
+    array<Int32>[16] FixedArray;
+    bitset[64] Flags;
+}
+
+// Component using the container
+component CollectionUser {
+    CollectionContainer Container;
+
+    [AllocateOnComponentAdded, FreeOnComponentRemoved]
+    list<CollectionContainer> Containers;
+}
+
+// Assets
+asset ItemAsset;
+asset WeaponAsset;
+asset MaterialAsset;
+asset PrefabAsset;
+asset EffectAsset;

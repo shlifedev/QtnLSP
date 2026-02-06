@@ -1,0 +1,58 @@
+// SYNTAX TEST "source.qtn" "Keyword highlighting"
+
+component Player {
+// <- keyword.declaration.qtn
+}
+
+struct Health {
+// <- keyword.declaration.qtn
+}
+
+enum WeaponType {
+// <- keyword.declaration.qtn
+}
+
+flags PlayerState : Byte {
+// <- keyword.declaration.qtn
+}
+
+union AbilityData {
+// <- keyword.declaration.qtn
+}
+
+event PlayerDamaged {
+// <- keyword.declaration.qtn
+}
+
+signal OnDamage(FP damage);
+// <- keyword.declaration.qtn
+
+input {
+// <- keyword.declaration.qtn
+}
+
+global {
+// <- keyword.declaration.qtn
+}
+
+singleton component GameState {
+// <- storage.modifier.qtn
+//        ^ keyword.declaration.qtn
+}
+
+abstract component BaseUnit {
+// <- storage.modifier.qtn
+//       ^ keyword.declaration.qtn
+}
+
+import MyNamespace.Utils;
+// <- keyword.control.qtn
+
+  synced FP SyncedValue;
+//^ keyword.control.qtn
+
+  local int LocalCounter;
+//^ keyword.control.qtn
+
+  remote FPVector3 RemotePosition;
+//^ keyword.control.qtn

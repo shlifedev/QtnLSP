@@ -1,0 +1,17 @@
+# Source files (exclude from bundle)
+src/
+out/
+tsconfig.json
+
+# Bundle output (include)
+!dist/
+
+# Tests and development
+tests/
+node_modules/
+.vscode/
+*.test
+
+# Misc
+.gitignore
+webpack.config.js

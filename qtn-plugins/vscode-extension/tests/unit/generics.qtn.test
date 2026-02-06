@@ -1,0 +1,22 @@
+// SYNTAX TEST "source.qtn" "Generic type highlighting"
+
+  list<EntityRef> Items;
+//^^^^ storage.type.generic.qtn
+
+  array<int>[10] QuickSlots;
+//^^^^^ storage.type.generic.qtn
+
+  dictionary<EntityRef, int> ItemCounts;
+//^^^^^^^^^^ storage.type.generic.qtn
+
+  hash_set<int> UnlockedAbilities;
+//^^^^^^^^ storage.type.generic.qtn
+
+  asset_ref<WeaponConfig> Config;
+//^^^^^^^^^ storage.type.generic.qtn
+
+  list<asset_ref<WeaponConfig>> WeaponConfigs;
+//^^^^ storage.type.generic.qtn
+
+  bitset[64] Flags;
+//^^^^^^ storage.type.generic.qtn
