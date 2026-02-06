@@ -7,4 +7,20 @@ struct SpecialData
   entity_ref AnotherEntity;
   asset_ref<CharacterData> CharacterData;
   array<FP>[10] TenNumbers;
+} 
+
+enum Q{
+  A,B,C
 }
+
+component W{
+  Q q;
+}
+
+asset WE; 
+
+struct VVVV{}
+component ET{
+  VVVV v;
+}
+

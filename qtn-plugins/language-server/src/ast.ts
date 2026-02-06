@@ -22,6 +22,7 @@ export interface SourceRange {
 // Type reference for field types, generic args, etc.
 export interface TypeReference {
   name: string;
+  nameRange: SourceRange;  // range of the type name only (excluding generics/array)
   genericArgs: TypeReference[];
   arraySize?: number;  // fixed array size: array<T>[N]
   isPointer: boolean;  // signal parameter pointer: *

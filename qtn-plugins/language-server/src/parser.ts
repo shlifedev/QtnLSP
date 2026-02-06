@@ -975,6 +975,9 @@ class Parser {
       name += '.' + next.value;
     }
 
+    // Capture nameRange: covers only the type name (before generics/array)
+    const nameRange = this.makeRange(startRange, this.prevRange());
+
     // Generic args: <T>, <K,V>, <T>[N]
     let genericArgs: TypeReference[] = [];
     if (this.match(TokenType.punctuation, '<')) {
@@ -1009,6 +1012,7 @@ class Parser {
 
     return {
       name,
+      nameRange,
       genericArgs,
       arraySize,
       isPointer,

@@ -16,6 +16,7 @@ import { handleDefinition } from './definition.js';
 import { handleCompletion } from './completion.js';
 import { handleHover } from './hover.js';
 import { handleDocumentSymbol, handleWorkspaceSymbol } from './symbols.js';
+import { handleSemanticTokensFull, tokenTypes, tokenModifiers } from './semantic-tokens.js';
 import { setLocale } from './locale.js';
 
 // Create LSP connection using Node IPC
@@ -57,6 +58,15 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
 
       // Workspace-wide symbol search
       workspaceSymbolProvider: true,
+
+      // Semantic tokens for type references
+      semanticTokensProvider: {
+        legend: {
+          tokenTypes,
+          tokenModifiers,
+        },
+        full: true,
+      },
     },
   };
 });
@@ -122,6 +132,12 @@ connection.onDocumentSymbol((params) => {
 // Provides project-wide symbol search
 connection.onWorkspaceSymbol((params) => {
   return handleWorkspaceSymbol(params, projectModel);
+});
+
+// Semantic Tokens handler
+// Provides semantic token data for type references
+connection.languages.semanticTokens.on((params) => {
+  return handleSemanticTokensFull(params, projectModel);
 });
 
 // ============================================================================
