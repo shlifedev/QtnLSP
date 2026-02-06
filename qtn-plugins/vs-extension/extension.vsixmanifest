@@ -1,0 +1,23 @@
+<PackageManifest Version="2.0.0" xmlns="http://schemas.microsoft.com/developer/vsx-schema/2011">
+  <Metadata>
+    <Identity Id="QtnLanguageExtension.a1b2c3d4-5678-9abc-def0-123456789abc" Version="1.0.0" Language="en-US" Publisher="qtn-tools" />
+    <DisplayName>Quantum DSL (QTN) Language Support</DisplayName>
+    <Description xml:space="preserve">Syntax highlighting and IntelliSense for Photon Quantum3 DSL (.qtn) files. Provides TextMate grammar-based colorization and Language Server Protocol support for auto-completion, hover information, and go-to-definition.</Description>
+    <MoreInfo>https://github.com/shlifedev/QtnLSP</MoreInfo>
+    <License>LICENSE</License>
+    <Tags>quantum, qtn, dsl, syntax highlighting, language server</Tags>
+    <Categories>Languages</Categories>
+  </Metadata>
+  <Installation>
+    <InstallationTarget Id="Microsoft.VisualStudio.Community" Version="[17.0, 18.0)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Professional" Version="[17.0, 18.0)" />
+    <InstallationTarget Id="Microsoft.VisualStudio.Enterprise" Version="[17.0, 18.0)" />
+  </Installation>
+  <Dependencies>
+    <Dependency Id="Microsoft.Framework.NDP" DisplayName="Microsoft .NET Framework" Version="[4.5,)" />
+  </Dependencies>
+  <Assets>
+    <Asset Type="Microsoft.VisualStudio.VsPackage" Path="QtnLanguage.pkgdef" />
+    <Asset Type="Microsoft.VisualStudio.MefComponent" Path="QtnLanguageExtension.dll" />
+  </Assets>
+</PackageManifest>

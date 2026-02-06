@@ -9,6 +9,11 @@ language-server/out/
 jetbrains-plugin/build/
 jetbrains-plugin/.gradle/
 
+# VS extension build output
+vs-extension/bin/
+vs-extension/obj/
+vs-extension/LanguageServer/
+
 # IDE
 .vscode/
 .idea/

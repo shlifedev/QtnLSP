@@ -1,0 +1,129 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build-vscode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install root workspace dependencies
+        working-directory: qtn-plugins
+        run: npm ci
+
+      - name: Install language-server dependencies
+        working-directory: qtn-plugins/language-server
+        run: npm ci
+
+      - name: Install vscode-extension dependencies
+        working-directory: qtn-plugins/vscode-extension
+        run: npm ci
+
+      - name: Sync grammar
+        run: cp qtn-plugins/shared/syntaxes/qtn.tmLanguage.json qtn-plugins/vscode-extension/syntaxes/qtn.tmLanguage.json
+
+      - name: Package VSIX
+        working-directory: qtn-plugins/vscode-extension
+        run: npx vsce package --no-dependencies
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vscode-vsix
+          path: qtn-plugins/vscode-extension/*.vsix
+
+  build-jetbrains:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Install & build language-server
+        working-directory: qtn-plugins/language-server
+        run: npm ci && npm run build
+
+      - name: Sync grammar
+        run: cp qtn-plugins/shared/syntaxes/qtn.tmLanguage.json qtn-plugins/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json
+
+      - name: Build JetBrains plugin
+        working-directory: qtn-plugins/jetbrains-plugin
+        run: ./gradlew buildPlugin
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: jetbrains-zip
+          path: qtn-plugins/jetbrains-plugin/build/distributions/*.zip
+
+  build-vs:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Install & build language-server
+        working-directory: qtn-plugins/language-server
+        run: npm ci && npm run build
+
+      - name: Copy language-server to VS extension
+        shell: bash
+        run: |
+          mkdir -p qtn-plugins/vs-extension/LanguageServer
+          cp -r qtn-plugins/language-server/out/* qtn-plugins/vs-extension/LanguageServer/
+          cp -r qtn-plugins/language-server/node_modules qtn-plugins/vs-extension/LanguageServer/
+
+      - name: Sync grammar
+        shell: bash
+        run: cp qtn-plugins/shared/syntaxes/qtn.tmLanguage.json qtn-plugins/vs-extension/Grammars/qtn.tmLanguage.json
+
+      - name: Build VS extension
+        working-directory: qtn-plugins/vs-extension
+        run: dotnet build -c Release
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vs-vsix
+          path: qtn-plugins/vs-extension/bin/Release/**/*.vsix
+
+  release:
+    needs: [build-vscode, build-jetbrains, build-vs]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$TAG" \
+            --generate-notes \
+            artifacts/vscode-vsix/*.vsix \
+            artifacts/jetbrains-zip/*.zip \
+            artifacts/vs-vsix/*.vsix
