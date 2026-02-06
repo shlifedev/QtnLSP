@@ -33,10 +33,15 @@ jobs:
         working-directory: qtn-plugins/vscode-extension
         run: npx vsce package --no-dependencies
 
+      - name: Prepare artifact
+        run: |
+          mkdir -p release
+          cp qtn-plugins/vscode-extension/*.vsix release/QtnLSP-vscode.vsix
+
       - uses: actions/upload-artifact@v4
         with:
           name: vscode-vsix
-          path: qtn-plugins/vscode-extension/*.vsix
+          path: release/QtnLSP-vscode.vsix
 
   build-jetbrains:
     runs-on: ubuntu-latest
@@ -63,10 +68,15 @@ jobs:
         working-directory: qtn-plugins/jetbrains-plugin
         run: ./gradlew buildPlugin
 
+      - name: Prepare artifact
+        run: |
+          mkdir -p release
+          cp qtn-plugins/jetbrains-plugin/build/distributions/*.zip release/QtnLSP-jetbrains.zip
+
       - uses: actions/upload-artifact@v4
         with:
           name: jetbrains-zip
-          path: qtn-plugins/jetbrains-plugin/build/distributions/*.zip
+          path: release/QtnLSP-jetbrains.zip
 
   build-vs:
     runs-on: windows-latest
@@ -102,10 +112,16 @@ jobs:
         working-directory: qtn-plugins/vs-extension
         run: dotnet build -c Release
 
+      - name: Prepare artifact
+        shell: bash
+        run: |
+          mkdir -p release
+          find qtn-plugins/vs-extension/bin/Release -name "*.vsix" -exec cp {} release/QtnLSP-vs.vsix \;
+
       - uses: actions/upload-artifact@v4
         with:
           name: vs-vsix
-          path: qtn-plugins/vs-extension/bin/Release/**/*.vsix
+          path: release/QtnLSP-vs.vsix
 
   release:
     needs: [build-vscode, build-jetbrains, build-vs]
@@ -116,6 +132,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           path: artifacts
+          merge-multiple: true
+
+      - name: List artifacts
+        run: find artifacts -type f
 
       - name: Create GitHub Release
         env:
@@ -126,6 +146,6 @@ jobs:
             --repo "$GITHUB_REPOSITORY" \
             --title "$TAG" \
             --generate-notes \
-            artifacts/vscode-vsix/*.vsix \
-            artifacts/jetbrains-zip/*.zip \
-            artifacts/vs-vsix/*.vsix
+            artifacts/QtnLSP-vscode.vsix \
+            artifacts/QtnLSP-jetbrains.zip \
+            artifacts/QtnLSP-vs.vsix
