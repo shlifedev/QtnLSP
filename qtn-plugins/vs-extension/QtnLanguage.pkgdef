@@ -1,0 +1,8 @@
+; QTN Language - TextMate Grammar Registration
+; Registers the .qtn TextMate grammar for syntax highlighting in Visual Studio 2022
+
+[$RootKey$\TextMate\Repositories]
+"QtnLanguage"="$PackageFolder$\Grammars"
+
+[$RootKey$\TextMate\LanguageConfiguration\GrammarMapping]
+"source.qtn"="$PackageFolder$\language-configuration.json"

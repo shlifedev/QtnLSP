@@ -4,10 +4,11 @@
 
 ## 개요
 
-이 프로젝트는 두 가지 플러그인을 제공합니다:
+이 프로젝트는 세 가지 플러그인을 제공합니다:
 
 - **VSCode Extension**: `qtn-syntax-highlighting-1.0.0.vsix`
 - **JetBrains Plugin**: `qtn-syntax-highlighting-1.0.0.zip` (Rider 2022.3 이상)
+- **Visual Studio Extension**: Visual Studio 2022 17.0+ 용 VSIX 패키지
 
 각 IDE에 맞는 설치 방법을 선택하세요.
 
@@ -122,6 +123,62 @@ cd /path/to/qtn-plugins
 
 ---
 
+## Visual Studio 2022 설치
+
+### 전제 조건
+
+- **Visual Studio 2022** (17.0 이상) 필수 — VS 2019는 지원하지 않음
+- **Node.js 18+** 시스템에 설치 필요 (LSP 서버 실행용)
+
+### 방법 1: VSIX 파일로 설치 (권장)
+
+미리 빌드된 .vsix 파일이 있으면:
+
+1. `.vsix` 파일 더블클릭
+2. Visual Studio Installer가 자동으로 시작됨
+3. **Install** 클릭
+4. Visual Studio 재시작
+
+또는 Visual Studio 내에서:
+
+1. Visual Studio 열기
+2. **Extensions** → **Manage Extensions** 열기
+3. 좌측 하단 **...** 메뉴 또는 검색 바 옆 아이콘 클릭
+4. **Install from VSIX...** 선택 (또는 .vsix 파일을 창에 드래그 앤 드롭)
+5. `.vsix` 파일 선택
+6. Visual Studio 재시작
+
+### 방법 2: 빌드 후 설치
+
+```bash
+cd /path/to/qtn-plugins
+./build.sh vs
+```
+
+그 후 위의 "방법 1"을 따릅니다.
+
+**주의:** Visual Studio 확장 빌드에는 .NET SDK 6.0+이 필요합니다.
+
+### 설치 확인
+
+1. Visual Studio 재시작
+2. `.qtn` 파일 열기
+3. 다음을 확인하세요:
+   - **신텍스 하이라이팅**: 키워드, 타입, 주석이 색상으로 표시됨
+   - **자동 완성**: Ctrl+Space 입력 시 제안 표시
+   - **Hover 정보**: 변수나 타입 위에 마우스를 올릴 때 정보 표시
+   - **정의 이동**: F12 또는 Ctrl+Click으로 정의 위치로 이동
+
+### 제거
+
+1. Visual Studio 열기
+2. **Extensions** → **Manage Extensions**
+3. "Quantum DSL" 검색
+4. **Uninstall** 클릭
+5. Visual Studio 재시작
+
+---
+
 ## 소스에서 빌드
 
 ### 빌드 요구사항
@@ -129,6 +186,7 @@ cd /path/to/qtn-plugins
 - **공통**: Node.js 18+ (npm 9+), git
 - **VSCode**: 추가 요구사항 없음
 - **JetBrains**: JDK 17 필수
+- **Visual Studio**: .NET SDK 6.0+
 
 ### JDK 17 설치 (macOS)
 
@@ -159,9 +217,16 @@ cd /path/to/qtn-plugins
 
 생성된 파일: `jetbrains-plugin/build/distributions/qtn-syntax-highlighting-1.0.0.zip`
 
+### Visual Studio 확장 빌드
+
+```bash
+cd /path/to/qtn-plugins
+./build.sh vs
+```
+
 ### 전체 빌드
 
-VSCode와 JetBrains 플러그인을 동시에 빌드합니다:
+VSCode, JetBrains, Visual Studio 플러그인을 모두 빌드합니다:
 
 ```bash
 cd /path/to/qtn-plugins
@@ -173,6 +238,7 @@ cd /path/to/qtn-plugins
 2. 문법 단위 테스트 실행
 3. VSCode 확장 빌드
 4. JetBrains 플러그인 빌드
+5. Visual Studio 확장 빌드
 
 ---
 
@@ -223,6 +289,28 @@ brew install openjdk@17
 
 build.sh가 시스템 Java를 감지하면 자동으로 JDK 17로 전환합니다.
 
+### Visual Studio 2022
+
+**확장이 활성화되지 않음**
+
+- Visual Studio를 완전히 재시작하세요
+- Extensions → Manage Extensions에서 확장이 활성화되어 있는지 확인
+- 파일이 `.qtn` 확장자인지 확인
+
+**자동 완성이 작동하지 않음**
+
+- Node.js가 시스템 PATH에 설치되어 있는지 확인:
+  ```bash
+  node --version
+  ```
+- Visual Studio 출력 창에서 "QTN Language Server" 관련 오류 확인
+- Visual Studio를 완전히 재시작
+
+**.NET SDK 오류 (빌드 시)**
+
+.NET SDK가 설치되어 있어야 합니다:
+- https://dotnet.microsoft.com/download 에서 .NET SDK 6.0+ 다운로드
+
 ---
 
 ## 개발자 정보
@@ -232,6 +320,7 @@ build.sh가 시스템 Java를 감지하면 자동으로 JDK 17로 전환합니�
 - **최소 요구사항**:
   - VSCode 1.50+
   - JetBrains Rider 2022.3+
+  - Visual Studio 2022 (17.0+)
 
 ### 추가 리소스
 

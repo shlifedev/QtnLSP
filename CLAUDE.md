@@ -1,12 +1,12 @@
 # QTN Syntax Highlighting
 
-> Photon Quantum3 DSL(`.qtn`) 파일의 신텍스 하이라이팅을 VSCode와 JetBrains Rider에서 제공하는 프로젝트.
+> Photon Quantum3 DSL(`.qtn`) 파일의 신텍스 하이라이팅을 VSCode, JetBrains Rider, Visual Studio 2022에서 제공하는 프로젝트.
 
 ## 프로젝트 개요
 
 `.qtn`은 Quantum ECS의 게임 상태를 정의하는 DSL이다. DSL 컴파일러(`Quantum.CodeGen.Qtn`)가 `.qtn` 파일을 파싱하여 메모리 정렬, 직렬화, 디버깅 헬퍼가 포함된 C# partial struct를 생성한다.
 
-이 프로젝트는 `.qtn` 파일에 대한 **정적 문법 기반 신텍스 하이라이팅**을 TextMate Grammar로 구현하고, **Language Server Protocol(LSP)** 기반 IntelliSense(자동 완성, 정의 이동, hover 등)를 제공한다. VSCode 확장과 JetBrains Rider 플러그인으로 패키징한다.
+이 프로젝트는 `.qtn` 파일에 대한 **정적 문법 기반 신텍스 하이라이팅**을 TextMate Grammar로 구현하고, **Language Server Protocol(LSP)** 기반 IntelliSense(자동 완성, 정의 이동, hover 등)를 제공한다. VSCode 확장, JetBrains Rider 플러그인, Visual Studio 2022 확장으로 패키징한다.
 
 ## 프로젝트 구조
 
@@ -44,6 +44,19 @@ jetbrains-plugin/
     │   └── lsp.xml                   # LSP extension (optional dependency)
     └── bundles/qtn.tmbundle/
 
+vs-extension/
+├── QtnLanguageExtension.csproj       # VSIX 프로젝트 (SDK-style)
+├── source.extension.vsixmanifest     # VSIX 매니페스트
+├── QtnLanguage.pkgdef                # TextMate 문법 등록
+├── QtnContentTypeDefinition.cs       # .qtn content type 매핑
+├── QtnLanguageClient.cs              # ILanguageClient 구현 (LSP)
+├── language-configuration.json       # 괄호 매칭, 주석 토글, 접기
+├── Grammars/
+│   └── qtn.tmLanguage.json           # shared/에서 복사 (빌드 시 sync)
+└── LanguageServer/                   # language-server/out/ 에서 복사 (빌드 시)
+    ├── server.js
+    └── node_modules/
+
 tests/fixtures/
 └── sample.qtn                        # 종합 테스트 픽스처
 
@@ -63,10 +76,11 @@ DSL.md                                # QTN DSL 전체 문법 레퍼런스
 ### Language Server 단일 소스 (Single Source of Truth)
 
 - **LSP 기능 확장은 항상 `language-server/src/`를 수정**한다
-- `language-server/`는 VSCode와 JetBrains 양쪽에서 공유하는 단일 Language Server이다
+- `language-server/`는 VSCode, JetBrains, Visual Studio 모두에서 공유하는 단일 Language Server이다
 - VSCode: Webpack으로 번들링 → `vscode-extension/dist/server.js` (단일 파일)
 - JetBrains: `out/` + `node_modules/` 통째로 플러그인에 복사
-- 새로운 LSP 기능(diagnostics, formatting, rename 등)을 추가할 때는 `language-server/src/`에 구현하면 양쪽 IDE에 자동 반영된다
+- Visual Studio: `out/` + `node_modules/` 통째로 VSIX에 복사
+- 새로운 LSP 기능(diagnostics, formatting, rename 등)을 추가할 때는 `language-server/src/`에 구현하면 모든 IDE에 자동 반영된다
 
 ## 명령어
 
@@ -89,12 +103,19 @@ cd jetbrains-plugin && ./gradlew buildPlugin
 # JetBrains 플러그인 로컬 테스트
 cd jetbrains-plugin && ./gradlew runIde
 
+# Visual Studio 확장 빌드
+cd vs-extension && dotnet build -c Release
+
+# Visual Studio 확장 설치 (빌드 포함)
+sh build.sh vs-install
+
 # Language Server 빌드
 cd language-server && npm run build
 
-# 전체 빌드 (VSCode + JetBrains)
+# 전체 빌드 (VSCode + JetBrains + Visual Studio)
 sh build.sh vscode
 sh build.sh jetbrains
+sh build.sh vs
 sh build.sh all
 ```
 
@@ -191,11 +212,11 @@ list<T>, dictionary<K,V>, hash_set<T>, array<T>[N], bitset[N]
 | VSCode 확장 | TypeScript/Node.js 18+, `@vscode/vsce` |
 | VSCode 테스트 | `vscode-tmgrammar-test` (단위 + 스냅샷) |
 | JetBrains 플러그인 | Kotlin/JDK 17+, Gradle IntelliJ Platform Plugin 2.x |
-| 대상 IDE | VSCode 1.50+, JetBrains Rider 2022.3+ |
+| Visual Studio 확장 | C#/.NET 4.7.2, Microsoft.VSSDK.BuildTools, ILanguageClient |
+| 대상 IDE | VSCode 1.50+, JetBrains Rider 2022.3+, Visual Studio 2022 (17.0+) |
 
 ## 범위 외
 
-- Visual Studio 지원
 - 사용자 정의 타입의 의미론적 하이라이팅
 - 코드 포매팅/리팩토링
 - Sublime Text, Vim, Emacs 등 기타 에디터\

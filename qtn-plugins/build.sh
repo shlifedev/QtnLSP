@@ -24,6 +24,8 @@ Commands:
   vscode      Build VSCode extension (.vsix)
   vscode-install  Build + install VSCode extension
   jetbrains   Build JetBrains plugin (.zip)
+  vs          Build Visual Studio 2022 extension (.vsix)
+  vs-install  Build + install Visual Studio extension
   all         Sync + test + build all plugins
   clean       Remove build artifacts
 
@@ -35,6 +37,7 @@ cmd_sync() {
     log "Syncing grammar from shared/ to plugins..."
     cp "$SHARED_GRAMMAR" "$SCRIPT_DIR/vscode-extension/syntaxes/qtn.tmLanguage.json"
     cp "$SHARED_GRAMMAR" "$SCRIPT_DIR/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json"
+    cp "$SHARED_GRAMMAR" "$SCRIPT_DIR/vs-extension/Grammars/qtn.tmLanguage.json"
     log "Grammar synced."
 }
 
@@ -156,6 +159,66 @@ cmd_jetbrains() {
     fi
 }
 
+# Build Visual Studio 2022 extension (.vsix)
+cmd_vs() {
+    log "Building Visual Studio 2022 extension..."
+
+    # Build language server (shared)
+    cd "$SCRIPT_DIR/language-server"
+    if [ ! -d node_modules ]; then
+        log "Installing language server dependencies..."
+        npm install
+    fi
+    log "Compiling language server..."
+    npm run build
+
+    # Copy language server output to VS extension
+    log "Copying language server to VS extension..."
+    rm -rf "$SCRIPT_DIR/vs-extension/LanguageServer"
+    mkdir -p "$SCRIPT_DIR/vs-extension/LanguageServer"
+    cp -r "$SCRIPT_DIR/language-server/out/"* "$SCRIPT_DIR/vs-extension/LanguageServer/"
+    cp -r "$SCRIPT_DIR/language-server/node_modules" "$SCRIPT_DIR/vs-extension/LanguageServer/"
+
+    # Build VSIX
+    cd "$SCRIPT_DIR/vs-extension"
+
+    if ! command -v dotnet &>/dev/null; then
+        error ".NET SDK is required. Install .NET SDK 6.0+ and try again."
+        error "Download from https://dotnet.microsoft.com/download"
+        exit 1
+    fi
+
+    log "Building VSIX with dotnet..."
+    dotnet build -c Release
+
+    VSIX=$(find "$SCRIPT_DIR/vs-extension" -name "*.vsix" -type f 2>/dev/null | head -1)
+    if [ -n "$VSIX" ]; then
+        log "Visual Studio extension built: $VSIX"
+    else
+        log "Visual Studio extension built (VSIX in bin/Release output)."
+    fi
+}
+
+# Build + install Visual Studio extension
+cmd_vs_install() {
+    cmd_sync
+    cmd_vs
+
+    cd "$SCRIPT_DIR/vs-extension"
+    VSIX=$(find . -name "*.vsix" -type f 2>/dev/null | head -1)
+
+    if [ -z "$VSIX" ]; then
+        error "No .vsix file found for Visual Studio extension."
+        exit 1
+    fi
+
+    log "To install in Visual Studio 2022:"
+    log "  1. Open Visual Studio"
+    log "  2. Extensions → Manage Extensions"
+    log "  3. Drag and drop: $VSIX"
+    log "  Or double-click the .vsix file."
+}
+
 # Build + install VSCode extension
 cmd_vscode_install() {
     cmd_sync
@@ -180,6 +243,7 @@ cmd_all() {
     cmd_test
     cmd_vscode
     cmd_jetbrains
+    cmd_vs
     log "All builds complete."
 }
 
@@ -191,6 +255,9 @@ cmd_clean() {
     rm -rf "$SCRIPT_DIR/vscode-extension/out"
     rm -rf "$SCRIPT_DIR/language-server/out"
     rm -rf "$SCRIPT_DIR/jetbrains-plugin/build"
+    rm -rf "$SCRIPT_DIR/vs-extension/bin"
+    rm -rf "$SCRIPT_DIR/vs-extension/obj"
+    rm -rf "$SCRIPT_DIR/vs-extension/LanguageServer"
     log "Clean complete."
 }
 
@@ -206,6 +273,8 @@ case "$1" in
     vscode)     cmd_vscode ;;
     vscode-install) cmd_vscode_install ;;
     jetbrains)  cmd_jetbrains ;;
+    vs)         cmd_vs ;;
+    vs-install) cmd_vs_install ;;
     all)        cmd_all ;;
     clean)      cmd_clean ;;
     *)

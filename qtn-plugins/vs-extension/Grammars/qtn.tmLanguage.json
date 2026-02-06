@@ -1,0 +1,389 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "QTN",
+  "scopeName": "source.qtn",
+  "fileTypes": ["qtn"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#preprocessor" },
+    { "include": "#attributes" },
+    { "include": "#declarations" },
+    { "include": "#imports" },
+    { "include": "#types" },
+    { "include": "#strings" },
+    { "include": "#numbers" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.line.double-slash.qtn",
+          "begin": "(//)",
+          "end": "$",
+          "beginCaptures": {
+            "1": {
+              "name": "punctuation.definition.comment.qtn"
+            }
+          }
+        },
+        {
+          "name": "comment.block.qtn",
+          "begin": "/\\*",
+          "end": "\\*/",
+          "beginCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.qtn"
+            }
+          },
+          "endCaptures": {
+            "0": {
+              "name": "punctuation.definition.comment.qtn"
+            }
+          }
+        }
+      ]
+    },
+    "strings": {
+      "patterns": [
+        {
+          "name": "string.quoted.double.qtn",
+          "begin": "\"",
+          "end": "\"",
+          "patterns": [
+            {
+              "name": "constant.character.escape.qtn",
+              "match": "\\\\(\\\\|\\\"|n|t|r|0)"
+            }
+          ]
+        }
+      ]
+    },
+    "numbers": {
+      "patterns": [
+        {
+          "name": "constant.numeric.hex.qtn",
+          "match": "\\b0x[0-9a-fA-F]+\\b"
+        },
+        {
+          "name": "constant.numeric.float.qtn",
+          "match": "\\b[0-9]+\\.[0-9]+\\b"
+        },
+        {
+          "name": "constant.numeric.integer.qtn",
+          "match": "\\b[0-9]+\\b"
+        }
+      ]
+    },
+    "preprocessor": {
+      "patterns": [
+        {
+          "begin": "^\\s*(#(pragma|define))\\b",
+          "end": "$",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.control.directive.qtn"
+            }
+          },
+          "patterns": [
+            { "include": "#strings" },
+            { "include": "#numbers" }
+          ]
+        }
+      ]
+    },
+    "attributes": {
+      "patterns": [
+        {
+          "name": "meta.annotation.qtn",
+          "begin": "(\\[)(?=[A-Za-z_])",
+          "end": "(\\])",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.annotation.begin.qtn" }
+          },
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.annotation.end.qtn" }
+          },
+          "patterns": [
+            {
+              "name": "support.type.attribute.qtn",
+              "match": "(?<=\\[|,\\s*)[A-Za-z_]\\w*"
+            },
+            {
+              "begin": "(\\()",
+              "end": "(\\))",
+              "beginCaptures": {
+                "1": { "name": "punctuation.definition.annotation.begin.qtn" }
+              },
+              "endCaptures": {
+                "1": { "name": "punctuation.definition.annotation.end.qtn" }
+              },
+              "patterns": [
+                { "include": "#strings" },
+                { "include": "#numbers" },
+                {
+                  "name": "variable.parameter.attribute.qtn",
+                  "match": "[A-Za-z_]\\w*"
+                },
+                {
+                  "name": "punctuation.separator.comma.qtn",
+                  "match": ","
+                }
+              ]
+            },
+            {
+              "name": "punctuation.separator.comma.qtn",
+              "match": ","
+            }
+          ]
+        }
+      ]
+    },
+    "types-primitive": {
+      "patterns": [
+        {
+          "name": "storage.type.primitive.qtn",
+          "match": "\\b(bool|Boolean|byte|Byte|sbyte|SByte|short|Int16|ushort|UInt16|int|Int32|uint|UInt32|long|Int64|ulong|UInt64|void)\\b"
+        }
+      ]
+    },
+    "types-quantum": {
+      "patterns": [
+        {
+          "name": "support.type.qtn",
+          "match": "\\b(AssetGuid|AssetRef|CallbackFlags|CharacterController2D|CharacterController3D|ColorRGBA|ComponentPrototypeRef|ComponentTypeRef|DistanceJoint|DistanceJoint3D|EntityPrototypeRef|EntityRef|FP|FPBounds2|FPBounds3|FPMatrix|FPMatrix2x2|FPMatrix3x3|FPMatrix4x4|FPQuaternion|FPVector2|FPVector3|FrameMetaData|FrameTimer|HingeJoint|HingeJoint3D|Hit|Hit3D|InputButtons|InputDirection|InputDirectionMagnitude|InputPitchYaw|IntVector2|IntVector3|Joint|Joint3D|LayerMask|MapEntityId|MapEntityLink|NavMeshAvoidanceAgent|NavMeshAvoidanceObstacle|NavMeshPathfinder|NavMeshRegionMask|NavMeshSteeringAgent|NullableFP|NullableFPVector2|NullableFPVector3|NullableNonNegativeFP|PhysicsBody2D|PhysicsBody3D|PhysicsCallbacks2D|PhysicsCallbacks3D|PhysicsCollider2D|PhysicsCollider3D|PhysicsEngineState|PhysicsJoints2D|PhysicsJoints3D|PhysicsQueryRef|PhysicsSceneSettings|PlayerRef|Ptr|QBoolean|QString|QStringUtf8|QueryOptions|RNGSession|Shape2D|Shape3D|SpringJoint|SpringJoint3D|Transform2D|Transform2DVertical|Transform3D|View|qstring|qstringutf8)\\b"
+        }
+      ]
+    },
+    "types-generic": {
+      "patterns": [
+        {
+          "begin": "\\b(list|array|dictionary|hash_set|set|bitset|entity_ref|player_ref|asset_ref|entity_prototype_ref|component_prototype_ref)\\b\\s*(<)",
+          "end": "(>)",
+          "beginCaptures": {
+            "1": {
+              "name": "storage.type.generic.qtn"
+            },
+            "2": {
+              "name": "punctuation.definition.generic.begin.qtn"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.generic.end.qtn"
+            }
+          },
+          "patterns": [
+            { "include": "#types-generic" },
+            { "include": "#types-primitive" },
+            { "include": "#types-quantum" },
+            { "include": "#numbers" }
+          ]
+        },
+        {
+          "match": "\\b(bitset)\\s*(\\[)(\\d+)(\\])",
+          "captures": {
+            "1": {
+              "name": "storage.type.generic.qtn"
+            },
+            "2": {
+              "name": "punctuation.definition.array.begin.qtn"
+            },
+            "3": {
+              "name": "constant.numeric.integer.qtn"
+            },
+            "4": {
+              "name": "punctuation.definition.array.end.qtn"
+            }
+          }
+        }
+      ]
+    },
+    "types": {
+      "patterns": [
+        { "include": "#types-generic" },
+        { "include": "#types-primitive" },
+        { "include": "#types-quantum" },
+        {
+          "name": "storage.type.qtn",
+          "match": "\\b(button|Button)\\b"
+        }
+      ]
+    },
+    "declarations": {
+      "patterns": [
+        {
+          "match": "\\b(singleton|abstract)\\s+(component|struct|enum|flags|union|event)\\s+([A-Za-z_]\\w*)(?:\\s*(:)\\s*([A-Za-z_]\\w*))?",
+          "captures": {
+            "1": {
+              "name": "storage.modifier.qtn"
+            },
+            "2": {
+              "name": "keyword.declaration.qtn"
+            },
+            "3": {
+              "name": "entity.name.type.qtn"
+            },
+            "4": {
+              "name": "punctuation.separator.inheritance.qtn"
+            },
+            "5": {
+              "name": "entity.other.inherited-class.qtn"
+            }
+          }
+        },
+        {
+          "match": "\\b(component|struct|enum|flags|union|event)\\s+([A-Za-z_]\\w*)(?:\\s*(:)\\s*([A-Za-z_]\\w*))?",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.qtn"
+            },
+            "2": {
+              "name": "entity.name.type.qtn"
+            },
+            "3": {
+              "name": "punctuation.separator.inheritance.qtn"
+            },
+            "4": {
+              "name": "entity.other.inherited-class.qtn"
+            }
+          }
+        },
+        {
+          "match": "\\b(asset)\\s+([A-Za-z_]\\w*)",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.qtn"
+            },
+            "2": {
+              "name": "entity.name.type.qtn"
+            }
+          }
+        },
+        {
+          "name": "keyword.declaration.qtn",
+          "match": "\\b(input|global)\\b"
+        },
+        {
+          "begin": "\\b(signal)\\s+([A-Za-z_]\\w*)\\s*(\\()",
+          "end": "(\\))",
+          "beginCaptures": {
+            "1": {
+              "name": "keyword.declaration.qtn"
+            },
+            "2": {
+              "name": "entity.name.type.qtn"
+            },
+            "3": {
+              "name": "punctuation.definition.parameters.begin.qtn"
+            }
+          },
+          "endCaptures": {
+            "1": {
+              "name": "punctuation.definition.parameters.end.qtn"
+            }
+          },
+          "patterns": [
+            { "include": "#types" },
+            { "include": "#comments" }
+          ]
+        },
+        {
+          "match": "\\b(signal)\\s+([A-Za-z_]\\w*)",
+          "captures": {
+            "1": {
+              "name": "keyword.declaration.qtn"
+            },
+            "2": {
+              "name": "entity.name.type.qtn"
+            }
+          }
+        },
+        {
+          "name": "keyword.control.qtn",
+          "match": "\\b(synced|local|remote|nothashed|client|server)\\b"
+        }
+      ]
+    },
+    "imports": {
+      "patterns": [
+        {
+          "match": "\\b(import)\\s+(struct)\\s+([A-Za-z_][A-Za-z0-9_.]*)\\s*\\((\\d+)\\)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.qtn"
+            },
+            "2": {
+              "name": "keyword.declaration.qtn"
+            },
+            "3": {
+              "name": "entity.name.type.qtn"
+            },
+            "4": {
+              "name": "constant.numeric.integer.qtn"
+            }
+          }
+        },
+        {
+          "match": "\\b(import)\\s+(enum)\\s+([A-Za-z_][A-Za-z0-9_.]*)\\s*\\(([A-Za-z_]\\w*)\\)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.qtn"
+            },
+            "2": {
+              "name": "keyword.declaration.qtn"
+            },
+            "3": {
+              "name": "entity.name.type.qtn"
+            },
+            "4": {
+              "name": "storage.type.primitive.qtn"
+            }
+          }
+        },
+        {
+          "match": "\\b(import)\\s+(singleton)\\s+([A-Za-z_]\\w*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.qtn"
+            },
+            "2": {
+              "name": "storage.modifier.qtn"
+            },
+            "3": {
+              "name": "entity.name.type.qtn"
+            }
+          }
+        },
+        {
+          "match": "\\b(import)\\s+(enum|struct)\\s+([A-Za-z_]\\w*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.qtn"
+            },
+            "2": {
+              "name": "keyword.declaration.qtn"
+            },
+            "3": {
+              "name": "entity.name.type.qtn"
+            }
+          }
+        },
+        {
+          "match": "\\b(import)\\s+([A-Za-z_][A-Za-z0-9_.]*)",
+          "captures": {
+            "1": {
+              "name": "keyword.control.qtn"
+            },
+            "2": {
+              "name": "entity.name.type.qtn"
+            }
+          }
+        },
+        {
+          "name": "keyword.control.qtn",
+          "match": "\\b(using)\\b"
+        }
+      ]
+    }
+  }
+}
