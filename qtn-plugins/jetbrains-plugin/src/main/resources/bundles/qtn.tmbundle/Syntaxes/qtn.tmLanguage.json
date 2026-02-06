@@ -106,7 +106,13 @@
           "patterns": [
             {
               "name": "support.type.attribute.qtn",
-              "match": "(?<=\\[|,\\s*)[A-Za-z_]\\w*"
+              "match": "(?<=\\[)[A-Za-z_]\\w*"
+            },
+            {
+              "match": ",\\s*([A-Za-z_]\\w*)",
+              "captures": {
+                "1": { "name": "support.type.attribute.qtn" }
+              }
             },
             {
               "begin": "(\\()",

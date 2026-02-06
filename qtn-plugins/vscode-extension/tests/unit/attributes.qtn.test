@@ -15,3 +15,8 @@
   [AllocateOnComponentAdded]
 //^ meta.annotation.qtn
 // ^^^^^^^^^^^^^^^^^^^^^^^^ support.type.attribute.qtn
+
+  [AllocateOnComponentAdded, FreeOnComponentRemoved]
+//^ meta.annotation.qtn
+// ^^^^^^^^^^^^^^^^^^^^^^^^ support.type.attribute.qtn
+//                           ^^^^^^^^^^^^^^^^^^^^^^ support.type.attribute.qtn

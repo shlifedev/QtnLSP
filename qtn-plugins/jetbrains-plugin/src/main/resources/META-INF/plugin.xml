@@ -23,5 +23,7 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <textmate.bundleProvider implementation="com.qtn.plugin.QtnTextMateBundleProvider"/>
+        <additionalTextAttributes scheme="Darcula" file="colorSchemes/QtnDarcula.xml"/>
+        <additionalTextAttributes scheme="Default" file="colorSchemes/QtnDefault.xml"/>
     </extensions>
 </idea-plugin>
