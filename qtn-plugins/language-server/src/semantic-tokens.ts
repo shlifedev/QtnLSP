@@ -18,6 +18,7 @@ import {
 } from './ast.js';
 import { ProjectModel } from './project-model.js';
 import { SymbolInfo } from './symbol-table.js';
+import { BUILTIN_TYPE_MAP } from './builtins.js';
 
 // Token types legend — order matters (index = token type ID)
 export const tokenTypes = [
@@ -135,7 +136,20 @@ export function handleSemanticTokensFull(
     for (const typeRef of typeRefs) {
       // Look up the base type name in the symbol table (strip dotted prefix for lookup)
       const symbol = symbolTable.lookup(typeRef.name);
-      if (!symbol) continue;
+      if (!symbol) {
+        // Built-in type fallback: emit token for primitives/quantum/collection types
+        // so that LSP semantic tokens don't override TextMate highlighting in JetBrains
+        if (BUILTIN_TYPE_MAP.has(typeRef.name)) {
+          tokens.push({
+            line: typeRef.nameRange.start.line,
+            char: typeRef.nameRange.start.character,
+            length: typeRef.name.length,
+            tokenType: 0, // 'type'
+            tokenModifiers: 0,
+          });
+        }
+        continue;
+      }
 
       const tokenType = symbolKindToTokenType(symbol.kind);
 
