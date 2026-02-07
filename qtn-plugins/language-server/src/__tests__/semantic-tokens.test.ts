@@ -80,7 +80,7 @@ component Player {
     expect(enumTokens.some(t => t.length === 'CharacterState'.length)).toBe(true);
   });
 
-  it('should emit token for builtin type reference', () => {
+  it('should not emit token for builtin type reference', () => {
     const source = `
 component Player {
   FP MoveSpeed;
@@ -89,10 +89,8 @@ component Player {
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    // FP is a builtin quantum type → SymbolKind.Class → tokenType 'class'
-    expect(tokens.length).toBeGreaterThanOrEqual(1);
-    const fpTokens = tokens.filter(t => t.length === 'FP'.length);
-    expect(fpTokens.length).toBeGreaterThanOrEqual(1);
+    // FP is a builtin type → no semantic token (TextMate handles it)
+    expect(tokens).toHaveLength(0);
   });
 
   it('should emit token for generic type argument', () => {
@@ -105,15 +103,15 @@ component Player {
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    // Should have tokens for both 'list' (builtin collection) and 'CharacterState'
-    expect(tokens.length).toBeGreaterThanOrEqual(2);
+    // 'list' is builtin → no token; CharacterState is user-defined → token emitted
+    expect(tokens.length).toBeGreaterThanOrEqual(1);
 
     // CharacterState should be tokenized
     const csTokens = tokens.filter(t => t.length === 'CharacterState'.length);
     expect(csTokens.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('should emit token for signal parameter types', () => {
+  it('should not emit tokens for signal builtin parameter types', () => {
     const source = `
 signal OnDamage(FP damage, EntityRef target);
 `;
@@ -121,8 +119,8 @@ signal OnDamage(FP damage, EntityRef target);
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    // Should have tokens for FP and EntityRef
-    expect(tokens.length).toBeGreaterThanOrEqual(2);
+    // FP and EntityRef are builtins → no semantic tokens (TextMate handles them)
+    expect(tokens).toHaveLength(0);
   });
 
   it('should not emit token for unknown types', () => {
@@ -148,7 +146,7 @@ component Player {
     expect(result.data).toHaveLength(0);
   });
 
-  it('should emit tokens for struct field types', () => {
+  it('should not emit tokens for struct builtin field types', () => {
     const source = `
 struct Stats {
   FP Health;
@@ -158,10 +156,11 @@ struct Stats {
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    expect(tokens.length).toBeGreaterThanOrEqual(2);
+    // FP and FPVector3 are builtins → no semantic tokens
+    expect(tokens).toHaveLength(0);
   });
 
-  it('should emit tokens for input block field types', () => {
+  it('should not emit tokens for input block builtin field types', () => {
     const source = `
 input {
   FPVector2 Move;
@@ -170,10 +169,11 @@ input {
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    expect(tokens.length).toBeGreaterThanOrEqual(1);
+    // FPVector2 is builtin → no semantic token
+    expect(tokens).toHaveLength(0);
   });
 
-  it('should emit tokens for global block field types', () => {
+  it('should not emit tokens for global block builtin field types', () => {
     const source = `
 global {
   FP GameTimer;
@@ -182,10 +182,11 @@ global {
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    expect(tokens.length).toBeGreaterThanOrEqual(1);
+    // FP is builtin → no semantic token
+    expect(tokens).toHaveLength(0);
   });
 
-  it('should emit tokens for event field types', () => {
+  it('should not emit tokens for event builtin field types', () => {
     const source = `
 event MyEvent {
   FP Value;
@@ -195,20 +196,23 @@ event MyEvent {
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    expect(tokens.length).toBeGreaterThanOrEqual(2);
+    // FP and EntityRef are builtins → no semantic tokens
+    expect(tokens).toHaveLength(0);
   });
 
   it('should handle nameRange correctly for multiline token positions', () => {
     const source = `
+struct StateA { }
+struct StateB { }
 component Player {
-  FP Health;
-  FPVector3 Position;
+  StateA Health;
+  StateB Position;
 }`;
     const result = getTokens(source);
     expect(result).not.toBeNull();
 
     const tokens = decodeTokens(result!.data);
-    // Tokens should be on different lines
+    // User-defined types StateA and StateB should be on different lines
     const lines = new Set(tokens.map(t => t.line));
     expect(lines.size).toBeGreaterThanOrEqual(2);
   });

@@ -1,0 +1,80 @@
+services:
+  builder:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/workspace
+      - npm-cache:/root/.npm
+      - gradle-cache:/root/.gradle
+
+  sync:
+    extends:
+      service: builder
+    command: >
+      bash -c "
+        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vscode-extension/syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vs-extension/Grammars/qtn.tmLanguage.json
+      "
+
+  test:
+    extends:
+      service: builder
+    command: >
+      bash -c "
+        cd /workspace/vscode-extension && npm ci --prefer-offline && npm test
+      "
+
+  vscode:
+    extends:
+      service: builder
+    command: >
+      bash -c "
+        cd /workspace && npm ci --prefer-offline &&
+        cd /workspace/language-server && npm ci --prefer-offline &&
+        cd /workspace/vscode-extension && npm ci --prefer-offline &&
+        npx vsce package --no-dependencies &&
+        mkdir -p /workspace/dist/vscode &&
+        cp /workspace/vscode-extension/*.vsix /workspace/dist/vscode/
+      "
+
+  jetbrains:
+    extends:
+      service: builder
+    command: >
+      bash -c "
+        cd /workspace/language-server && npm ci --prefer-offline && npm run build &&
+        cd /workspace/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
+        mkdir -p /workspace/dist/jetbrains &&
+        cp /workspace/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/
+      "
+
+  all:
+    extends:
+      service: builder
+    command: >
+      bash -c "
+        echo '=== Sync grammar ===' &&
+        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vscode-extension/syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vs-extension/Grammars/qtn.tmLanguage.json &&
+        echo '=== Test ===' &&
+        cd /workspace/vscode-extension && npm ci --prefer-offline && npm test &&
+        echo '=== Build VSCode ===' &&
+        cd /workspace && npm ci --prefer-offline &&
+        cd /workspace/language-server && npm ci --prefer-offline &&
+        cd /workspace/vscode-extension && npx vsce package --no-dependencies &&
+        echo '=== Build JetBrains ===' &&
+        cd /workspace/language-server && npm run build &&
+        cd /workspace/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
+        echo '=== Copy artifacts to dist ===' &&
+        mkdir -p /workspace/dist/vscode /workspace/dist/jetbrains &&
+        cp /workspace/vscode-extension/*.vsix /workspace/dist/vscode/ &&
+        cp /workspace/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/ &&
+        echo '=== All builds complete ==='
+      "
+
+volumes:
+  npm-cache:
+  gradle-cache:

@@ -85,38 +85,13 @@ DSL.md                                # QTN DSL 전체 문법 레퍼런스
 ## 명령어
 
 ```bash
-# VSCode 확장 테스트
-cd vscode-extension && npm test
-
-# 스냅샷 테스트
-cd vscode-extension && npm run test:snap
-
-# 문법 파일 동기화
-cd vscode-extension && npm run sync-grammar
-
-# VSCode 확장 패키징
-cd vscode-extension && vsce package
-
-# JetBrains 플러그인 빌드
-cd jetbrains-plugin && ./gradlew buildPlugin
-
-# JetBrains 플러그인 로컬 테스트
-cd jetbrains-plugin && ./gradlew runIde
-
-# Visual Studio 확장 빌드
-cd vs-extension && dotnet build -c Release
-
-# Visual Studio 확장 설치 (빌드 포함)
-sh build.sh vs-install
-
-# Language Server 빌드
-cd language-server && npm run build
-
-# 전체 빌드 (VSCode + JetBrains + Visual Studio)
-sh build.sh vscode
-sh build.sh jetbrains
-sh build.sh vs
-sh build.sh all
+# Docker로 빌드 (로컬 툴체인 불필요, Docker만 있으면 됨)
+sh build.sh sync          # 문법 파일 동기화
+sh build.sh test          # 테스트 실행
+sh build.sh vscode        # VSCode 확장 빌드
+sh build.sh jetbrains     # JetBrains 플러그인 빌드
+sh build.sh all           # sync + test + vscode + jetbrains
+sh build.sh clean         # 빌드 산출물 삭제
 ```
 
 ## TextMate 스코프 매핑
