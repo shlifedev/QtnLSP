@@ -41,6 +41,10 @@ sh build.sh vscode     # VSCode extension only
 sh build.sh jetbrains  # JetBrains plugin only
 ```
 
+## Screenshot
+
+<img src="sample.png" width="600" alt="QtnLSP screenshot">
+
 ## License
 
 MIT

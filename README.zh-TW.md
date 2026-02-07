@@ -41,6 +41,10 @@ sh build.sh vscode     # 僅 VSCode 擴充功能
 sh build.sh jetbrains  # 僅 JetBrains 外掛
 ```
 
+## 截圖
+
+<img src="sample.png" width="600" alt="QtnLSP 截圖">
+
 ## 授權
 
 MIT
