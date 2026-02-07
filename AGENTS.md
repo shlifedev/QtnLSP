@@ -1,6 +1,6 @@
 <!-- Generated: 2026-02-06 | Updated: 2026-02-06 -->
 
-# qtn-plugins
+# QtnLSP
 
 ## Purpose
 Photon Quantum3 DSL(`.qtn`) 파일을 위한 IDE 플러그인 모노레포. TextMate Grammar 기반의 정적 신텍스 하이라이팅과 LSP 기반 IntelliSense(자동 완성, 정의 이동, hover, 심볼)를 VSCode 확장과 JetBrains Rider 플러그인으로 제공한다.

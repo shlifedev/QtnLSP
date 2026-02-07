@@ -60,7 +60,6 @@ vs-extension/
 tests/fixtures/
 └── sample.qtn                        # 종합 테스트 픽스처
 
-specs/                                # 기능 명세, 계획, 태스크
 DSL.md                                # QTN DSL 전체 문법 레퍼런스
 ```
 

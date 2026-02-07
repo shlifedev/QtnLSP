@@ -13,10 +13,18 @@ out/
 *.iml
 .intellijPlatform/
 
+# VS extension
+vs-extension/bin/
+vs-extension/obj/
+vs-extension/LanguageServer/
+
 # OS
 .DS_Store
 Thumbs.db
 
+# Logs
+*.log
+npm-debug.log*
 
 # Worktrees
 .worktrees/

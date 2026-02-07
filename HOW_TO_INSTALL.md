@@ -21,7 +21,7 @@
 빌드와 설치를 동시에 수행합니다:
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh vscode-install
 ```
 
@@ -95,7 +95,7 @@ code --uninstall-extension qtn-tools.qtn-syntax-highlighting
 .zip 파일이 없으면 직접 빌드할 수 있습니다:
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh jetbrains
 ```
 
@@ -151,7 +151,7 @@ cd /path/to/qtn-plugins
 ### 방법 2: 빌드 후 설치
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh vs
 ```
 
@@ -202,7 +202,7 @@ export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
 ### VSCode 확장 빌드
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh vscode
 ```
 
@@ -211,7 +211,7 @@ cd /path/to/qtn-plugins
 ### JetBrains 플러그인 빌드
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh jetbrains
 ```
 
@@ -220,7 +220,7 @@ cd /path/to/qtn-plugins
 ### Visual Studio 확장 빌드
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh vs
 ```
 
@@ -229,7 +229,7 @@ cd /path/to/qtn-plugins
 VSCode, JetBrains, Visual Studio 플러그인을 모두 빌드합니다:
 
 ```bash
-cd /path/to/qtn-plugins
+cd /path/to/QtnLSP
 ./build.sh all
 ```
 
@@ -324,9 +324,9 @@ build.sh가 시스템 Java를 감지하면 자동으로 JDK 17로 전환합니�
 
 ### 추가 리소스
 
-- QTN DSL 문법 레퍼런스: [DSL.md](../DSL.md)
-- 빌드 스크립트 옵션: [build.sh](./build.sh)
-- 프로젝트 구조 및 개발 가이드: [CLAUDE.md](../CLAUDE.md)
+- QTN DSL 문법 레퍼런스: [DSL.md](DSL.md)
+- 빌드 스크립트 옵션: [build.sh](build.sh)
+- 프로젝트 구조 및 개발 가이드: [CLAUDE.md](CLAUDE.md)
 
 ---
 
