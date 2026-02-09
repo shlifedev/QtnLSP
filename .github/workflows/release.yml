@@ -3,10 +3,52 @@ name: Release
 on:
   push:
     branches: [main]
-    tags: ["v*"]
 
 jobs:
+  version:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      new_version: ${{ steps.bump.outputs.new_version }}
+      should_release: ${{ steps.bump.outputs.should_release }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: bump
+        run: |
+          # 최신 v* 태그 찾기
+          LATEST_TAG=$(git tag --sort=-version:refname | grep '^v' | head -1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            NEW_VERSION="v1.0.0"
+          else
+            # patch 버전 추출 및 증가
+            VERSION="${LATEST_TAG#v}"
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+            PATCH=$(echo "$VERSION" | cut -d. -f3)
+            PATCH=$((PATCH + 1))
+            NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+          fi
+
+          # 이미 같은 태그가 있으면 skip
+          if git rev-parse "$NEW_VERSION" >/dev/null 2>&1; then
+            echo "should_release=false" >> "$GITHUB_OUTPUT"
+            echo "Tag $NEW_VERSION already exists. Skipping release."
+          else
+            echo "should_release=true" >> "$GITHUB_OUTPUT"
+            echo "Will create release for $NEW_VERSION"
+          fi
+
+          echo "new_version=$NEW_VERSION" >> "$GITHUB_OUTPUT"
+
   build-vscode:
+    needs: version
+    if: needs.version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,6 +78,14 @@ jobs:
       - name: Sync grammar
         run: cp shared/syntaxes/qtn.tmLanguage.json vscode-extension/syntaxes/qtn.tmLanguage.json
 
+      - name: Language Server tests
+        working-directory: language-server
+        run: npm test
+
+      - name: Grammar tests
+        working-directory: vscode-extension
+        run: npm test
+
       - name: Package VSIX
         working-directory: vscode-extension
         run: npx vsce package --no-dependencies
@@ -51,6 +101,8 @@ jobs:
           path: release/QtnLSP-vscode.vsix
 
   build-jetbrains:
+    needs: version
+    if: needs.version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -93,6 +145,8 @@ jobs:
           path: release/QtnLSP-jetbrains.zip
 
   build-vs:
+    needs: version
+    if: needs.version.outputs.should_release == 'true'
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -143,7 +197,8 @@ jobs:
           path: release/QtnLSP-vs.vsix
 
   release:
-    needs: [build-vscode, build-jetbrains, build-vs]
+    needs: [version, build-vscode, build-jetbrains, build-vs]
+    if: needs.version.outputs.should_release == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -160,61 +215,48 @@ jobs:
       - name: Generate changelog
         id: changelog
         env:
-          REF_NAME: ${{ github.ref_name }}
+          NEW_VERSION: ${{ needs.version.outputs.new_version }}
         run: |
-          if [[ "$REF_NAME" == v* ]]; then
-            PREV_TAG=$(git tag --sort=-version:refname | grep '^v' | sed -n '2p')
-            if [ -n "$PREV_TAG" ]; then
-              RANGE="${PREV_TAG}..HEAD"
-            else
-              RANGE="HEAD"
-            fi
+          PREV_TAG=$(git tag --sort=-version:refname | grep '^v' | head -1)
+          if [ -n "$PREV_TAG" ]; then
+            RANGE="${PREV_TAG}..HEAD"
           else
-            PREV_TAG=$(git tag --sort=-version:refname | grep '^v' | head -1)
-            if [ -n "$PREV_TAG" ]; then
-              RANGE="${PREV_TAG}..HEAD"
-            else
-              RANGE="HEAD~20..HEAD"
-            fi
+            RANGE="HEAD"
           fi
 
           {
             echo 'BODY<<CHANGELOG_EOF'
-            echo '## Changelog'
+            echo "## What's Changed"
             echo ''
             git log "$RANGE" --pretty=format:'- %s (%h)' --no-merges 2>/dev/null || echo '- Initial release'
             echo ''
+            echo ''
+            echo '## Downloads'
+            echo ''
+            echo '| IDE | File |'
+            echo '|-----|------|'
+            echo "| VSCode | \`QtnLSP-vscode.vsix\` |"
+            echo "| JetBrains Rider | \`QtnLSP-jetbrains.zip\` |"
+            echo "| Visual Studio 2022 | \`QtnLSP-vs.vsix\` |"
             echo 'CHANGELOG_EOF'
           } >> "$GITHUB_OUTPUT"
 
       - name: List artifacts
         run: find artifacts -type f
 
-      - name: Create GitHub Release
+      - name: Create tag and release
         env:
           GH_TOKEN: ${{ github.token }}
-          REF_NAME: ${{ github.ref_name }}
-          SHA: ${{ github.sha }}
+          NEW_VERSION: ${{ needs.version.outputs.new_version }}
           BODY: ${{ steps.changelog.outputs.BODY }}
         run: |
-          if [[ "$REF_NAME" == v* ]]; then
-            gh release create "$REF_NAME" \
-              --repo "$GITHUB_REPOSITORY" \
-              --title "$REF_NAME" \
-              --notes "$BODY" \
-              artifacts/QtnLSP-vscode.vsix \
-              artifacts/QtnLSP-jetbrains.zip \
-              artifacts/QtnLSP-vs.vsix
-          else
-            gh release delete latest --repo "$GITHUB_REPOSITORY" --yes 2>/dev/null || true
-            git push --delete origin latest 2>/dev/null || true
-            gh release create latest \
-              --repo "$GITHUB_REPOSITORY" \
-              --title "Latest (${SHA::7})" \
-              --target "$SHA" \
-              --prerelease \
-              --notes "$BODY" \
-              artifacts/QtnLSP-vscode.vsix \
-              artifacts/QtnLSP-jetbrains.zip \
-              artifacts/QtnLSP-vs.vsix
-          fi
+          git tag "$NEW_VERSION"
+          git push origin "$NEW_VERSION"
+
+          gh release create "$NEW_VERSION" \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "$NEW_VERSION" \
+            --notes "$BODY" \
+            artifacts/QtnLSP-vscode.vsix \
+            artifacts/QtnLSP-jetbrains.zip \
+            artifacts/QtnLSP-vs.vsix
