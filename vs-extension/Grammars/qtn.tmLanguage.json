@@ -201,6 +201,10 @@
               "name": "punctuation.definition.array.end.qtn"
             }
           }
+        },
+        {
+          "name": "support.type.generic.qtn",
+          "match": "\\b(list|array|dictionary|hash_set|set|bitset|entity_ref|player_ref|asset_ref|entity_prototype_ref|component_prototype_ref)\\b"
         }
       ]
     },

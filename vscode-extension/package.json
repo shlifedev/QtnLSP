@@ -1,9 +1,9 @@
 {
   "name": "qtn-syntax-highlighting",
-  "displayName": "Quantum DSL (QTN) Syntax Highlighting",
-  "description": "Syntax highlighting for Photon Quantum3 DSL (.qtn) files",
+  "displayName": "Quantum DSL (QTN) Support",
+  "description": "Syntax highlighting and Language Server (autocomplete, go-to-definition, hover) for Photon Quantum3 DSL (.qtn) files",
   "version": "1.0.0",
-  "publisher": "qtn-tools",
+  "publisher": "shlifedev",
   "main": "./dist/extension.js",
   "activationEvents": [
     "onLanguage:qtn"
