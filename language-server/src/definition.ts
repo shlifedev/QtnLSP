@@ -39,7 +39,7 @@ export function handleDefinition(
 
 /**
  * Get the word at a given position in the document.
- * A word consists of alphanumeric characters and underscores [a-zA-Z0-9_].
+ * A word consists of alphanumeric characters, underscores, and @ [a-zA-Z0-9_@].
  *
  * @param document - The text document
  * @param position - The cursor position
@@ -72,11 +72,11 @@ function getWordAtPosition(document: TextDocument, position: Position): string |
 
 /**
  * Check if a character is a valid word character.
- * Word characters: [a-zA-Z0-9_]
+ * Word characters: [a-zA-Z0-9_@]
  *
  * @param ch - Character to check
  * @returns true if ch is a word character
  */
 function isWordChar(ch: string): boolean {
-  return /[a-zA-Z0-9_]/.test(ch);
+  return /[a-zA-Z0-9_@]/.test(ch);
 }
