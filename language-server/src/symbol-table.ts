@@ -14,13 +14,14 @@ import {
   EnumMemberDefinition,
   NodeKind,
   SourceRange,
-} from './ast';
+} from './ast.js';
 import {
   ALL_BUILTIN_TYPES,
   BuiltinTypeInfo,
   getDescription,
-} from './builtins';
-import { getLocale } from './locale';
+} from './builtins.js';
+import { getLocale } from './locale.js';
+import { buildEventDetail, buildSignalDetail, buildTypeDefinitionDetail, formatTypeReference } from './symbol-format.js';
 
 // Symbol information for types, constants, and definitions
 export interface SymbolInfo {
@@ -171,14 +172,7 @@ export class SymbolTable {
       }
     }
 
-    // Create detail string
-    let detail: string = def.kind;
-    if (def.modifiers && def.modifiers.length > 0) {
-      detail = `${def.modifiers.join(' ')} ${detail}`;
-    }
-    if (def.baseType) {
-      detail += ` : ${def.baseType}`;
-    }
+    const detail = buildTypeDefinitionDetail(def);
 
     const symbol: SymbolInfo = {
       name: def.name,
@@ -202,13 +196,7 @@ export class SymbolTable {
       }
     }
 
-    let detail: string = 'event';
-    if (def.modifiers && def.modifiers.length > 0) {
-      detail = `${def.modifiers.join(' ')} ${detail}`;
-    }
-    if (def.parentName) {
-      detail += ` : ${def.parentName}`;
-    }
+    const detail = buildEventDetail(def);
 
     const symbol: SymbolInfo = {
       name: def.name,
@@ -224,13 +212,7 @@ export class SymbolTable {
 
   // Process signal definition
   private processSignalDefinition(def: SignalDefinition, fileUri: string): void {
-    // Build parameter types string for detail
-    const paramTypes = def.parameters.map(p => {
-      const pointerPrefix = p.typeRef.isPointer ? '*' : '';
-      return `${pointerPrefix}${p.typeRef.name}`;
-    }).join(', ');
-
-    const detail = `signal(${paramTypes})`;
+    const detail = buildSignalDetail(def);
 
     const symbol: SymbolInfo = {
       name: def.name,
@@ -304,7 +286,7 @@ export class SymbolTable {
 
   // Create field symbol
   private createFieldSymbol(field: FieldDefinition, fileUri: string): SymbolInfo {
-    const typeStr = this.formatTypeReference(field.typeRef);
+    const typeStr = formatTypeReference(field.typeRef);
     return {
       name: field.name,
       kind: SymbolKind.Field,
@@ -326,26 +308,6 @@ export class SymbolTable {
       children: [],
       source: 'user',
     };
-  }
-
-  // Format type reference as string
-  private formatTypeReference(typeRef: any): string {
-    let result = typeRef.name;
-
-    if (typeRef.genericArgs && typeRef.genericArgs.length > 0) {
-      const args = typeRef.genericArgs.map((arg: any) => this.formatTypeReference(arg)).join(', ');
-      result += `<${args}>`;
-    }
-
-    if (typeRef.arraySize !== undefined) {
-      result += `[${typeRef.arraySize}]`;
-    }
-
-    if (typeRef.isPointer) {
-      result = `*${result}`;
-    }
-
-    return result;
   }
 
   // Pre-populate symbol table with built-in types
