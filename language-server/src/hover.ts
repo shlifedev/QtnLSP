@@ -1,12 +1,13 @@
 // Hover handler for QTN Language Server
 // Provides contextual documentation and type info when hovering over symbols
 
-import { HoverParams, Hover, MarkupKind, Position } from 'vscode-languageserver';
+import { HoverParams, Hover, MarkupKind } from 'vscode-languageserver';
 import { TextDocuments } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ProjectModel } from './project-model.js';
 import { BUILTIN_TYPE_MAP, KEYWORD_MAP, ATTRIBUTE_MAP, BuiltinTypeInfo, KeywordInfo, AttributeInfo, getDescription } from './builtins.js';
 import { getLocale } from './locale.js';
+import { getIdentifierAtPosition } from './text-navigation.js';
 
 /**
  * Handle "Hover" request.
@@ -35,7 +36,7 @@ export function handleHover(
   }
 
   // Extract the word at the cursor position
-  const word = getWordAtPosition(document, params.position);
+  const word = getIdentifierAtPosition(document, params.position, { allowHashPrefix: true });
   if (!word) {
     return null;
   }
@@ -205,54 +206,4 @@ function createUserDefinedHover(info: import('./symbol-table.js').SymbolInfo): H
       value: markdown
     }
   };
-}
-
-/**
- * Get the word at a given position in the document.
- * A word consists of alphanumeric characters and underscores [a-zA-Z0-9_].
- * Also handles '#' prefix for preprocessor keywords (#pragma, #define).
- *
- * @param document - The text document
- * @param position - The cursor position
- * @returns The word at the position, or null if no word found
- */
-function getWordAtPosition(document: TextDocument, position: Position): string | null {
-  const text = document.getText();
-  const offset = document.offsetAt(position);
-
-  // Find word start (scan backwards from cursor)
-  let start = offset;
-  while (start > 0 && isWordChar(text[start - 1])) {
-    start--;
-  }
-
-  // Check for '#' prefix (preprocessor directives)
-  if (start > 0 && text[start - 1] === '#') {
-    start--;
-  }
-
-  // Find word end (scan forwards from cursor)
-  let end = offset;
-  while (end < text.length && isWordChar(text[end])) {
-    end++;
-  }
-
-  // No word found at cursor
-  if (start === end) {
-    return null;
-  }
-
-  // Extract and return the word
-  return text.substring(start, end);
-}
-
-/**
- * Check if a character is a valid word character.
- * Word characters: [a-zA-Z0-9_]
- *
- * @param ch - Character to check
- * @returns true if ch is a word character
- */
-function isWordChar(ch: string): boolean {
-  return /[a-zA-Z0-9_]/.test(ch);
 }

@@ -3,6 +3,7 @@ import {
   CompletionItem,
   CompletionItemKind,
   CompletionParams,
+  SymbolKind,
   TextDocuments,
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -431,20 +432,20 @@ function getGenericArgCompletions(projectModel: ProjectModel): CompletionItem[] 
 /**
  * Convert LSP SymbolKind to CompletionItemKind
  */
-function symbolKindToCompletionItemKind(symbolKind: number): CompletionItemKind {
+function symbolKindToCompletionItemKind(symbolKind: SymbolKind): CompletionItemKind {
   // Map common SymbolKind values to CompletionItemKind
   switch (symbolKind) {
-    case 5: // SymbolKind.Class
+    case SymbolKind.Class:
       return CompletionItemKind.Class;
-    case 23: // SymbolKind.Struct
+    case SymbolKind.Struct:
       return CompletionItemKind.Struct;
-    case 10: // SymbolKind.Enum
+    case SymbolKind.Enum:
       return CompletionItemKind.Enum;
-    case 24: // SymbolKind.Event
+    case SymbolKind.Event:
       return CompletionItemKind.Event;
-    case 12: // SymbolKind.Function
+    case SymbolKind.Function:
       return CompletionItemKind.Function;
-    case 11: // SymbolKind.Interface
+    case SymbolKind.Interface:
       return CompletionItemKind.Interface;
     default:
       return CompletionItemKind.Class;
