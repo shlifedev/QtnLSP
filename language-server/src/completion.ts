@@ -3,6 +3,7 @@ import {
   CompletionItem,
   CompletionItemKind,
   CompletionParams,
+  SymbolKind,
   TextDocuments,
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
@@ -33,6 +34,13 @@ type CompletionContext =
   | 'enumBase'
   | 'generic';
 
+type Locale = 'ko' | 'en';
+
+const topLevelCompletionCache = new Map<Locale, CompletionItem[]>();
+const attributeCompletionCache = new Map<Locale, CompletionItem[]>();
+const importCompletionCache = new Map<Locale, CompletionItem[]>();
+const enumBaseCompletionCache = new Map<Locale, CompletionItem[]>();
+
 /**
  * Main completion handler - analyzes cursor position and provides context-appropriate completions
  */
@@ -50,7 +58,7 @@ export function handleCompletion(
   const offset = document.offsetAt(params.position);
 
   // Detect completion context
-  const context = detectContext(text, offset, params.position.line);
+  const context = detectContext(text, offset);
 
   // Generate completions based on context
   switch (context) {
@@ -76,18 +84,16 @@ export function handleCompletion(
 /**
  * Detect the completion context based on the cursor position
  */
-function detectContext(
-  text: string,
-  offset: number,
-  cursorLine: number
-): CompletionContext {
+function detectContext(text: string, offset: number): CompletionContext {
   // Extract text up to cursor
   const textUpToCursor = text.substring(0, offset);
 
-  // Get the current line up to cursor
-  const lines = textUpToCursor.split(/\r?\n/);
-  const currentLine = lines[cursorLine] || '';
-  const lineUpToCursor = currentLine;
+  // Get current line up to cursor without splitting entire prefix
+  const lineStart = Math.max(
+    textUpToCursor.lastIndexOf('\n'),
+    textUpToCursor.lastIndexOf('\r')
+  );
+  const lineUpToCursor = lineStart === -1 ? textUpToCursor : textUpToCursor.slice(lineStart + 1);
 
   // Check if inside an attribute (unmatched '[')
   if (hasUnmatchedOpenBracket(textUpToCursor)) {
@@ -293,9 +299,14 @@ function isFieldTypePosition(text: string, offset: number): boolean {
  * Get top-level keyword completions
  */
 function getTopLevelCompletions(): CompletionItem[] {
-  const locale = getLocale();
+  const locale = getCurrentLocale();
+  const cached = topLevelCompletionCache.get(locale);
+  if (cached) {
+    return cached;
+  }
+
   const fallback = locale === 'ko' ? 'QTN 키워드' : 'QTN keyword';
-  return TOP_LEVEL_KEYWORDS.map((keyword) => {
+  const completions = TOP_LEVEL_KEYWORDS.map((keyword) => {
     const info = KEYWORD_MAP.get(keyword);
     return {
       label: keyword,
@@ -303,6 +314,9 @@ function getTopLevelCompletions(): CompletionItem[] {
       detail: info ? getDescription(info, locale) : fallback,
     };
   });
+
+  topLevelCompletionCache.set(locale, completions);
+  return completions;
 }
 
 /**
@@ -311,7 +325,7 @@ function getTopLevelCompletions(): CompletionItem[] {
 function getFieldTypeCompletions(projectModel: ProjectModel): CompletionItem[] {
   const items: CompletionItem[] = [];
 
-  const locale = getLocale();
+  const locale = getCurrentLocale();
 
   // Field modifier keywords (synced, local, remote, nothashed, ...)
   for (const keyword of FIELD_MODIFIER_KEYWORDS) {
@@ -369,12 +383,20 @@ function getFieldTypeCompletions(projectModel: ProjectModel): CompletionItem[] {
  * Get attribute completions
  */
 function getAttributeCompletions(): CompletionItem[] {
-  const locale = getLocale();
-  return ATTRIBUTES.map((attr) => ({
+  const locale = getCurrentLocale();
+  const cached = attributeCompletionCache.get(locale);
+  if (cached) {
+    return cached;
+  }
+
+  const completions = ATTRIBUTES.map((attr) => ({
     label: attr.name,
     kind: CompletionItemKind.Property,
     detail: getDescription(attr, locale),
   }));
+
+  attributeCompletionCache.set(locale, completions);
+  return completions;
 }
 
 /**
@@ -382,6 +404,7 @@ function getAttributeCompletions(): CompletionItem[] {
  */
 function getInputBlockCompletions(projectModel: ProjectModel): CompletionItem[] {
   const items = getFieldTypeCompletions(projectModel);
+  const locale = getCurrentLocale();
 
   // Add 'button' special type
   for (const type of SPECIAL_TYPES) {
@@ -389,7 +412,7 @@ function getInputBlockCompletions(projectModel: ProjectModel): CompletionItem[] 
       items.push({
         label: type.name,
         kind: CompletionItemKind.Keyword,
-        detail: getDescription(type, getLocale()),
+        detail: getDescription(type, locale),
       });
     }
   }
@@ -401,24 +424,42 @@ function getInputBlockCompletions(projectModel: ProjectModel): CompletionItem[] 
  * Get import sub-keyword completions
  */
 function getImportCompletions(): CompletionItem[] {
-  const detail = getLocale() === 'ko' ? 'import 하위 키워드' : 'Import sub-keyword';
-  return IMPORT_SUB_KEYWORDS.map((keyword) => ({
+  const locale = getCurrentLocale();
+  const cached = importCompletionCache.get(locale);
+  if (cached) {
+    return cached;
+  }
+
+  const detail = locale === 'ko' ? 'import 하위 키워드' : 'Import sub-keyword';
+  const completions = IMPORT_SUB_KEYWORDS.map((keyword) => ({
     label: keyword,
     kind: CompletionItemKind.Keyword,
     detail,
   }));
+
+  importCompletionCache.set(locale, completions);
+  return completions;
 }
 
 /**
  * Get enum base type completions (integer types only)
  */
 function getEnumBaseCompletions(): CompletionItem[] {
-  const detail = getLocale() === 'ko' ? 'enum 기본 타입용 정수 타입' : 'Integer type for enum base';
-  return ENUM_BASE_TYPES.map((type) => ({
+  const locale = getCurrentLocale();
+  const cached = enumBaseCompletionCache.get(locale);
+  if (cached) {
+    return cached;
+  }
+
+  const detail = locale === 'ko' ? 'enum 기본 타입용 정수 타입' : 'Integer type for enum base';
+  const completions = ENUM_BASE_TYPES.map((type) => ({
     label: type,
     kind: CompletionItemKind.Struct,
     detail,
   }));
+
+  enumBaseCompletionCache.set(locale, completions);
+  return completions;
 }
 
 /**
@@ -431,22 +472,26 @@ function getGenericArgCompletions(projectModel: ProjectModel): CompletionItem[] 
 /**
  * Convert LSP SymbolKind to CompletionItemKind
  */
-function symbolKindToCompletionItemKind(symbolKind: number): CompletionItemKind {
+function symbolKindToCompletionItemKind(symbolKind: SymbolKind): CompletionItemKind {
   // Map common SymbolKind values to CompletionItemKind
   switch (symbolKind) {
-    case 5: // SymbolKind.Class
+    case SymbolKind.Class:
       return CompletionItemKind.Class;
-    case 23: // SymbolKind.Struct
+    case SymbolKind.Struct:
       return CompletionItemKind.Struct;
-    case 10: // SymbolKind.Enum
+    case SymbolKind.Enum:
       return CompletionItemKind.Enum;
-    case 24: // SymbolKind.Event
+    case SymbolKind.Event:
       return CompletionItemKind.Event;
-    case 12: // SymbolKind.Function
+    case SymbolKind.Function:
       return CompletionItemKind.Function;
-    case 11: // SymbolKind.Interface
+    case SymbolKind.Interface:
       return CompletionItemKind.Interface;
     default:
       return CompletionItemKind.Class;
   }
+}
+
+function getCurrentLocale(): Locale {
+  return getLocale() === 'ko' ? 'ko' : 'en';
 }

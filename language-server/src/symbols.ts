@@ -11,6 +11,7 @@ import {
 } from 'vscode-languageserver';
 import { ProjectModel } from './project-model.js';
 import { nodeKindToSymbolKind } from './symbol-table.js';
+import { buildEventDetail, buildTypeDefinitionDetail, formatTypeReference } from './symbol-format.js';
 import {
   Definition,
   TypeDefinition,
@@ -23,7 +24,6 @@ import {
   DefineDefinition,
   FieldDefinition,
   EnumMemberDefinition,
-  TypeReference,
   SourceRange,
 } from './ast.js';
 
@@ -38,20 +38,6 @@ function sourceRangeToLspRange(range: SourceRange): Range {
 }
 
 /**
- * Convert TypeReference to string representation
- */
-function typeRefToString(typeRef: TypeReference): string {
-  let s = typeRef.name;
-  if (typeRef.genericArgs.length > 0) {
-    s += '<' + typeRef.genericArgs.map(typeRefToString).join(', ') + '>';
-  }
-  if (typeRef.arraySize !== undefined) {
-    s += `[${typeRef.arraySize}]`;
-  }
-  return s;
-}
-
-/**
  * Create DocumentSymbol for a field
  */
 function createFieldSymbol(field: FieldDefinition): DocumentSymbol {
@@ -60,7 +46,7 @@ function createFieldSymbol(field: FieldDefinition): DocumentSymbol {
     kind: SymbolKind.Field,
     range: sourceRangeToLspRange(field.range),
     selectionRange: sourceRangeToLspRange(field.range),
-    detail: typeRefToString(field.typeRef),
+    detail: formatTypeReference(field.typeRef),
   };
 }
 
@@ -109,14 +95,7 @@ function createDefinitionSymbol(def: Definition): DocumentSymbol {
         }
       }
 
-      // Build detail string
-      let detail: string = typeDef.kind;
-      if (typeDef.modifiers && typeDef.modifiers.length > 0) {
-        detail = `${typeDef.modifiers.join(' ')} ${detail}`;
-      }
-      if (typeDef.baseType) {
-        detail += ` : ${typeDef.baseType}`;
-      }
+      const detail = buildTypeDefinitionDetail(typeDef);
 
       return {
         name: typeDef.name,
@@ -138,13 +117,7 @@ function createDefinitionSymbol(def: Definition): DocumentSymbol {
         }
       }
 
-      let detail: string = 'event';
-      if (eventDef.modifiers && eventDef.modifiers.length > 0) {
-        detail = `${eventDef.modifiers.join(' ')} ${detail}`;
-      }
-      if (eventDef.parentName) {
-        detail += ` : ${eventDef.parentName}`;
-      }
+      const detail = buildEventDetail(eventDef);
 
       return {
         name: eventDef.name,
@@ -161,8 +134,7 @@ function createDefinitionSymbol(def: Definition): DocumentSymbol {
 
       // Build parameter signature
       const paramTypes = signalDef.parameters.map(p => {
-        const pointerPrefix = p.typeRef.isPointer ? '*' : '';
-        return `${pointerPrefix}${typeRefToString(p.typeRef)} ${p.name}`;
+        return `${formatTypeReference(p.typeRef)} ${p.name}`;
       }).join(', ');
 
       return {

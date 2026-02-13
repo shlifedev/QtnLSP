@@ -14,13 +14,14 @@ import {
   EnumMemberDefinition,
   NodeKind,
   SourceRange,
-} from './ast';
+} from './ast.js';
 import {
   ALL_BUILTIN_TYPES,
   BuiltinTypeInfo,
   getDescription,
-} from './builtins';
-import { getLocale } from './locale';
+} from './builtins.js';
+import { getLocale } from './locale.js';
+import { buildEventDetail, buildSignalDetail, buildTypeDefinitionDetail, formatTypeReference } from './symbol-format.js';
 
 // Symbol information for types, constants, and definitions
 export interface SymbolInfo {
@@ -30,6 +31,11 @@ export interface SymbolInfo {
   detail: string;
   children: SymbolInfo[];
   source: 'builtin' | 'user' | 'import';
+}
+
+interface SearchEntry {
+  lowerName: string;
+  symbol: SymbolInfo;
 }
 
 // Convert NodeKind to LSP SymbolKind
@@ -97,12 +103,16 @@ export class SymbolTable {
   types: Map<string, SymbolInfo> = new Map();
   constants: Map<string, SymbolInfo> = new Map();
   imports: ImportDefinition[] = [];
+  private typeSearchEntries: SearchEntry[] = [];
+  private constantSearchEntries: SearchEntry[] = [];
+  private searchCacheDirty = true;
 
   // Build symbol table from parsed QTN document
   buildFromDocument(doc: QtnDocument): void {
     this.types.clear();
     this.constants.clear();
     this.imports = [];
+    this.invalidateSearchCache();
 
     for (const def of doc.definitions) {
       this.processDefinition(def, doc.uri);
@@ -112,6 +122,7 @@ export class SymbolTable {
   // Add symbols from a document WITHOUT clearing existing symbols
   // Used by ProjectModel to incrementally build symbol table from multiple documents
   addFromDocument(doc: QtnDocument): void {
+    this.invalidateSearchCache();
     for (const def of doc.definitions) {
       this.processDefinition(def, doc.uri);
     }
@@ -171,14 +182,7 @@ export class SymbolTable {
       }
     }
 
-    // Create detail string
-    let detail: string = def.kind;
-    if (def.modifiers && def.modifiers.length > 0) {
-      detail = `${def.modifiers.join(' ')} ${detail}`;
-    }
-    if (def.baseType) {
-      detail += ` : ${def.baseType}`;
-    }
+    const detail = buildTypeDefinitionDetail(def);
 
     const symbol: SymbolInfo = {
       name: def.name,
@@ -202,13 +206,7 @@ export class SymbolTable {
       }
     }
 
-    let detail: string = 'event';
-    if (def.modifiers && def.modifiers.length > 0) {
-      detail = `${def.modifiers.join(' ')} ${detail}`;
-    }
-    if (def.parentName) {
-      detail += ` : ${def.parentName}`;
-    }
+    const detail = buildEventDetail(def);
 
     const symbol: SymbolInfo = {
       name: def.name,
@@ -224,13 +222,7 @@ export class SymbolTable {
 
   // Process signal definition
   private processSignalDefinition(def: SignalDefinition, fileUri: string): void {
-    // Build parameter types string for detail
-    const paramTypes = def.parameters.map(p => {
-      const pointerPrefix = p.typeRef.isPointer ? '*' : '';
-      return `${pointerPrefix}${p.typeRef.name}`;
-    }).join(', ');
-
-    const detail = `signal(${paramTypes})`;
+    const detail = buildSignalDetail(def);
 
     const symbol: SymbolInfo = {
       name: def.name,
@@ -304,7 +296,7 @@ export class SymbolTable {
 
   // Create field symbol
   private createFieldSymbol(field: FieldDefinition, fileUri: string): SymbolInfo {
-    const typeStr = this.formatTypeReference(field.typeRef);
+    const typeStr = formatTypeReference(field.typeRef);
     return {
       name: field.name,
       kind: SymbolKind.Field,
@@ -328,28 +320,9 @@ export class SymbolTable {
     };
   }
 
-  // Format type reference as string
-  private formatTypeReference(typeRef: any): string {
-    let result = typeRef.name;
-
-    if (typeRef.genericArgs && typeRef.genericArgs.length > 0) {
-      const args = typeRef.genericArgs.map((arg: any) => this.formatTypeReference(arg)).join(', ');
-      result += `<${args}>`;
-    }
-
-    if (typeRef.arraySize !== undefined) {
-      result += `[${typeRef.arraySize}]`;
-    }
-
-    if (typeRef.isPointer) {
-      result = `*${result}`;
-    }
-
-    return result;
-  }
-
   // Pre-populate symbol table with built-in types
   mergeBuiltins(): void {
+    this.invalidateSearchCache();
     for (const builtin of ALL_BUILTIN_TYPES) {
       const symbol = this.createBuiltinSymbol(builtin);
       // Don't overwrite user-defined types
@@ -399,42 +372,42 @@ export class SymbolTable {
 
   // Fuzzy search for symbols (case-insensitive substring matching)
   fuzzySearch(query: string): SymbolInfo[] {
+    this.rebuildSearchEntriesIfNeeded();
+
     const lowerQuery = query.toLowerCase();
     const results: Array<{ symbol: SymbolInfo; score: number }> = [];
 
     // Search in types
-    for (const [name, symbol] of this.types) {
-      const lowerName = name.toLowerCase();
+    for (const entry of this.typeSearchEntries) {
       let score = 0;
 
-      if (lowerName === lowerQuery) {
+      if (entry.lowerName === lowerQuery) {
         score = 3; // Exact match
-      } else if (lowerName.startsWith(lowerQuery)) {
+      } else if (entry.lowerName.startsWith(lowerQuery)) {
         score = 2; // Prefix match
-      } else if (lowerName.includes(lowerQuery)) {
+      } else if (entry.lowerName.includes(lowerQuery)) {
         score = 1; // Contains match
       }
 
       if (score > 0) {
-        results.push({ symbol, score });
+        results.push({ symbol: entry.symbol, score });
       }
     }
 
     // Search in constants
-    for (const [name, symbol] of this.constants) {
-      const lowerName = name.toLowerCase();
+    for (const entry of this.constantSearchEntries) {
       let score = 0;
 
-      if (lowerName === lowerQuery) {
+      if (entry.lowerName === lowerQuery) {
         score = 3; // Exact match
-      } else if (lowerName.startsWith(lowerQuery)) {
+      } else if (entry.lowerName.startsWith(lowerQuery)) {
         score = 2; // Prefix match
-      } else if (lowerName.includes(lowerQuery)) {
+      } else if (entry.lowerName.includes(lowerQuery)) {
         score = 1; // Contains match
       }
 
       if (score > 0) {
-        results.push({ symbol, score });
+        results.push({ symbol: entry.symbol, score });
       }
     }
 
@@ -447,5 +420,33 @@ export class SymbolTable {
     });
 
     return results.map(r => r.symbol);
+  }
+
+  private rebuildSearchEntriesIfNeeded(): void {
+    if (!this.searchCacheDirty) {
+      return;
+    }
+
+    this.typeSearchEntries = [];
+    for (const [name, symbol] of this.types) {
+      this.typeSearchEntries.push({
+        lowerName: name.toLowerCase(),
+        symbol,
+      });
+    }
+
+    this.constantSearchEntries = [];
+    for (const [name, symbol] of this.constants) {
+      this.constantSearchEntries.push({
+        lowerName: name.toLowerCase(),
+        symbol,
+      });
+    }
+
+    this.searchCacheDirty = false;
+  }
+
+  private invalidateSearchCache(): void {
+    this.searchCacheDirty = true;
   }
 }
