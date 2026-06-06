@@ -17,7 +17,7 @@ Usage: $(basename "$0") <command>
 
 Commands:
   sync        Sync shared grammar to all plugin directories
-  test        Run grammar unit tests
+  test        Run headless test suite (LSP unit + protocol integration + grammar + snapshot)
   vscode          Build VSCode extension (.vsix)
   vscode-install  Build + install VSCode extension
   jetbrains       Build JetBrains plugin (.zip)
