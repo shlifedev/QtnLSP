@@ -152,7 +152,7 @@ export type Definition =
   | PragmaDefinition
   | DefineDefinition;
 
-// Parse error (internal, no diagnostics published)
+// Parse/lex error surfaced to the editor as an LSP diagnostic.
 export interface ParseError {
   message: string;
   range: SourceRange;
