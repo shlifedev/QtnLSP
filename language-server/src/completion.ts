@@ -25,6 +25,7 @@ import {
 } from './builtins.js';
 import { getLocale } from './locale.js';
 import { nodeKindToSymbolKind } from './symbol-table.js';
+import { isPositionInCommentOrString } from './text-navigation.js';
 
 // Completion context types
 type CompletionContext =
@@ -58,6 +59,10 @@ export function handleCompletion(
 ): CompletionItem[] {
   const document = documents.get(params.textDocument.uri);
   if (!document) {
+    return [];
+  }
+
+  if (isPositionInCommentOrString(document, params.position)) {
     return [];
   }
 

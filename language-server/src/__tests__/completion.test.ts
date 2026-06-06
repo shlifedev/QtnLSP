@@ -27,13 +27,19 @@ describe('Completion handler', () => {
     expect(labels).toEqual(expect.arrayContaining(TOP_LEVEL_KEYWORDS));
   });
 
+  it('top-level context does not offer field-only modifiers', () => {
+    const labels = complete('', 0, 0);
+    expect(labels).not.toContain('local');
+    expect(labels).not.toContain('remote');
+  });
+
   it('field-type context offers builtin and user-defined types', () => {
     const source = `enum Weapon { Sword }
 component Player {
 
 }`;
     const labels = complete(source, 2, 0);
-    expect(labels).toEqual(expect.arrayContaining(['FP', 'int', 'Weapon']));
+    expect(labels).toEqual(expect.arrayContaining(['FP', 'int', 'Weapon', 'local', 'remote']));
   });
 
   it('attribute context offers attribute names', () => {
@@ -69,5 +75,10 @@ component Player {
     const labels = complete('/* input { */\n', 1, 0);
     expect(labels).toEqual(expect.arrayContaining(['component']));
     expect(labels).not.toContain('button');
+  });
+
+  it('returns no completions inside comments or strings', () => {
+    expect(complete('// list<', 0, '// list<'.length)).toEqual([]);
+    expect(complete('[Header("list<")]\ncomponent P {}', 0, '[Header("list<'.length)).toEqual([]);
   });
 });
