@@ -29,7 +29,9 @@ intellijPlatform {
         version = providers.gradleProperty("pluginVersion").get()
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")
-            untilBuild = providers.gradleProperty("pluginUntilBuild")
+            // 상한 없음: since-build 이후 모든 IDE(미래 버전 포함) 호환.
+            // 빈 until-build("")는 마켓 검증에서 거부되므로 provider { null }로 속성을 생략한다.
+            untilBuild = provider { null }
         }
     }
     signing {
