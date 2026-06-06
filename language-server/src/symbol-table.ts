@@ -33,6 +33,11 @@ export interface SymbolInfo {
   source: 'builtin' | 'user' | 'import';
 }
 
+interface SearchEntry {
+  lowerName: string;
+  symbol: SymbolInfo;
+}
+
 // Convert NodeKind to LSP SymbolKind
 export function nodeKindToSymbolKind(kind: NodeKind): SymbolKind {
   switch (kind) {
@@ -98,12 +103,16 @@ export class SymbolTable {
   types: Map<string, SymbolInfo> = new Map();
   constants: Map<string, SymbolInfo> = new Map();
   imports: ImportDefinition[] = [];
+  private typeSearchEntries: SearchEntry[] = [];
+  private constantSearchEntries: SearchEntry[] = [];
+  private searchCacheDirty = true;
 
   // Build symbol table from parsed QTN document
   buildFromDocument(doc: QtnDocument): void {
     this.types.clear();
     this.constants.clear();
     this.imports = [];
+    this.invalidateSearchCache();
 
     for (const def of doc.definitions) {
       this.processDefinition(def, doc.uri);
@@ -113,6 +122,7 @@ export class SymbolTable {
   // Add symbols from a document WITHOUT clearing existing symbols
   // Used by ProjectModel to incrementally build symbol table from multiple documents
   addFromDocument(doc: QtnDocument): void {
+    this.invalidateSearchCache();
     for (const def of doc.definitions) {
       this.processDefinition(def, doc.uri);
     }
@@ -357,6 +367,7 @@ export class SymbolTable {
 
   // Pre-populate symbol table with built-in types
   mergeBuiltins(): void {
+    this.invalidateSearchCache();
     for (const builtin of ALL_BUILTIN_TYPES) {
       const symbol = this.createBuiltinSymbol(builtin);
       // Don't overwrite user-defined types
@@ -406,42 +417,42 @@ export class SymbolTable {
 
   // Fuzzy search for symbols (case-insensitive substring matching)
   fuzzySearch(query: string): SymbolInfo[] {
+    this.rebuildSearchEntriesIfNeeded();
+
     const lowerQuery = query.toLowerCase();
     const results: Array<{ symbol: SymbolInfo; score: number }> = [];
 
     // Search in types
-    for (const [name, symbol] of this.types) {
-      const lowerName = name.toLowerCase();
+    for (const entry of this.typeSearchEntries) {
       let score = 0;
 
-      if (lowerName === lowerQuery) {
+      if (entry.lowerName === lowerQuery) {
         score = 3; // Exact match
-      } else if (lowerName.startsWith(lowerQuery)) {
+      } else if (entry.lowerName.startsWith(lowerQuery)) {
         score = 2; // Prefix match
-      } else if (lowerName.includes(lowerQuery)) {
+      } else if (entry.lowerName.includes(lowerQuery)) {
         score = 1; // Contains match
       }
 
       if (score > 0) {
-        results.push({ symbol, score });
+        results.push({ symbol: entry.symbol, score });
       }
     }
 
     // Search in constants
-    for (const [name, symbol] of this.constants) {
-      const lowerName = name.toLowerCase();
+    for (const entry of this.constantSearchEntries) {
       let score = 0;
 
-      if (lowerName === lowerQuery) {
+      if (entry.lowerName === lowerQuery) {
         score = 3; // Exact match
-      } else if (lowerName.startsWith(lowerQuery)) {
+      } else if (entry.lowerName.startsWith(lowerQuery)) {
         score = 2; // Prefix match
-      } else if (lowerName.includes(lowerQuery)) {
+      } else if (entry.lowerName.includes(lowerQuery)) {
         score = 1; // Contains match
       }
 
       if (score > 0) {
-        results.push({ symbol, score });
+        results.push({ symbol: entry.symbol, score });
       }
     }
 
@@ -454,5 +465,33 @@ export class SymbolTable {
     });
 
     return results.map(r => r.symbol);
+  }
+
+  private rebuildSearchEntriesIfNeeded(): void {
+    if (!this.searchCacheDirty) {
+      return;
+    }
+
+    this.typeSearchEntries = [];
+    for (const [name, symbol] of this.types) {
+      this.typeSearchEntries.push({
+        lowerName: name.toLowerCase(),
+        symbol,
+      });
+    }
+
+    this.constantSearchEntries = [];
+    for (const [name, symbol] of this.constants) {
+      this.constantSearchEntries.push({
+        lowerName: name.toLowerCase(),
+        symbol,
+      });
+    }
+
+    this.searchCacheDirty = false;
+  }
+
+  private invalidateSearchCache(): void {
+    this.searchCacheDirty = true;
   }
 }
