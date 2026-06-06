@@ -404,46 +404,37 @@ export class SymbolTable {
     return this.types.get(name) || this.constants.get(name);
   }
 
+  // Score each entry in `map` against `lowerQuery` and append hits to `results`.
+  private scoreSymbols(
+    lowerQuery: string,
+    map: Map<string, SymbolInfo>,
+    results: Array<{ symbol: SymbolInfo; score: number }>
+  ): void {
+    for (const [name, symbol] of map) {
+      const lowerName = name.toLowerCase();
+      let score = 0;
+
+      if (lowerName === lowerQuery) {
+        score = 3; // Exact match
+      } else if (lowerName.startsWith(lowerQuery)) {
+        score = 2; // Prefix match
+      } else if (lowerName.includes(lowerQuery)) {
+        score = 1; // Contains match
+      }
+
+      if (score > 0) {
+        results.push({ symbol, score });
+      }
+    }
+  }
+
   // Fuzzy search for symbols (case-insensitive substring matching)
   fuzzySearch(query: string): SymbolInfo[] {
     const lowerQuery = query.toLowerCase();
     const results: Array<{ symbol: SymbolInfo; score: number }> = [];
 
-    // Search in types
-    for (const [name, symbol] of this.types) {
-      const lowerName = name.toLowerCase();
-      let score = 0;
-
-      if (lowerName === lowerQuery) {
-        score = 3; // Exact match
-      } else if (lowerName.startsWith(lowerQuery)) {
-        score = 2; // Prefix match
-      } else if (lowerName.includes(lowerQuery)) {
-        score = 1; // Contains match
-      }
-
-      if (score > 0) {
-        results.push({ symbol, score });
-      }
-    }
-
-    // Search in constants
-    for (const [name, symbol] of this.constants) {
-      const lowerName = name.toLowerCase();
-      let score = 0;
-
-      if (lowerName === lowerQuery) {
-        score = 3; // Exact match
-      } else if (lowerName.startsWith(lowerQuery)) {
-        score = 2; // Prefix match
-      } else if (lowerName.includes(lowerQuery)) {
-        score = 1; // Contains match
-      }
-
-      if (score > 0) {
-        results.push({ symbol, score });
-      }
-    }
+    this.scoreSymbols(lowerQuery, this.types, results);
+    this.scoreSymbols(lowerQuery, this.constants, results);
 
     // Sort by score (descending), then by name (ascending)
     results.sort((a, b) => {
