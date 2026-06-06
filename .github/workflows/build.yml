@@ -139,15 +139,21 @@ jobs:
         run: cp shared/syntaxes/qtn.tmLanguage.json jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json
 
       # 릴리스(version 있음)면 서명본을 만들고, PR/dev면 서명 없이 빌드만 검증한다.
+      # 시크릿은 base64로 저장돼 있어 파일로 디코드 후 경로를 주입한다(멀티라인 전달 손상 회피).
       - name: Build / sign JetBrains plugin
         working-directory: jetbrains-plugin
         env:
           VERSION: ${{ inputs.version }}
-          CERTIFICATE_CHAIN: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
-          PRIVATE_KEY: ${{ secrets.JETBRAINS_PRIVATE_KEY }}
+          CERTIFICATE_CHAIN_B64: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
+          PRIVATE_KEY_B64: ${{ secrets.JETBRAINS_PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.JETBRAINS_PRIVATE_KEY_PASSWORD }}
         run: |
           if [ -n "$VERSION" ]; then
+            printf '%s' "$CERTIFICATE_CHAIN_B64" | base64 -d > sign-chain.crt
+            printf '%s' "$PRIVATE_KEY_B64" | base64 -d > sign-private.pem
+            keytool -printcert -file sign-chain.crt >/dev/null \
+              || { echo "::error::certificate chain failed to parse — check JETBRAINS_CERTIFICATE_CHAIN (must be base64 of chain.crt)"; exit 1; }
+            export CERTIFICATE_CHAIN_FILE=sign-chain.crt PRIVATE_KEY_FILE=sign-private.pem
             ./gradlew signPlugin "-PpluginVersion=${VERSION#v}"
           else
             ./gradlew buildPlugin
@@ -177,11 +183,15 @@ jobs:
         working-directory: jetbrains-plugin
         env:
           VERSION: ${{ inputs.version }}
-          CERTIFICATE_CHAIN: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
-          PRIVATE_KEY: ${{ secrets.JETBRAINS_PRIVATE_KEY }}
+          CERTIFICATE_CHAIN_B64: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
+          PRIVATE_KEY_B64: ${{ secrets.JETBRAINS_PRIVATE_KEY }}
           PRIVATE_KEY_PASSWORD: ${{ secrets.JETBRAINS_PRIVATE_KEY_PASSWORD }}
           PUBLISH_TOKEN: ${{ secrets.JETBRAINS_PUBLISH_TOKEN }}
-        run: ./gradlew publishPlugin "-PpluginVersion=${VERSION#v}"
+        run: |
+          printf '%s' "$CERTIFICATE_CHAIN_B64" | base64 -d > sign-chain.crt
+          printf '%s' "$PRIVATE_KEY_B64" | base64 -d > sign-private.pem
+          export CERTIFICATE_CHAIN_FILE=sign-chain.crt PRIVATE_KEY_FILE=sign-private.pem
+          ./gradlew publishPlugin "-PpluginVersion=${VERSION#v}"
 
   build-vs:
     needs: test

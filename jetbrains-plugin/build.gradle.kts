@@ -33,8 +33,10 @@ intellijPlatform {
         }
     }
     signing {
-        certificateChain = providers.environmentVariable("CERTIFICATE_CHAIN")
-        privateKey = providers.environmentVariable("PRIVATE_KEY")
+        // 인증서/키는 CI에서 파일로 디코드해 경로만 주입한다.
+        // (멀티라인 PEM을 -cert CLI 인자로 넘기면 전달 중 손상돼 "signed fields invalid"가 난다)
+        certificateChainFile = layout.projectDirectory.file(providers.environmentVariable("CERTIFICATE_CHAIN_FILE"))
+        privateKeyFile = layout.projectDirectory.file(providers.environmentVariable("PRIVATE_KEY_FILE"))
         password = providers.environmentVariable("PRIVATE_KEY_PASSWORD")
     }
 
