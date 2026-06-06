@@ -6,7 +6,7 @@
     <Description xml:space="preserve">Syntax highlighting and IntelliSense for Photon Quantum3 DSL (.qtn) files. Provides TextMate grammar-based colorization and Language Server Protocol support for auto-completion, hover information, and go-to-definition.</Description>
     <MoreInfo>https://github.com/shlifedev/QtnLSP</MoreInfo>
     <License>LICENSE</License>
-    <Tags>quantum, qtn, dsl, syntax highlighting, language server</Tags>
+    <Tags>quantum;qtn;dsl;syntax highlighting;language server</Tags>
     <Categories>Languages</Categories>
   </Metadata>
   <Installation>
