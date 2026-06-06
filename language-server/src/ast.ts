@@ -36,6 +36,7 @@ export interface TypeReference {
   genericArgs: TypeArgument[];
   arraySize?: number;  // fixed array size: array<T>[N]
   isPointer: boolean;  // signal parameter pointer: *
+  isNullable: boolean; // nullable suffix: Type?
   range: SourceRange;
 }
 
@@ -152,7 +153,7 @@ export type Definition =
   | PragmaDefinition
   | DefineDefinition;
 
-// Parse error (internal, no diagnostics published)
+// Parse/lex error surfaced to the editor as an LSP diagnostic.
 export interface ParseError {
   message: string;
   range: SourceRange;

@@ -2,7 +2,7 @@
 // Converts token stream from lexer into AST (ast.ts nodes).
 // Implements panic-mode error recovery: on parse errors, skips to }, ;, or top-level keyword.
 
-import { tokenize, QtnToken, TokenType } from './lexer.js';
+import { tokenizeWithErrors, QtnToken, TokenType } from './lexer.js';
 import {
   type SourceRange,
   type Position,
@@ -52,11 +52,13 @@ class Parser {
   private fileUri: string;
   private errors: ParseError[];
 
-  constructor(tokens: QtnToken[], fileUri: string) {
+  constructor(tokens: QtnToken[], fileUri: string, initialErrors: ParseError[] = []) {
     this.tokens = tokens;
     this.pos = 0;
     this.fileUri = fileUri;
-    this.errors = [];
+    // Lexer-level errors (unterminated strings/comments) are seeded first so
+    // they surface alongside parse errors in the resulting QtnDocument.
+    this.errors = [...initialErrors];
   }
 
   // ── Token helpers ──────────────────────────────────────────────
@@ -1038,13 +1040,11 @@ class Parser {
       this.expect(TokenType.punctuation, ']');
     }
 
-    // Nullable suffix: FP? → becomes NullableFP conceptually, but
-    // we store it as the original name with `?` appended for downstream.
-    // Actually the AST TypeReference doesn't have an isNullable flag.
-    // The DSL maps FP? → NullableFP at codegen. For the parser we record
-    // it as the name with a nullable indicator. Let's just rename it.
+    // Nullable suffix: FP? — keep the original name so symbol lookups and
+    // nameRange stay accurate. The DSL maps it to NullableFP at codegen.
+    let isNullable = false;
     if (this.match(TokenType.punctuation, '?')) {
-      name = 'Nullable' + name;
+      isNullable = true;
     }
 
     // Pointer suffix: Type* (used in signal params)
@@ -1061,6 +1061,7 @@ class Parser {
       genericArgs,
       arraySize,
       isPointer,
+      isNullable,
       range: this.makeRange(startRange, endRange),
     };
   }
@@ -1219,7 +1220,7 @@ class Parser {
 // ── Public API ─────────────────────────────────────────────────────
 
 export function parse(text: string, fileUri: string): QtnDocument {
-  const tokens = tokenize(text);
-  const parser = new Parser(tokens, fileUri);
+  const { tokens, errors } = tokenizeWithErrors(text);
+  const parser = new Parser(tokens, fileUri, errors);
   return parser.parse();
 }

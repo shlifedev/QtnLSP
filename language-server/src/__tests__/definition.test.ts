@@ -26,6 +26,19 @@ component P {
     expect(loc!.range.start.line).toBe(0);
   });
 
+  it('resolves a user-defined type reference prefixed with @', () => {
+    const source = `struct @Player {
+  int Hp;
+}
+component Game {
+  @Player Actor;
+}`;
+    const loc = define(source, 4, 4);
+    expect(loc).not.toBeNull();
+    expect(loc!.uri).toBe('test://test.qtn');
+    expect(loc!.range.start.line).toBe(0);
+  });
+
   it('returns null for a builtin type', () => {
     const loc = define('component P {\n  FP X;\n}', 1, 3);
     expect(loc).toBeNull();

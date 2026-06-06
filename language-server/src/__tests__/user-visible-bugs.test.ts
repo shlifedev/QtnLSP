@@ -110,4 +110,21 @@ signal OnBeforeDamage(FP damage, Resources* resources);
     expect(formatTypeReference(signal.parameters[1].typeRef)).toBe('Resources*');
     expect(buildSignalDetail(signal)).toBe('signal(FP, Resources*)');
   });
+
+  it('formats nullable field types using QTN suffix syntax', () => {
+    const result = parse(`
+struct Stats {}
+component Player {
+  Stats? MaybeStats;
+}`, 'test://nullable-format.qtn');
+
+    expect(result.parseErrors).toHaveLength(0);
+
+    const component = result.definitions.find((def) => def.kind === 'component');
+    if (component?.kind !== 'component') {
+      throw new Error('Expected component definition');
+    }
+
+    expect(formatTypeReference(component.fields[0].typeRef)).toBe('Stats?');
+  });
 });

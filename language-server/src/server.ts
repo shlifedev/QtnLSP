@@ -21,6 +21,7 @@ import { handleHover } from './hover.js';
 import { handleDocumentSymbol, handleWorkspaceSymbol } from './symbols.js';
 import { handleSemanticTokensFull, tokenTypes, tokenModifiers } from './semantic-tokens.js';
 import { setLocale } from './locale.js';
+import { diagnosticsForDocument } from './diagnostics.js';
 
 // Create LSP connection using Node IPC
 const connection = createConnection(ProposedFeatures.all);
@@ -84,12 +85,29 @@ connection.onInitialized(() => {
 // Document change handler - update project model when documents change
 documents.onDidChangeContent((change) => {
   projectModel.updateDocument(change.document.uri, change.document.getText());
+  publishDiagnostics(change.document.uri);
 });
 
 // Document close handler - keep workspace files indexed from disk.
 documents.onDidClose((event) => {
+  // The buffer is gone from the editor; clear its diagnostics. If the file
+  // still exists on disk, reloadClosedDocument re-publishes from disk content.
+  clearDiagnostics(event.document.uri);
   void reloadClosedDocument(event.document.uri);
 });
+
+// Publish syntax diagnostics for a parsed document. Sends an empty array to
+// clear when there are no errors. Safe to call only after the document has
+// been (re)parsed into the project model.
+function publishDiagnostics(uri: string): void {
+  const doc = projectModel.getDocument(uri);
+  const diagnostics = doc ? diagnosticsForDocument(doc) : [];
+  void connection.sendDiagnostics({ uri, diagnostics });
+}
+
+function clearDiagnostics(uri: string): void {
+  void connection.sendDiagnostics({ uri, diagnostics: [] });
+}
 
 // Handle workspace file changes (external edits, file creation/deletion)
 connection.onDidChangeWatchedFiles((params) => {
@@ -99,6 +117,7 @@ connection.onDidChangeWatchedFiles((params) => {
     switch (change.type) {
       case FileChangeType.Deleted:
         projectModel.removeDocument(change.uri);
+        clearDiagnostics(change.uri);
         break;
       case FileChangeType.Created:
       case FileChangeType.Changed:
@@ -158,6 +177,7 @@ async function loadFileIntoProject(uri: string): Promise<void> {
   const openDocument = documents.get(uri);
   if (openDocument) {
     projectModel.updateDocument(uri, openDocument.getText());
+    publishDiagnostics(uri);
     return;
   }
 
@@ -169,9 +189,11 @@ async function loadFileIntoProject(uri: string): Promise<void> {
   try {
     const text = await fs.readFile(filePath, 'utf8');
     projectModel.updateDocument(uri, text);
+    publishDiagnostics(uri);
   } catch (error) {
     if (isMissingFileError(error)) {
       projectModel.removeDocument(uri);
+      clearDiagnostics(uri);
       return;
     }
 
