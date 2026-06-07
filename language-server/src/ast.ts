@@ -88,6 +88,7 @@ export interface EventDefinition extends QtnAstNode {
   name: string;
   modifiers: string[];  // synced, abstract, client, server
   parentName?: string;  // inheritance: event Foo : Bar
+  parentNameRange?: SourceRange;
   fields: FieldDefinition[];
 }
 

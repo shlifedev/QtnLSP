@@ -233,4 +233,28 @@ component Player {
     const lines = new Set(tokens.map(t => t.line));
     expect(lines.size).toBeGreaterThanOrEqual(2);
   });
+
+  it('should emit token for user-defined event parent references', () => {
+    const source = `
+event BaseEvent {
+  FP Time;
+}
+event ChildEvent : BaseEvent {
+  FP Amount;
+}`;
+    const result = getTokens(source);
+    expect(result).not.toBeNull();
+
+    const tokens = decodeTokens(result!.data);
+    expect(tokens).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          line: 4,
+          char: 'event ChildEvent : '.length,
+          length: 'BaseEvent'.length,
+          tokenType: tokenTypes.indexOf('event'),
+        }),
+      ]),
+    );
+  });
 });

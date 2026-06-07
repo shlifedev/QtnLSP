@@ -507,8 +507,11 @@ class Parser {
     const name = this.expectIdentifierOrKeyword('event name');
 
     let parentName: string | undefined;
+    let parentNameRange: SourceRange | undefined;
     if (this.match(TokenType.punctuation, ':')) {
-      parentName = this.expectIdentifierOrKeyword('parent event name').value;
+      const parentTok = this.expectIdentifierOrKeyword('parent event name');
+      parentName = parentTok.value;
+      parentNameRange = parentTok.range;
     }
 
     const fields = this.parseFieldBlock();
@@ -519,6 +522,7 @@ class Parser {
       name: name.value,
       modifiers: [...modifiers],
       parentName,
+      parentNameRange,
       fields,
       range: this.makeRange(startRange, endRange),
       fileUri: this.fileUri,
