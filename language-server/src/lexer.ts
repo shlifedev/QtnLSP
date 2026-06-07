@@ -1,5 +1,5 @@
 // QTN Lexer - Token stream generator for QTN parser
-import { Position, SourceRange } from './ast.js';
+import { Position, SourceRange, ParseError } from './ast.js';
 
 // Token types
 export enum TokenType {
@@ -44,6 +44,7 @@ class Lexer {
   private line: number;
   private character: number;
   private tokens: QtnToken[];
+  private errors: ParseError[];
 
   constructor(text: string) {
     this.text = text;
@@ -51,6 +52,11 @@ class Lexer {
     this.line = 0;
     this.character = 0;
     this.tokens = [];
+    this.errors = [];
+  }
+
+  getErrors(): ParseError[] {
+    return this.errors;
   }
 
   // Get current character
@@ -119,6 +125,7 @@ class Lexer {
 
   // Skip multi-line comment: /* ... */
   private skipBlockComment(): void {
+    const start = this.currentPosition();
     // Skip /*
     this.advance();
     this.advance();
@@ -129,16 +136,23 @@ class Lexer {
       if (ch === '*' && this.peek() === '/') {
         this.advance(); // skip *
         this.advance(); // skip /
-        break;
+        return;
       }
       this.advance();
     }
+
+    // Reached EOF without a closing */
+    this.errors.push({
+      message: 'Unterminated block comment',
+      range: { start, end: this.currentPosition() },
+    });
   }
 
   // Read string literal: "..."
   private readString(): QtnToken {
     const start = this.currentPosition();
     let value = '';
+    let terminated = false;
 
     // Skip opening quote
     this.advance();
@@ -149,6 +163,7 @@ class Lexer {
       if (ch === '"') {
         // End of string
         this.advance();
+        terminated = true;
         break;
       } else if (ch === '\\') {
         // Escape sequence
@@ -179,6 +194,14 @@ class Lexer {
     }
 
     const end = this.currentPosition();
+
+    if (!terminated) {
+      this.errors.push({
+        message: 'Unterminated string literal',
+        range: { start, end },
+      });
+    }
+
     return {
       type: TokenType.string,
       value,
@@ -426,8 +449,21 @@ class Lexer {
   }
 }
 
+// Result of tokenizing with lexer-level diagnostics attached.
+export interface LexResult {
+  tokens: QtnToken[];
+  errors: ParseError[];
+}
+
 // Main entry point
 export function tokenize(text: string): QtnToken[] {
   const lexer = new Lexer(text);
   return lexer.tokenize();
+}
+
+// Tokenize and also surface lexer errors (unterminated strings/comments).
+export function tokenizeWithErrors(text: string): LexResult {
+  const lexer = new Lexer(text);
+  const tokens = lexer.tokenize();
+  return { tokens, errors: lexer.getErrors() };
 }
