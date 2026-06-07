@@ -157,14 +157,16 @@ export function handleSemanticTokensFull(
     // Handle event parent type reference (inheritance)
     if (def.kind === 'event') {
       const eventDef = def as EventDefinition;
-      if (eventDef.parentName) {
+      if (eventDef.parentName && eventDef.parentNameRange) {
         const parentSymbol = symbolTable.lookup(eventDef.parentName);
-        if (parentSymbol) {
-          // Find parent name range: it's after `:` in the event declaration
-          // We need to locate it in the source. Since we don't have a dedicated
-          // parentNameRange in the AST, we compute it from the event range.
-          // For now, skip — parentName range is not tracked in the AST.
-          // This can be added in a future enhancement.
+        if (parentSymbol && parentSymbol.source !== 'builtin') {
+          tokens.push({
+            line: eventDef.parentNameRange.start.line,
+            char: eventDef.parentNameRange.start.character,
+            length: eventDef.parentName.length,
+            tokenType: symbolKindToTokenType(parentSymbol.kind),
+            tokenModifiers: 0,
+          });
         }
       }
     }
