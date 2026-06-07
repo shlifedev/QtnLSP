@@ -64,3 +64,24 @@ describe('SymbolTable fuzzySearch cache invalidation', () => {
     expect(currentResults).toContain('CurrentType');
   });
 });
+
+describe('SymbolTable signal parameters', () => {
+  it('should retain signal parameters as child symbols', () => {
+    const table = new SymbolTable();
+    const doc = parse(
+      `
+      signal OnDamage(EntityRef target, FP amount);
+      `,
+      'test://signals.qtn'
+    );
+
+    table.addFromDocument(doc);
+
+    const signal = table.lookup('OnDamage');
+    expect(signal?.children.map((child) => child.name)).toEqual(['target', 'amount']);
+    expect(signal?.children.map((child) => child.detail)).toEqual([
+      'target: EntityRef',
+      'amount: FP',
+    ]);
+  });
+});

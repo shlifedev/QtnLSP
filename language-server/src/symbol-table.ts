@@ -12,6 +12,7 @@ import {
   DefineDefinition,
   FieldDefinition,
   EnumMemberDefinition,
+  ParameterDefinition,
   NodeKind,
   SourceRange,
 } from './ast.js';
@@ -268,13 +269,14 @@ export class SymbolTable {
   // Process signal definition
   private processSignalDefinition(def: SignalDefinition, fileUri: string): void {
     const detail = buildSignalDetail(def);
+    const children = def.parameters.map((parameter) => this.createParameterSymbol(parameter, fileUri));
 
     const symbol: SymbolInfo = {
       name: def.name,
       kind: SymbolKind.Function,
       location: createLocation(fileUri, def.range),
       detail,
-      children: [],
+      children,
       source: 'user',
     };
 
@@ -360,6 +362,19 @@ export class SymbolTable {
       kind: SymbolKind.EnumMember,
       location: createLocation(fileUri, member.range),
       detail: `${member.name}${valueStr}`,
+      children: [],
+      source: 'user',
+    };
+  }
+
+  // Create signal parameter symbol
+  private createParameterSymbol(parameter: ParameterDefinition, fileUri: string): SymbolInfo {
+    const typeStr = formatTypeReference(parameter.typeRef);
+    return {
+      name: parameter.name,
+      kind: SymbolKind.Variable,
+      location: createLocation(fileUri, parameter.range),
+      detail: `${parameter.name}: ${typeStr}`,
       children: [],
       source: 'user',
     };
