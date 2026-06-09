@@ -2,11 +2,9 @@
   <idea-version since-build="243" />
   <version>1.1.11</version>
   <id>com.qtn.syntax-highlighting</id>
-  <name>Quantum DSL (QTN) Syntax Highlighting</name>
+  <name>Quantum DSL (QTN) Language Support</name>
   <vendor>qtn-tools</vendor>
-  <description><![CDATA[Syntax highlighting for Photon Quantum3 DSL (.qtn) files in JetBrains Rider.
-        Supports all QTN constructs including components, structs, enums, flags, unions,
-        events, signals, and more.]]></description>
+  <description><![CDATA[Syntax highlighting and Language Server support for Photon Quantum3 DSL (.qtn) files in JetBrains Rider, including autocomplete, go-to-definition, hover information, and symbols.]]></description>
   <depends>com.intellij.modules.platform</depends>
   <depends>com.intellij.modules.rider</depends>
   <depends>org.jetbrains.plugins.textmate</depends>

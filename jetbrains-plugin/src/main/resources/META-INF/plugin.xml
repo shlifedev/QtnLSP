@@ -1,18 +1,18 @@
 <idea-plugin>
     <id>com.qtn.syntax-highlighting</id>
-    <name>Quantum DSL (QTN) Syntax Highlighting</name>
+    <name>Quantum DSL (QTN) Language Support</name>
     <vendor>qtn-tools</vendor>
     <description><![CDATA[
-        Syntax highlighting for Photon Quantum3 DSL (.qtn) files in JetBrains Rider.
-        Supports all QTN constructs including components, structs, enums, flags, unions,
-        events, signals, and more.
+        Syntax highlighting and Language Server support for Photon Quantum3 DSL (.qtn) files in JetBrains Rider,
+        including autocomplete, go-to-definition, hover information, and symbols.
     ]]></description>
 
     <change-notes><![CDATA[
         <b>1.1.11</b>
         <ul>
-            <li>Rider 2024.3 이상 호환성 메타데이터 수정</li>
-            <li>Marketplace 검증 범위를 Rider 제품군으로 제한</li>
+            <li>Removed internal JetBrains Platform API usage for Rider 2026.2 EAP compatibility.</li>
+            <li>Updated compatibility metadata for Rider 2024.3 and later.</li>
+            <li>Limited Marketplace verification to Rider products.</li>
         </ul>
     ]]></change-notes>
 

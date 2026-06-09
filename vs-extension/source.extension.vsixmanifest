@@ -3,8 +3,8 @@
   <Metadata>
     <Identity Id="QtnLanguageExtension.a1b2c3d4-5678-9abc-def0-123456789abc" Version="1.0.0" Language="en-US" Publisher="shlifedev" />
     <DisplayName>Quantum DSL (QTN) Language Support</DisplayName>
-    <Description xml:space="preserve">Syntax highlighting and IntelliSense for Photon Quantum3 DSL (.qtn) files. Provides TextMate grammar-based colorization and Language Server Protocol support for auto-completion, hover information, and go-to-definition.</Description>
-    <MoreInfo>https://github.com/shlifedev/QtnLSP</MoreInfo>
+    <Description xml:space="preserve">Syntax highlighting and Language Server support for Photon Quantum3 DSL (.qtn) files, including autocomplete, go-to-definition, hover information, and symbols.</Description>
+    <MoreInfo>https://github.com/shlifedev/photon-quantum-qtn-lsp</MoreInfo>
     <License>LICENSE</License>
     <Tags>quantum;qtn;dsl;syntax highlighting;language server</Tags>
     <Categories>Languages</Categories>

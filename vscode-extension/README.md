@@ -1,10 +1,10 @@
-# Quantum DSL (QTN) Syntax Highlighting
+# Quantum DSL (QTN) Language Support
 
-Professional syntax highlighting for Photon Quantum3 DSL (.qtn) files in Visual Studio Code.
+Syntax highlighting and Language Server support for Photon Quantum3 DSL (`.qtn`) files in Visual Studio Code, including autocomplete, go-to-definition, hover information, and symbols.
 
 ## What It Does
 
-This extension provides comprehensive syntax highlighting for the Quantum Scripting Language (QSL), Quantum3's domain-specific language for defining game data structures, components, and networking protocols. It enables developers to write clean, readable QTN code with proper color differentiation for all language constructs.
+This extension provides comprehensive language support for Quantum3's domain-specific language for defining game data structures, components, and networking protocols. It helps developers write and navigate QTN code with TextMate grammar-based colorization and LSP-powered editor features.
 
 ## Features
 

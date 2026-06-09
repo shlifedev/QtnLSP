@@ -27,7 +27,7 @@ dependencies {
 intellijPlatform {
     pluginConfiguration {
         id = "com.qtn.syntax-highlighting"
-        name = "Quantum DSL (QTN) Syntax Highlighting"
+        name = "Quantum DSL (QTN) Language Support"
         version = providers.gradleProperty("pluginVersion").get()
         ideaVersion {
             sinceBuild = providers.gradleProperty("pluginSinceBuild")

@@ -4,7 +4,7 @@
 
 # QtnLSP
 
-Syntax highlighting and LSP-based IntelliSense for Photon Quantum3 DSL (`.qtn`) files.
+Syntax highlighting and Language Server support for Photon Quantum3 DSL (`.qtn`) files, including autocomplete, go-to-definition, hover information, and symbols.
 
 Supports **VSCode**, **JetBrains Rider**, and **Visual Studio 2022**.
 
