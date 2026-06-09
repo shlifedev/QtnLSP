@@ -35,7 +35,7 @@ Photon Quantum3 DSL(`.qtn`) 파일을 위한 IDE 플러그인 모노레포. Text
 - 문법 테스트: `cd vscode-extension && npm test` (vscode-tmgrammar-test)
 - 스냅샷 테스트: `cd vscode-extension && npm run test:snap`
 - Language Server 테스트: `cd language-server && npm test` (vitest)
-- JetBrains 빌드: `cd jetbrains-plugin && ./gradlew buildPlugin` (JDK 17 필요)
+- JetBrains 빌드: `cd jetbrains-plugin && ./gradlew buildPlugin` (JDK 21 toolchain)
 - 전체 빌드: `./build.sh all`
 
 ### Common Patterns
@@ -50,7 +50,7 @@ Photon Quantum3 DSL(`.qtn`) 파일을 위한 IDE 플러그인 모노레포. Text
 - `vscode-languageserver` / `vscode-languageclient` 9.x — LSP 구현
 - `vscode-tmgrammar-test` — 문법 단위/스냅샷 테스트
 - `@vscode/vsce` — VSCode 확장 패키징
-- Kotlin 1.9.x, JDK 17, Gradle IntelliJ Platform Plugin 2.x — JetBrains 플러그인
+- Kotlin 1.9.x, JDK 21, Gradle IntelliJ Platform Plugin 2.x — JetBrains 플러그인
 - Webpack 5.x — 번들링
 
 <!-- MANUAL: -->

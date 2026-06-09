@@ -3,26 +3,26 @@
     <name>Quantum DSL (QTN) Syntax Highlighting</name>
     <vendor>qtn-tools</vendor>
     <description><![CDATA[
-        Syntax highlighting for Photon Quantum3 DSL (.qtn) files in JetBrains IDEs.
+        Syntax highlighting for Photon Quantum3 DSL (.qtn) files in JetBrains Rider.
         Supports all QTN constructs including components, structs, enums, flags, unions,
         events, signals, and more.
     ]]></description>
 
     <change-notes><![CDATA[
-        <b>1.0.0</b>
+        <b>1.1.11</b>
         <ul>
-            <li>TextMate Grammar 기반 신텍스 하이라이팅</li>
-            <li>LSP 기반 IntelliSense (자동 완성, hover, 정의 이동)</li>
-            <li>한글/영어 다국어 지원</li>
+            <li>Rider 2024.3 이상 호환성 메타데이터 수정</li>
+            <li>Marketplace 검증 범위를 Rider 제품군으로 제한</li>
         </ul>
     ]]></change-notes>
 
     <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.modules.rider</depends>
     <depends>org.jetbrains.plugins.textmate</depends>
-    <depends optional="true" config-file="lsp.xml">com.intellij.modules.lsp</depends>
 
     <extensions defaultExtensionNs="com.intellij">
         <textmate.bundleProvider implementation="com.qtn.plugin.QtnTextMateBundleProvider"/>
+        <platform.lsp.serverSupportProvider implementation="com.qtn.plugin.QtnLspServerSupportProvider"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/QtnDarcula.xml"/>
         <additionalTextAttributes scheme="Default" file="colorSchemes/QtnDefault.xml"/>
     </extensions>

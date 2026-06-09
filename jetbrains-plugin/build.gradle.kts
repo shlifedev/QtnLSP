@@ -1,3 +1,5 @@
+import org.jetbrains.intellij.platform.gradle.IntelliJPlatformType
+
 plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
@@ -46,8 +48,22 @@ intellijPlatform {
         token = providers.environmentVariable("PUBLISH_TOKEN")
     }
 
+    pluginVerification {
+        ides {
+            ide(IntelliJPlatformType.Rider, providers.gradleProperty("platformVersion").get())
+        }
+    }
+
     buildSearchableOptions = false
     instrumentCode = false
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }
 
 tasks {
@@ -72,5 +88,5 @@ tasks {
 }
 
 kotlin {
-    jvmToolchain(17)
+    jvmToolchain(21)
 }
