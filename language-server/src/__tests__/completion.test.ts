@@ -59,6 +59,12 @@ component Player {
     const labels = complete(source, 1, 7);
     expect(labels).toEqual(expect.arrayContaining(['FP', 'int']));
   });
+
+  it('does not offer completions inside comments or strings', () => {
+    expect(complete('// comp', 0, '// comp'.length)).toEqual([]);
+    expect(complete('/* comp', 0, '/* comp'.length)).toEqual([]);
+    expect(complete('"comp', 0, '"comp'.length)).toEqual([]);
+  });
 });
 
 describe('input block detection', () => {

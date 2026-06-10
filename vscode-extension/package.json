@@ -39,7 +39,17 @@
         "scopeName": "source.qtn",
         "path": "./syntaxes/qtn.tmLanguage.json"
       }
-    ]
+    ],
+    "configurationDefaults": {
+      "[qtn]": {
+        "editor.quickSuggestions": {
+          "other": true,
+          "comments": false,
+          "strings": false
+        },
+        "editor.suggestOnTriggerCharacters": true
+      }
+    }
   },
   "scripts": {
     "vscode:prepublish": "npm run compile && npm run webpack",

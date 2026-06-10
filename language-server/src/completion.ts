@@ -59,6 +59,10 @@ export function handleCompletion(
   const text = document.getText();
   const offset = document.offsetAt(params.position);
 
+  if (isInCommentOrString(text, offset)) {
+    return [];
+  }
+
   // Detect completion context
   const parsedDoc = projectModel.getDocument(params.textDocument.uri);
   const context = detectContext(text, offset, parsedDoc, params.position);
@@ -82,6 +86,59 @@ export function handleCompletion(
     default:
       return [];
   }
+}
+
+function isInCommentOrString(text: string, offset: number): boolean {
+  let inString = false;
+  let inLineComment = false;
+  let inBlockComment = false;
+
+  for (let i = 0; i < offset && i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (inLineComment) {
+      if (ch === '\n' || ch === '\r') {
+        inLineComment = false;
+      }
+      continue;
+    }
+
+    if (inBlockComment) {
+      if (ch === '*' && next === '/') {
+        inBlockComment = false;
+        i++;
+      }
+      continue;
+    }
+
+    if (inString) {
+      if (ch === '\\') {
+        i++;
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === '/' && next === '/') {
+      inLineComment = true;
+      i++;
+      continue;
+    }
+
+    if (ch === '/' && next === '*') {
+      inBlockComment = true;
+      i++;
+      continue;
+    }
+
+    if (ch === '"') {
+      inString = true;
+    }
+  }
+
+  return inString || inLineComment || inBlockComment;
 }
 
 /**

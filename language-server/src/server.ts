@@ -34,6 +34,9 @@ const documents = new TextDocuments(TextDocument);
 const projectModel = new ProjectModel();
 let workspaceRoots: string[] = [];
 
+const IDENTIFIER_TRIGGER_CHARACTERS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_'.split('');
+const COMPLETION_TRIGGER_CHARACTERS = ['.', '<', '[', '#', ...IDENTIFIER_TRIGGER_CHARACTERS];
+
 // Initialize handler - declare server capabilities
 connection.onInitialize((params: InitializeParams): InitializeResult => {
   workspaceRoots = getWorkspaceRoots(params);
@@ -51,7 +54,7 @@ connection.onInitialize((params: InitializeParams): InitializeResult => {
 
       // Code completion with trigger characters
       completionProvider: {
-        triggerCharacters: ['.', '<', '[', '#'],
+        triggerCharacters: COMPLETION_TRIGGER_CHARACTERS,
         resolveProvider: false,
       },
 

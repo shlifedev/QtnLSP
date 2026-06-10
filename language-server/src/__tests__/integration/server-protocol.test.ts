@@ -87,6 +87,9 @@ beforeAll(async () => {
   });
   // Sanity: the server advertises the providers the IDEs rely on.
   expect(init.capabilities.completionProvider).toBeTruthy();
+  expect(init.capabilities.completionProvider).toMatchObject({
+    triggerCharacters: expect.arrayContaining(['.', '[', '#', 'c', 'F', '_']),
+  });
   expect(init.capabilities.definitionProvider).toBeTruthy();
   expect(init.capabilities.hoverProvider).toBeTruthy();
 
