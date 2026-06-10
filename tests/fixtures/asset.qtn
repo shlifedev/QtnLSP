@@ -24,3 +24,8 @@ component ET{
   VVVV v;
 }
 
+
+component OO{
+  Q q;
+}
+

@@ -5,6 +5,7 @@ import { Location } from 'vscode-languageserver';
 import { QtnDocument } from './ast.js';
 import { parse } from './parser.js';
 import { SymbolTable, SymbolInfo } from './symbol-table.js';
+import { normalizeUri } from './uri-utils.js';
 
 /**
  * ProjectModel manages the state of all .qtn files in the project.
@@ -34,6 +35,9 @@ export class ProjectModel {
    * @param text - Full document text
    */
   updateDocument(uri: string, text: string): void {
+    // 클라이언트와 인덱서가 만드는 URI 인코딩이 달라도 한 문서로 취급
+    uri = normalizeUri(uri);
+
     let doc: QtnDocument;
     try {
       doc = parse(text, uri);
@@ -63,7 +67,7 @@ export class ProjectModel {
    * @param uri - Document URI to remove
    */
   removeDocument(uri: string): void {
-    this.documents.delete(uri);
+    this.documents.delete(normalizeUri(uri));
 
     // Mark symbol table as dirty for lazy rebuild
     this.dirty = true;
@@ -75,7 +79,7 @@ export class ProjectModel {
    * @returns The parsed QtnDocument, or undefined if not found
    */
   getDocument(uri: string): QtnDocument | undefined {
-    return this.documents.get(uri);
+    return this.documents.get(normalizeUri(uri));
   }
 
   /**

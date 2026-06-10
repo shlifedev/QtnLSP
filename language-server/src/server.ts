@@ -23,6 +23,7 @@ import { handleDocumentSymbol, handleWorkspaceSymbol } from './symbols.js';
 import { handleSemanticTokensFull, tokenTypes, tokenModifiers } from './semantic-tokens.js';
 import { setLocale } from './locale.js';
 import { shouldSkipDirectory } from './workspace-index.js';
+import { normalizeUri } from './uri-utils.js';
 
 // Create LSP connection using Node IPC
 const connection = createConnection(ProposedFeatures.all);
@@ -138,7 +139,7 @@ connection.onDidChangeWatchedFiles((params) => {
         break;
       case FileChangeType.Created:
       case FileChangeType.Changed:
-        if (!documents.get(change.uri)) {
+        if (!findOpenDocument(change.uri)) {
           void loadFileIntoProject(change.uri);
         }
         break;
@@ -198,8 +199,19 @@ async function reloadClosedDocument(uri: string): Promise<void> {
   await loadFileIntoProject(uri);
 }
 
+// TextDocuments는 클라이언트가 보낸 URI를 그대로 키로 쓰므로, 인덱서가 만든
+// URI(pathToFileURL 형식)로 조회하면 인코딩 차이 때문에 열린 문서를 놓칠 수 있다
+function findOpenDocument(uri: string): TextDocument | undefined {
+  const direct = documents.get(uri);
+  if (direct) {
+    return direct;
+  }
+  const normalized = normalizeUri(uri);
+  return documents.all().find((doc) => normalizeUri(doc.uri) === normalized);
+}
+
 async function loadFileIntoProject(uri: string): Promise<void> {
-  const openDocument = documents.get(uri);
+  const openDocument = findOpenDocument(uri);
   if (openDocument) {
     projectModel.updateDocument(uri, openDocument.getText());
     return;
