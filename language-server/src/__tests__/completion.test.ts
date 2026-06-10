@@ -60,3 +60,56 @@ component Player {
     expect(labels).toEqual(expect.arrayContaining(['FP', 'int']));
   });
 });
+
+describe('input block detection', () => {
+  it('offers button inside an input block', () => {
+    const source = `input {
+
+}`;
+    const labels = complete(source, 1, 0);
+    expect(labels).toContain('button');
+  });
+
+  it('does not offer button inside a component', () => {
+    const source = `component Player {
+
+}`;
+    const labels = complete(source, 1, 0);
+    expect(labels).not.toContain('button');
+  });
+
+  it('offers button in an unclosed input block while typing', () => {
+    const source = `input {
+  FPVector2 Move;
+`;
+    const labels = complete(source, 2, 0);
+    expect(labels).toContain('button');
+  });
+
+  it('is not fooled by "input {" inside a line comment', () => {
+    const source = `component Player {
+  // input {
+
+}`;
+    const labels = complete(source, 2, 2);
+    expect(labels).not.toContain('button');
+  });
+
+  it('is not fooled by "input {" inside a block comment', () => {
+    const source = `/* input { */
+component Player {
+
+}`;
+    const labels = complete(source, 2, 2);
+    expect(labels).not.toContain('button');
+  });
+
+  it('is not fooled by braces inside strings', () => {
+    const source = `component Player {
+  [Tooltip("input {")]
+
+}`;
+    const labels = complete(source, 2, 2);
+    expect(labels).not.toContain('button');
+  });
+});

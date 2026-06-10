@@ -1,7 +1,7 @@
 // Hover handler for QTN Language Server
 // Provides contextual documentation and type info when hovering over symbols
 
-import { HoverParams, Hover, MarkupKind } from 'vscode-languageserver';
+import { HoverParams, Hover, MarkupKind, SymbolKind } from 'vscode-languageserver';
 import { TextDocuments } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
 import { ProjectModel } from './project-model.js';
@@ -184,10 +184,10 @@ function createUserDefinedHover(info: import('./symbol-table.js').SymbolInfo): H
   const locale = getLocale();
   if (info.children && info.children.length > 0) {
     if (locale === 'ko') {
-      const childType = info.children[0].kind === 13 /* EnumMember */ ? '멤버' : '필드';
+      const childType = info.children[0].kind === SymbolKind.EnumMember ? '멤버' : '필드';
       markdown += ` (${info.children.length}개 ${childType})`;
     } else {
-      const childType = info.children[0].kind === 13 /* EnumMember */ ? 'member' : 'field';
+      const childType = info.children[0].kind === SymbolKind.EnumMember ? 'member' : 'field';
       markdown += ` (${info.children.length} ${childType}${info.children.length !== 1 ? 's' : ''})`;
     }
   }

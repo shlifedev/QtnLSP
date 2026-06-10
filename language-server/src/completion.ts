@@ -3,10 +3,12 @@ import {
   CompletionItem,
   CompletionItemKind,
   CompletionParams,
+  Position,
   SymbolKind,
   TextDocuments,
 } from 'vscode-languageserver';
 import { TextDocument } from 'vscode-languageserver-textdocument';
+import { QtnDocument, SourceRange } from './ast.js';
 import { ProjectModel } from './project-model.js';
 import {
   TOP_LEVEL_KEYWORDS,
@@ -58,7 +60,8 @@ export function handleCompletion(
   const offset = document.offsetAt(params.position);
 
   // Detect completion context
-  const context = detectContext(text, offset);
+  const parsedDoc = projectModel.getDocument(params.textDocument.uri);
+  const context = detectContext(text, offset, parsedDoc, params.position);
 
   // Generate completions based on context
   switch (context) {
@@ -84,7 +87,12 @@ export function handleCompletion(
 /**
  * Detect the completion context based on the cursor position
  */
-function detectContext(text: string, offset: number): CompletionContext {
+function detectContext(
+  text: string,
+  offset: number,
+  parsedDoc?: QtnDocument,
+  position?: Position
+): CompletionContext {
   // Extract text up to cursor
   const textUpToCursor = text.substring(0, offset);
 
@@ -116,7 +124,7 @@ function detectContext(text: string, offset: number): CompletionContext {
   }
 
   // Check if inside input block
-  if (isInsideInputBlock(textUpToCursor, offset)) {
+  if (isInsideInputBlock(textUpToCursor, offset, parsedDoc, position)) {
     return 'inputBlock';
   }
 
@@ -226,43 +234,108 @@ function isEnumBasePosition(text: string, offset: number): boolean {
 }
 
 /**
- * Check if inside input block
+ * Check if inside input block.
+ * Prefers the parsed AST; falls back to a comment/string-aware text scan,
+ * since the AST range can be incomplete while the user is mid-edit.
  */
-function isInsideInputBlock(text: string, offset: number): boolean {
-  // Scan backwards to find 'input {' without a closing '}'
-  let braceDepth = 0;
-  let foundInput = false;
-
-  // Look backwards from cursor
-  let i = offset - 1;
-  while (i >= 0) {
-    const ch = text[i];
-
-    if (ch === '}') {
-      braceDepth++;
-    } else if (ch === '{') {
-      braceDepth--;
-
-      // If we're back to level 0, check if this is an input block
-      if (braceDepth < 0) {
-        // Look backwards for 'input' keyword
-        let j = i - 1;
-        while (j >= 0 && /\s/.test(text[j])) {
-          j--;
-        }
-        const beforeBrace = text.substring(Math.max(0, j - 10), j + 1);
-        if (/input\s*$/.test(beforeBrace)) {
-          foundInput = true;
-          break;
-        }
-        // Not an input block, we're in some other block
-        return false;
+function isInsideInputBlock(
+  text: string,
+  offset: number,
+  parsedDoc?: QtnDocument,
+  position?: Position
+): boolean {
+  if (parsedDoc && position) {
+    for (const def of parsedDoc.definitions) {
+      if (def.kind === 'input' && rangeContainsPosition(def.range, position)) {
+        return true;
       }
     }
-    i--;
+  }
+  return isInsideInputBlockTextScan(text, offset);
+}
+
+function rangeContainsPosition(range: SourceRange, pos: Position): boolean {
+  if (pos.line < range.start.line || pos.line > range.end.line) {
+    return false;
+  }
+  if (pos.line === range.start.line && pos.character < range.start.character) {
+    return false;
+  }
+  if (pos.line === range.end.line && pos.character > range.end.character) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Forward scan tracking the keyword preceding each '{', skipping comments
+ * and strings so braces inside them don't corrupt the block stack.
+ */
+function isInsideInputBlockTextScan(text: string, offset: number): boolean {
+  const blockStack: string[] = [];
+  let lastWord = '';
+  let wordBuf = '';
+  let inString = false;
+  let inLineComment = false;
+  let inBlockComment = false;
+
+  for (let i = 0; i < offset && i < text.length; i++) {
+    const ch = text[i];
+    const next = text[i + 1];
+
+    if (inLineComment) {
+      if (ch === '\n') inLineComment = false;
+      continue;
+    }
+    if (inBlockComment) {
+      if (ch === '*' && next === '/') {
+        inBlockComment = false;
+        i++;
+      }
+      continue;
+    }
+    if (inString) {
+      if (ch === '\\') {
+        i++; // skip escaped char
+      } else if (ch === '"') {
+        inString = false;
+      }
+      continue;
+    }
+
+    if (ch === '/' && next === '/') {
+      inLineComment = true;
+      i++;
+      continue;
+    }
+    if (ch === '/' && next === '*') {
+      inBlockComment = true;
+      i++;
+      continue;
+    }
+    if (ch === '"') {
+      inString = true;
+      continue;
+    }
+
+    if (/[A-Za-z0-9_]/.test(ch)) {
+      wordBuf += ch;
+      continue;
+    }
+    if (wordBuf) {
+      lastWord = wordBuf;
+      wordBuf = '';
+    }
+
+    if (ch === '{') {
+      blockStack.push(lastWord);
+      lastWord = '';
+    } else if (ch === '}') {
+      blockStack.pop();
+    }
   }
 
-  return foundInput;
+  return blockStack.length > 0 && blockStack[blockStack.length - 1] === 'input';
 }
 
 /**

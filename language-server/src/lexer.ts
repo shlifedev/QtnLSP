@@ -173,6 +173,8 @@ class Lexer {
             value += '\t';
           } else if (next === 'r') {
             value += '\r';
+          } else if (next === '0') {
+            value += '\0';
           } else if (next === '\\') {
             value += '\\';
           } else if (next === '"') {

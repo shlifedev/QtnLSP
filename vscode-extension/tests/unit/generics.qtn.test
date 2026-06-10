@@ -20,3 +20,15 @@
 
   bitset[64] Flags;
 //^^^^^^ support.type.generic.qtn
+
+  QString<16> Name;
+//^^^^^^^ support.type.qtn
+//       ^ punctuation.definition.generic.begin.qtn
+//        ^^ constant.numeric.integer.qtn
+//          ^ punctuation.definition.generic.end.qtn
+
+  QStringUtf8<32> Description;
+//^^^^^^^^^^^ support.type.qtn
+//           ^ punctuation.definition.generic.begin.qtn
+//            ^^ constant.numeric.integer.qtn
+//              ^ punctuation.definition.generic.end.qtn

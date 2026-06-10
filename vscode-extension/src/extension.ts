@@ -1,5 +1,6 @@
+import * as fs from 'fs';
 import * as path from 'path';
-import { workspace, ExtensionContext, env } from 'vscode';
+import { window, workspace, ExtensionContext, env } from 'vscode';
 import {
   LanguageClient,
   LanguageClientOptions,
@@ -16,6 +17,17 @@ export function activate(context: ExtensionContext) {
     'dist',
     'server.js'
   );
+
+  // Without the bundled server only TextMate highlighting works — tell the
+  // user why IntelliSense is missing instead of failing silently
+  if (!fs.existsSync(serverModule)) {
+    window.showErrorMessage(
+      'QTN Language Server bundle is missing (dist/server.js). ' +
+      'Syntax highlighting still works, but IntelliSense is disabled. ' +
+      'Please reinstall the extension.'
+    );
+    return;
+  }
 
   // Server options: use stdio transport
   const serverOptions: ServerOptions = {
@@ -42,7 +54,11 @@ export function activate(context: ExtensionContext) {
     clientOptions
   );
 
-  client.start();
+  client.start().catch((err: unknown) => {
+    const message = err instanceof Error ? err.message : String(err);
+    window.showErrorMessage(`QTN Language Server failed to start: ${message}`);
+    client = undefined;
+  });
 }
 
 export function deactivate(): Thenable<void> | undefined {
