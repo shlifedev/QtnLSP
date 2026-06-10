@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-TW.md">繁體中文</a>
+  <a href="../README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-TW.md">繁體中文</a>
 </p>
 
 # QtnLSP
@@ -26,9 +26,9 @@ Photon Quantum3 DSL(`.qtn`) 파일을 위한 구문 강조 및 LSP 기반 Intell
 - **마켓플레이스**: [Quantum DSL (QTN) Language Support](https://marketplace.visualstudio.com/items?itemName=shlifedev.QtnLanguageSupport) — 또는 Visual Studio에서 **Extensions → Manage Extensions → Online**으로 들어가 `Quantum DSL (QTN)` 검색.
 
 ### JetBrains Rider
-- [GitHub Releases](../../releases)에서 `QtnLSP-jetbrains.zip`를 받은 뒤 **Settings → Plugins → ⚙ → Install Plugin from Disk**. _(마켓플레이스 등록 예정)_
+- [GitHub Releases](https://github.com/shlifedev/photon-quantum-qtn-lsp/releases)에서 `QtnLSP-jetbrains.zip`를 받은 뒤 **Settings → Plugins → ⚙ → Install Plugin from Disk**. _(마켓플레이스 등록 예정)_
 
-> 수동 설치를 원하면 모든 빌드가 [GitHub Releases](../../releases)에 `.vsix` / `.zip`으로 첨부돼 있습니다.
+> 수동 설치를 원하면 모든 빌드가 [GitHub Releases](https://github.com/shlifedev/photon-quantum-qtn-lsp/releases)에 `.vsix` / `.zip`으로 첨부돼 있습니다.
 
 ## 빌드
 
@@ -43,7 +43,7 @@ sh build.sh jetbrains  # JetBrains 플러그인만
 
 ## 스크린샷
 
-<img src="sample.png" width="600" alt="QtnLSP 스크린샷">
+<img src="images/sample.png" width="600" alt="QtnLSP 스크린샷">
 
 ## 라이선스
 

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-TW.md">繁體中文</a>
+  <a href="README.md">English</a> | <a href="docs/README.ko.md">한국어</a> | <a href="docs/README.ja.md">日本語</a> | <a href="docs/README.zh-TW.md">繁體中文</a>
 </p>
 
 # QtnLSP
@@ -43,7 +43,7 @@ sh build.sh jetbrains  # JetBrains plugin only
 
 ## Screenshot
 
-<img src="sample.png" width="600" alt="QtnLSP screenshot">
+<img src="docs/images/sample.png" width="600" alt="QtnLSP screenshot">
 
 ## License
 

@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-TW.md">繁體中文</a>
+  <a href="../README.md">English</a> | <a href="README.ko.md">한국어</a> | <a href="README.ja.md">日本語</a> | <a href="README.zh-TW.md">繁體中文</a>
 </p>
 
 # QtnLSP
@@ -26,9 +26,9 @@ Photon Quantum3 DSL(`.qtn`)檔案的語法高亮與基於LSP的IntelliSense。
 - **市集（Marketplace）**：[Quantum DSL (QTN) Language Support](https://marketplace.visualstudio.com/items?itemName=shlifedev.QtnLanguageSupport) — 或在 Visual Studio 中開啟 **Extensions → Manage Extensions → Online** 並搜尋 `Quantum DSL (QTN)`。
 
 ### JetBrains Rider
-- 從 [GitHub Releases](../../releases) 下載 `QtnLSP-jetbrains.zip`，然後 **Settings → Plugins → ⚙ → Install Plugin from Disk**。_(市集上架即將推出)_
+- 從 [GitHub Releases](https://github.com/shlifedev/photon-quantum-qtn-lsp/releases) 下載 `QtnLSP-jetbrains.zip`，然後 **Settings → Plugins → ⚙ → Install Plugin from Disk**。_(市集上架即將推出)_
 
-> 若偏好手動安裝，所有建置版本皆以 `.vsix` / `.zip` 形式附加於 [GitHub Releases](../../releases)。
+> 若偏好手動安裝，所有建置版本皆以 `.vsix` / `.zip` 形式附加於 [GitHub Releases](https://github.com/shlifedev/photon-quantum-qtn-lsp/releases)。
 
 ## 建置
 
@@ -42,7 +42,7 @@ sh build.sh jetbrains  # 僅 JetBrains 外掛
 
 ## 截圖
 
-<img src="sample.png" width="600" alt="QtnLSP 截圖">
+<img src="images/sample.png" width="600" alt="QtnLSP 截圖">
 
 ## 授權
 

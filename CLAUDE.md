@@ -59,7 +59,11 @@ vs-extension/
 tests/fixtures/
 └── sample.qtn                        # 종합 테스트 픽스처
 
-DSL.md                                # QTN DSL 전체 문법 레퍼런스
+docs/
+├── DSL.md                            # QTN DSL 전체 문법 레퍼런스
+├── HOW_TO_INSTALL.md                 # 설치 가이드
+├── README.ko.md / ja / zh-TW        # README 번역본
+└── images/sample.png                 # README 스크린샷
 ```
 
 ## 핵심 규칙
@@ -96,7 +100,7 @@ sh build.sh clean         # 빌드 산출물 삭제
 
 ## TextMate 스코프 매핑
 
-문법 작성 시 아래 스코프 매핑을 반드시 따른다. 전체 DSL 레퍼런스는 `DSL.md` 참고.
+문법 작성 시 아래 스코프 매핑을 반드시 따른다. 전체 DSL 레퍼런스는 `docs/DSL.md` 참고.
 
 ### 키워드
 

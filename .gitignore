@@ -32,6 +32,10 @@ verification-*/
 # Worktrees
 .worktrees/
 
+# AI tooling (local only)
+.claude/
+.specify/
+
 # Plugin signing keys (절대 커밋 금지)
 *.pem
 *.crt
