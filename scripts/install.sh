@@ -39,7 +39,7 @@ install_vscode() {
     shopt -s nullglob
     local candidates=(
         "$ROOT_DIR"/dist/vscode/*.vsix
-        "$ROOT_DIR"/vscode-extension/*.vsix
+        "$ROOT_DIR"/packages/vscode-extension/*.vsix
     )
     shopt -u nullglob
     if [ ${#candidates[@]} -eq 0 ]; then
@@ -62,7 +62,7 @@ install_jetbrains() {
     shopt -s nullglob
     local candidates=(
         "$ROOT_DIR"/dist/jetbrains/*.zip
-        "$ROOT_DIR"/jetbrains-plugin/build/distributions/*.zip
+        "$ROOT_DIR"/packages/jetbrains-plugin/build/distributions/*.zip
     )
     shopt -u nullglob
     if [ ${#candidates[@]} -eq 0 ]; then
@@ -77,7 +77,7 @@ install_jetbrains() {
         echo "  JetBrains plugins cannot be installed from CLI."
         echo "  After building, install manually:"
         echo "    1. Rider > Settings > Plugins > Gear icon > Install Plugin from Disk..."
-        echo "    2. Select the .zip file from jetbrains-plugin/build/distributions/"
+        echo "    2. Select the .zip file from packages/jetbrains-plugin/build/distributions/"
         exit 1
     fi
 

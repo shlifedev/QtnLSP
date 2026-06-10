@@ -3,8 +3,8 @@
 const fs = require('fs');
 const path = require('path');
 
-const srcDir = path.join(__dirname, '..', 'language-server', 'dist');
-const destDir = path.join(__dirname, '..', 'vscode-extension', 'dist');
+const srcDir = path.join(__dirname, '..', 'packages', 'language-server', 'dist');
+const destDir = path.join(__dirname, '..', 'packages', 'vscode-extension', 'dist');
 
 if (!fs.existsSync(path.join(srcDir, 'server.js'))) {
   console.error(`server bundle not found: ${path.join(srcDir, 'server.js')} — run "npm run webpack:server" first`);

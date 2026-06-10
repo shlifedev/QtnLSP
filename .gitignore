@@ -14,9 +14,9 @@ out/
 .intellijPlatform/
 
 # VS extension
-vs-extension/bin/
-vs-extension/obj/
-vs-extension/LanguageServer/
+packages/vs-extension/bin/
+packages/vs-extension/obj/
+packages/vs-extension/LanguageServer/
 
 # OS
 .DS_Store

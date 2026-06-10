@@ -206,7 +206,7 @@ cd /path/to/QtnLSP
 ./scripts/build.sh vscode
 ```
 
-생성된 파일: `vscode-extension/qtn-syntax-highlighting-1.0.0.vsix`
+생성된 파일: `packages/vscode-extension/qtn-syntax-highlighting-1.0.0.vsix`
 
 ### JetBrains 플러그인 빌드
 
@@ -215,7 +215,7 @@ cd /path/to/QtnLSP
 ./scripts/build.sh jetbrains
 ```
 
-생성된 파일: `jetbrains-plugin/build/distributions/qtn-syntax-highlighting-1.0.0.zip`
+생성된 파일: `packages/jetbrains-plugin/build/distributions/qtn-syntax-highlighting-1.0.0.zip`
 
 ### Visual Studio 확장 빌드
 

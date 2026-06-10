@@ -4,13 +4,13 @@
   "description": "Workspace root for QTN Syntax Highlighting project",
   "scripts": {
     "compile": "npm run compile:client && npm run compile:server",
-    "compile:client": "cd vscode-extension && tsc -p .",
-    "compile:server": "cd language-server && tsc -p .",
+    "compile:client": "cd packages/vscode-extension && tsc -p .",
+    "compile:server": "cd packages/language-server && tsc -p .",
     "webpack": "npm run webpack:client && npm run webpack:server",
-    "webpack:client": "webpack --config vscode-extension/webpack.config.js --mode production",
-    "webpack:server": "webpack --config language-server/webpack.config.js --mode production && node scripts/copy-server-bundle.js",
-    "watch:client": "cd vscode-extension && tsc -watch -p .",
-    "watch:server": "cd language-server && tsc -watch -p .",
+    "webpack:client": "webpack --config packages/vscode-extension/webpack.config.js --mode production",
+    "webpack:server": "webpack --config packages/language-server/webpack.config.js --mode production && node scripts/copy-server-bundle.js",
+    "watch:client": "cd packages/vscode-extension && tsc -watch -p .",
+    "watch:server": "cd packages/language-server && tsc -watch -p .",
     "bundle:server": "npm run compile:server && npm run webpack:server"
   },
   "devDependencies": {

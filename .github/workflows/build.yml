@@ -39,31 +39,31 @@ jobs:
           cache: 'npm'
           cache-dependency-path: |
             package-lock.json
-            language-server/package-lock.json
-            vscode-extension/package-lock.json
+            packages/language-server/package-lock.json
+            packages/vscode-extension/package-lock.json
 
       - name: Install dependencies
         run: |
           npm ci
-          npm --prefix language-server ci
-          npm --prefix vscode-extension ci
+          npm --prefix packages/language-server ci
+          npm --prefix packages/vscode-extension ci
 
       - name: Sync grammar
-        run: cp shared/syntaxes/qtn.tmLanguage.json vscode-extension/syntaxes/qtn.tmLanguage.json
+        run: cp packages/shared/syntaxes/qtn.tmLanguage.json packages/vscode-extension/syntaxes/qtn.tmLanguage.json
 
       - name: Language Server unit tests
-        run: npm --prefix language-server test
+        run: npm --prefix packages/language-server test
 
       - name: Language Server protocol integration test
         # Spawns the real compiled server.js and drives it over the LSP wire —
         # the exact contract VSCode, Visual Studio, and Rider all invoke.
-        run: npm --prefix language-server run test:integration
+        run: npm --prefix packages/language-server run test:integration
 
       - name: Grammar tests
-        run: npm --prefix vscode-extension test
+        run: npm --prefix packages/vscode-extension test
 
       - name: Grammar snapshot test
-        run: npm --prefix vscode-extension run test:snap
+        run: npm --prefix packages/vscode-extension run test:snap
 
   build-vscode:
     needs: test
@@ -81,32 +81,32 @@ jobs:
           cache: 'npm'
           cache-dependency-path: |
             package-lock.json
-            language-server/package-lock.json
-            vscode-extension/package-lock.json
+            packages/language-server/package-lock.json
+            packages/vscode-extension/package-lock.json
 
       - name: Install dependencies
         run: |
           npm ci
-          npm --prefix language-server ci
-          npm --prefix vscode-extension ci
+          npm --prefix packages/language-server ci
+          npm --prefix packages/vscode-extension ci
 
       - name: Sync grammar
-        run: cp shared/syntaxes/qtn.tmLanguage.json vscode-extension/syntaxes/qtn.tmLanguage.json
+        run: cp packages/shared/syntaxes/qtn.tmLanguage.json packages/vscode-extension/syntaxes/qtn.tmLanguage.json
 
       - name: Inject version
         if: inputs.version != ''
         env:
           VERSION: ${{ inputs.version }}
-        run: npm --prefix vscode-extension version "${VERSION#v}" --no-git-tag-version --allow-same-version
+        run: npm --prefix packages/vscode-extension version "${VERSION#v}" --no-git-tag-version --allow-same-version
 
       - name: Package VSIX
-        working-directory: vscode-extension
+        working-directory: packages/vscode-extension
         run: npx vsce package --no-dependencies
 
       - name: Prepare artifact
         run: |
           mkdir -p release
-          cp vscode-extension/*.vsix release/QtnLSP-vscode.vsix
+          cp packages/vscode-extension/*.vsix release/QtnLSP-vscode.vsix
 
       - uses: actions/upload-artifact@v4
         with:
@@ -118,8 +118,8 @@ jobs:
       # 릴리스 파이프라인이 깨지지 않게 한다. --skip-duplicate로 같은 버전 재실행도 안전.
       - name: Publish to VSCode Marketplace
         if: inputs.version != '' && env.VSCE_PAT != ''
-        working-directory: vscode-extension
-        run: npx vsce publish --packagePath ../release/QtnLSP-vscode.vsix --skip-duplicate
+        working-directory: packages/vscode-extension
+        run: npx vsce publish --packagePath ../../release/QtnLSP-vscode.vsix --skip-duplicate
 
   build-jetbrains:
     needs: test
@@ -134,7 +134,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: |
             package-lock.json
-            language-server/package-lock.json
+            packages/language-server/package-lock.json
 
       - uses: actions/setup-java@v4
         with:
@@ -147,16 +147,16 @@ jobs:
       - name: Build language-server bundle
         run: |
           npm ci
-          npm --prefix language-server ci
+          npm --prefix packages/language-server ci
           npm run bundle:server
 
       - name: Sync grammar
-        run: cp shared/syntaxes/qtn.tmLanguage.json jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json
+        run: cp packages/shared/syntaxes/qtn.tmLanguage.json packages/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json
 
       # 릴리스(version 있음)면 서명본을 만들고, PR/dev면 서명 없이 빌드만 검증한다.
       # 시크릿은 base64로 저장돼 있어 파일로 디코드 후 경로를 주입한다(멀티라인 전달 손상 회피).
       - name: Build / sign JetBrains plugin
-        working-directory: jetbrains-plugin
+        working-directory: packages/jetbrains-plugin
         env:
           VERSION: ${{ inputs.version }}
           CERTIFICATE_CHAIN_B64: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
@@ -178,11 +178,11 @@ jobs:
         run: |
           mkdir -p release
           # signPlugin은 *-signed.zip을 추가로 만든다. 릴리스면 서명본, dev면 일반 zip을 고른다.
-          signed=$(find jetbrains-plugin/build/distributions -name '*-signed.zip' | head -1)
+          signed=$(find packages/jetbrains-plugin/build/distributions -name '*-signed.zip' | head -1)
           if [ -n "$signed" ]; then
             cp "$signed" release/QtnLSP-jetbrains.zip
           else
-            cp jetbrains-plugin/build/distributions/*.zip release/QtnLSP-jetbrains.zip
+            cp packages/jetbrains-plugin/build/distributions/*.zip release/QtnLSP-jetbrains.zip
           fi
 
       - uses: actions/upload-artifact@v4
@@ -195,7 +195,7 @@ jobs:
       # 리스팅 승인 후 `gh variable set JETBRAINS_MARKETPLACE_LISTED --body true`로 켜면 그때부터 자동 배포.
       - name: Publish to JetBrains Marketplace
         if: inputs.version != '' && vars.JETBRAINS_MARKETPLACE_LISTED == 'true'
-        working-directory: jetbrains-plugin
+        working-directory: packages/jetbrains-plugin
         env:
           VERSION: ${{ inputs.version }}
           CERTIFICATE_CHAIN_B64: ${{ secrets.JETBRAINS_CERTIFICATE_CHAIN }}
@@ -224,7 +224,7 @@ jobs:
           cache: 'npm'
           cache-dependency-path: |
             package-lock.json
-            language-server/package-lock.json
+            packages/language-server/package-lock.json
 
       - uses: actions/setup-dotnet@v4
         with:
@@ -234,14 +234,14 @@ jobs:
       - name: Build language-server bundle
         run: |
           npm ci
-          npm --prefix language-server ci
+          npm --prefix packages/language-server ci
           npm run bundle:server
 
       - name: Sync grammar + LICENSE
         shell: bash
         run: |
-          cp shared/syntaxes/qtn.tmLanguage.json vs-extension/Grammars/qtn.tmLanguage.json
-          cp LICENSE vs-extension/LICENSE
+          cp packages/shared/syntaxes/qtn.tmLanguage.json packages/vs-extension/Grammars/qtn.tmLanguage.json
+          cp LICENSE packages/vs-extension/LICENSE
 
       - name: Inject version
         if: inputs.version != ''
@@ -250,20 +250,20 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           $ver = $env:VERSION -replace '^v', ''
-          $path = 'vs-extension/source.extension.vsixmanifest'
+          $path = 'packages/vs-extension/source.extension.vsixmanifest'
           $content = Get-Content $path -Raw
           $content = $content -replace '(<Identity\b[^>]*\bVersion=")[^"]*(")', "`${1}$ver`${2}"
           Set-Content -Path $path -Value $content -NoNewline
 
       - name: Build VS extension
-        working-directory: vs-extension
+        working-directory: packages/vs-extension
         run: dotnet build -c Release
 
       - name: Prepare artifact
         shell: bash
         run: |
           mkdir -p release
-          find vs-extension/bin/Release -name "*.vsix" -exec cp {} release/QtnLSP-vs.vsix \;
+          find packages/vs-extension/bin/Release -name "*.vsix" -exec cp {} release/QtnLSP-vs.vsix \;
 
       - uses: actions/upload-artifact@v4
         with:
@@ -276,7 +276,7 @@ jobs:
       # VsixPublisher는 확장이 없으면 생성, 있으면 같은 버전도 덮어쓰므로 멱등.
       - name: Publish to VS Marketplace
         if: inputs.version != '' && env.VSCE_PAT != ''
-        working-directory: vs-extension
+        working-directory: packages/vs-extension
         shell: pwsh
         run: |
           $vswhere = "${env:ProgramFiles(x86)}\Microsoft Visual Studio\Installer\vswhere.exe"
@@ -284,7 +284,7 @@ jobs:
           $publisher = Join-Path $vsdir 'VSSDK\VisualStudioIntegration\Tools\Bin\VsixPublisher.exe'
           if (-not (Test-Path $publisher)) { throw "VsixPublisher.exe not found at $publisher" }
           & $publisher publish `
-            -payload "..\release\QtnLSP-vs.vsix" `
+            -payload "..\..\release\QtnLSP-vs.vsix" `
             -publishManifest "vs-publish.json" `
             -personalAccessToken "$env:VSCE_PAT"
           if ($LASTEXITCODE -ne 0) { throw "VsixPublisher exited with $LASTEXITCODE" }

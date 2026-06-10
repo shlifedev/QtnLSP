@@ -13,9 +13,9 @@ services:
       service: builder
     command: >
       bash -c "
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vscode-extension/syntaxes/qtn.tmLanguage.json &&
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vs-extension/Grammars/qtn.tmLanguage.json
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/vscode-extension/syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/vs-extension/Grammars/qtn.tmLanguage.json
       "
 
   test:
@@ -23,8 +23,8 @@ services:
       service: builder
     command: >
       bash -c "
-        cd /workspace/language-server && npm ci --prefer-offline && npm test && npm run test:integration &&
-        cd /workspace/vscode-extension && npm ci --prefer-offline && npm test && npm run test:snap
+        cd /workspace/packages/language-server && npm ci --prefer-offline && npm test && npm run test:integration &&
+        cd /workspace/packages/vscode-extension && npm ci --prefer-offline && npm test && npm run test:snap
       "
 
   vscode:
@@ -32,13 +32,13 @@ services:
       service: builder
     command: >
       bash -c "
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vscode-extension/syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/vscode-extension/syntaxes/qtn.tmLanguage.json &&
         cd /workspace && npm ci --prefer-offline &&
-        cd /workspace/language-server && npm ci --prefer-offline &&
-        cd /workspace/vscode-extension && npm ci --prefer-offline &&
+        cd /workspace/packages/language-server && npm ci --prefer-offline &&
+        cd /workspace/packages/vscode-extension && npm ci --prefer-offline &&
         npx vsce package --no-dependencies &&
         mkdir -p /workspace/dist/vscode &&
-        cp /workspace/vscode-extension/*.vsix /workspace/dist/vscode/
+        cp /workspace/packages/vscode-extension/*.vsix /workspace/dist/vscode/
       "
 
   jetbrains:
@@ -46,13 +46,13 @@ services:
       service: builder
     command: >
       bash -c "
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
         cd /workspace && npm ci --prefer-offline &&
-        cd /workspace/language-server && npm ci --prefer-offline &&
+        cd /workspace/packages/language-server && npm ci --prefer-offline &&
         cd /workspace && npm run bundle:server &&
-        cd /workspace/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
+        cd /workspace/packages/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
         mkdir -p /workspace/dist/jetbrains &&
-        cp /workspace/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/
+        cp /workspace/packages/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/
       "
 
   all:
@@ -61,23 +61,23 @@ services:
     command: >
       bash -c "
         echo '=== Sync grammar ===' &&
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vscode-extension/syntaxes/qtn.tmLanguage.json &&
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
-        cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/vs-extension/Grammars/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/vscode-extension/syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
+        cp /workspace/packages/shared/syntaxes/qtn.tmLanguage.json /workspace/packages/vs-extension/Grammars/qtn.tmLanguage.json &&
         echo '=== Test ===' &&
-        cd /workspace/language-server && npm ci --prefer-offline && npm test && npm run test:integration &&
-        cd /workspace/vscode-extension && npm ci --prefer-offline && npm test && npm run test:snap &&
+        cd /workspace/packages/language-server && npm ci --prefer-offline && npm test && npm run test:integration &&
+        cd /workspace/packages/vscode-extension && npm ci --prefer-offline && npm test && npm run test:snap &&
         echo '=== Build VSCode ===' &&
         cd /workspace && npm ci --prefer-offline &&
-        cd /workspace/language-server && npm ci --prefer-offline &&
-        cd /workspace/vscode-extension && npx vsce package --no-dependencies &&
+        cd /workspace/packages/language-server && npm ci --prefer-offline &&
+        cd /workspace/packages/vscode-extension && npx vsce package --no-dependencies &&
         echo '=== Build JetBrains ===' &&
         cd /workspace && npm run bundle:server &&
-        cd /workspace/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
+        cd /workspace/packages/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
         echo '=== Copy artifacts to dist ===' &&
         mkdir -p /workspace/dist/vscode /workspace/dist/jetbrains &&
-        cp /workspace/vscode-extension/*.vsix /workspace/dist/vscode/ &&
-        cp /workspace/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/ &&
+        cp /workspace/packages/vscode-extension/*.vsix /workspace/dist/vscode/ &&
+        cp /workspace/packages/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/ &&
         echo '=== All builds complete ==='
       "
 

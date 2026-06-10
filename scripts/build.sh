@@ -44,15 +44,15 @@ ensure_image() {
 cmd_clean() {
     log "Cleaning build artifacts..."
     rm -rf "$ROOT_DIR/dist"
-    rm -f "$ROOT_DIR/vscode-extension/"*.vsix
-    rm -rf "$ROOT_DIR/vscode-extension/dist"
-    rm -rf "$ROOT_DIR/vscode-extension/out"
-    rm -rf "$ROOT_DIR/language-server/out"
-    rm -rf "$ROOT_DIR/language-server/dist"
-    rm -rf "$ROOT_DIR/jetbrains-plugin/build"
-    rm -rf "$ROOT_DIR/vs-extension/bin"
-    rm -rf "$ROOT_DIR/vs-extension/obj"
-    rm -rf "$ROOT_DIR/vs-extension/LanguageServer"
+    rm -f "$ROOT_DIR/packages/vscode-extension/"*.vsix
+    rm -rf "$ROOT_DIR/packages/vscode-extension/dist"
+    rm -rf "$ROOT_DIR/packages/vscode-extension/out"
+    rm -rf "$ROOT_DIR/packages/language-server/out"
+    rm -rf "$ROOT_DIR/packages/language-server/dist"
+    rm -rf "$ROOT_DIR/packages/jetbrains-plugin/build"
+    rm -rf "$ROOT_DIR/packages/vs-extension/bin"
+    rm -rf "$ROOT_DIR/packages/vs-extension/obj"
+    rm -rf "$ROOT_DIR/packages/vs-extension/LanguageServer"
     log "Clean complete."
 }
 
@@ -68,14 +68,14 @@ cmd_vs() {
 
     log "Building QTN Language Server bundle for Visual Studio..."
     npm --prefix "$ROOT_DIR" ci --prefer-offline
-    npm --prefix "$ROOT_DIR/language-server" ci --prefer-offline
+    npm --prefix "$ROOT_DIR/packages/language-server" ci --prefer-offline
     npm --prefix "$ROOT_DIR" run bundle:server
 
     log "Building Visual Studio extension..."
-    dotnet build "$ROOT_DIR/vs-extension/QtnLanguageExtension.csproj" -c Release
+    dotnet build "$ROOT_DIR/packages/vs-extension/QtnLanguageExtension.csproj" -c Release
 
     mkdir -p "$ROOT_DIR/dist/vs"
-    VSIX=$(find "$ROOT_DIR/vs-extension/bin" -name '*.vsix' -type f 2>/dev/null | sort | tail -1)
+    VSIX=$(find "$ROOT_DIR/packages/vs-extension/bin" -name '*.vsix' -type f 2>/dev/null | sort | tail -1)
     if [ -z "$VSIX" ]; then
         error "No .vsix file was produced. Visual Studio VSIX packaging usually requires Windows."
         exit 1
