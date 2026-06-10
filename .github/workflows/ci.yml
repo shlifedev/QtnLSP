@@ -12,5 +12,22 @@ permissions:
   contents: read
 
 jobs:
+  # shared/syntaxes/가 단일 소스 — 복사본을 직접 수정한 커밋을 잡아낸다.
+  # (build.yml은 빌드 전에 덮어쓰기 동기화를 하므로 여기서만 drift가 드러난다)
+  grammar-sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify grammar copies match shared/
+        run: |
+          for f in \
+            vscode-extension/syntaxes/qtn.tmLanguage.json \
+            jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json \
+            vs-extension/Grammars/qtn.tmLanguage.json; do
+            diff -u shared/syntaxes/qtn.tmLanguage.json "$f" \
+              || { echo "::error::$f is out of sync with shared/syntaxes/ — run 'sh build.sh sync'"; exit 1; }
+          done
+
   build:
     uses: ./.github/workflows/build.yml

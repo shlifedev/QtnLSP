@@ -48,6 +48,7 @@ cmd_clean() {
     rm -rf "$SCRIPT_DIR/vscode-extension/dist"
     rm -rf "$SCRIPT_DIR/vscode-extension/out"
     rm -rf "$SCRIPT_DIR/language-server/out"
+    rm -rf "$SCRIPT_DIR/language-server/dist"
     rm -rf "$SCRIPT_DIR/jetbrains-plugin/build"
     rm -rf "$SCRIPT_DIR/vs-extension/bin"
     rm -rf "$SCRIPT_DIR/vs-extension/obj"
@@ -65,9 +66,10 @@ cmd_vs() {
         exit 1
     fi
 
-    log "Building QTN Language Server for Visual Studio..."
+    log "Building QTN Language Server bundle for Visual Studio..."
+    npm --prefix "$SCRIPT_DIR" ci --prefer-offline
     npm --prefix "$SCRIPT_DIR/language-server" ci --prefer-offline
-    npm --prefix "$SCRIPT_DIR/language-server" run build
+    npm --prefix "$SCRIPT_DIR" run bundle:server
 
     log "Building Visual Studio extension..."
     dotnet build "$SCRIPT_DIR/vs-extension/QtnLanguageExtension.csproj" -c Release

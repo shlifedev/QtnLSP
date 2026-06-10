@@ -8,9 +8,10 @@
     "compile:server": "cd language-server && tsc -p .",
     "webpack": "npm run webpack:client && npm run webpack:server",
     "webpack:client": "webpack --config vscode-extension/webpack.config.js --mode production",
-    "webpack:server": "webpack --config language-server/webpack.config.js --mode production",
+    "webpack:server": "webpack --config language-server/webpack.config.js --mode production && node scripts/copy-server-bundle.js",
     "watch:client": "cd vscode-extension && tsc -watch -p .",
-    "watch:server": "cd language-server && tsc -watch -p ."
+    "watch:server": "cd language-server && tsc -watch -p .",
+    "bundle:server": "npm run compile:server && npm run webpack:server"
   },
   "devDependencies": {
     "webpack": "^5.89.0",

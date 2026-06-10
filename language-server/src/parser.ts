@@ -2,7 +2,7 @@
 // Converts token stream from lexer into AST (ast.ts nodes).
 // Implements panic-mode error recovery: on parse errors, skips to }, ;, or top-level keyword.
 
-import { tokenize, QtnToken, TokenType } from './lexer.js';
+import { tokenizeWithErrors, QtnToken, TokenType } from './lexer.js';
 import {
   type SourceRange,
   type Position,
@@ -372,6 +372,7 @@ class Parser {
     return {
       kind: 'struct',
       name: name.value,
+      nameRange: name.range,
       modifiers: [],
       fields,
       enumMembers: [],
@@ -394,6 +395,7 @@ class Parser {
     return {
       kind: 'union',
       name: name.value,
+      nameRange: name.range,
       modifiers: [],
       fields,
       enumMembers: [],
@@ -429,6 +431,7 @@ class Parser {
     return {
       kind: 'component',
       name: name.value,
+      nameRange: name.range,
       modifiers,
       fields,
       enumMembers: [],
@@ -457,6 +460,7 @@ class Parser {
     return {
       kind: 'enum',
       name: name.value,
+      nameRange: name.range,
       modifiers: [],
       fields: [],
       enumMembers: members,
@@ -485,6 +489,7 @@ class Parser {
     return {
       kind: 'flags',
       name: name.value,
+      nameRange: name.range,
       modifiers: [],
       fields: [],
       enumMembers: members,
@@ -520,6 +525,7 @@ class Parser {
     return {
       kind: 'event',
       name: name.value,
+      nameRange: name.range,
       modifiers: [...modifiers],
       parentName,
       parentNameRange,
@@ -551,6 +557,7 @@ class Parser {
     return {
       kind: 'signal',
       name: name.value,
+      nameRange: name.range,
       parameters,
       range: this.makeRange(startRange, endRange),
       fileUri: this.fileUri,
@@ -604,6 +611,7 @@ class Parser {
     return {
       kind: 'asset',
       name: name.value,
+      nameRange: name.range,
       modifiers: [],
       fields: [],
       enumMembers: [],
@@ -1254,7 +1262,9 @@ class Parser {
 // ── Public API ─────────────────────────────────────────────────────
 
 export function parse(text: string, fileUri: string): QtnDocument {
-  const tokens = tokenize(text);
+  const { tokens, errors: lexErrors } = tokenizeWithErrors(text);
   const parser = new Parser(tokens, fileUri);
-  return parser.parse();
+  const doc = parser.parse();
+  doc.parseErrors.unshift(...lexErrors);
+  return doc;
 }

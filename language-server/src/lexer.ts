@@ -1,5 +1,5 @@
 // QTN Lexer - Token stream generator for QTN parser
-import { Position, SourceRange } from './ast.js';
+import { ParseError, Position, SourceRange } from './ast.js';
 
 // Token types
 export enum TokenType {
@@ -21,7 +21,8 @@ export interface QtnToken {
 }
 
 // Keyword mapping (from reference Lexer.cs)
-const KEYWORDS = new Set([
+// (diagnostics에서 "keyword가 타입 위치에 온 경우"를 미지 타입으로 오인하지 않도록 export)
+export const KEYWORDS = new Set([
   'struct', 'union', 'enum', 'flags', 'component', 'fields', 'use', 'global',
   'buffers', 'input', 'signal', 'asset_ref', 'AssetRef', 'array', 'entity_ref',
   'EntityRef', 'entity_prototype_ref', 'component_prototype_ref', 'bitset',
@@ -44,6 +45,7 @@ class Lexer {
   private line: number;
   private character: number;
   private tokens: QtnToken[];
+  errors: ParseError[];
 
   constructor(text: string) {
     this.text = text;
@@ -51,6 +53,7 @@ class Lexer {
     this.line = 0;
     this.character = 0;
     this.tokens = [];
+    this.errors = [];
   }
 
   // Get current character
@@ -119,6 +122,8 @@ class Lexer {
 
   // Skip multi-line comment: /* ... */
   private skipBlockComment(): void {
+    const start = this.currentPosition();
+
     // Skip /*
     this.advance();
     this.advance();
@@ -129,10 +134,16 @@ class Lexer {
       if (ch === '*' && this.peek() === '/') {
         this.advance(); // skip *
         this.advance(); // skip /
-        break;
+        return;
       }
       this.advance();
     }
+
+    // EOF에 도달했는데 */가 없으면 파일 나머지를 통째로 삼킨 것 — 진단으로 알린다
+    this.errors.push({
+      message: "Unterminated block comment: missing '*/'",
+      range: { start, end: this.currentPosition() },
+    });
   }
 
   // Read string literal: "..."
@@ -430,4 +441,11 @@ class Lexer {
 export function tokenize(text: string): QtnToken[] {
   const lexer = new Lexer(text);
   return lexer.tokenize();
+}
+
+// Tokenize and also surface lexer-level errors (e.g. unterminated block comment)
+export function tokenizeWithErrors(text: string): { tokens: QtnToken[]; errors: ParseError[] } {
+  const lexer = new Lexer(text);
+  const tokens = lexer.tokenize();
+  return { tokens, errors: lexer.errors };
 }

@@ -133,6 +133,7 @@ jobs:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: |
+            package-lock.json
             language-server/package-lock.json
 
       - uses: actions/setup-java@v4
@@ -142,10 +143,12 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build language-server
+      # 플러그인에는 webpack 단일 번들만 동봉한다 (node_modules 불필요)
+      - name: Build language-server bundle
         run: |
+          npm ci
           npm --prefix language-server ci
-          npm --prefix language-server run build
+          npm run bundle:server
 
       - name: Sync grammar
         run: cp shared/syntaxes/qtn.tmLanguage.json jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json
@@ -220,23 +223,19 @@ jobs:
           node-version: 20
           cache: 'npm'
           cache-dependency-path: |
+            package-lock.json
             language-server/package-lock.json
 
       - uses: actions/setup-dotnet@v4
         with:
           dotnet-version: 8.0.x
 
-      - name: Build language-server
+      # csproj가 language-server/dist/server.js(단일 webpack 번들)를 직접 링크한다
+      - name: Build language-server bundle
         run: |
+          npm ci
           npm --prefix language-server ci
-          npm --prefix language-server run build
-
-      - name: Copy language-server to VS extension
-        shell: bash
-        run: |
-          mkdir -p vs-extension/LanguageServer
-          cp -r language-server/out/* vs-extension/LanguageServer/
-          cp -r language-server/node_modules vs-extension/LanguageServer/
+          npm run bundle:server
 
       - name: Sync grammar + LICENSE
         shell: bash

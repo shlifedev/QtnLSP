@@ -53,9 +53,8 @@ vs-extension/
 ├── language-configuration.json       # 괄호 매칭, 주석 토글, 접기
 ├── Grammars/
 │   └── qtn.tmLanguage.json           # shared/에서 복사 (빌드 시 sync)
-└── LanguageServer/                   # language-server/out/ 에서 복사 (빌드 시)
-    ├── server.js
-    └── node_modules/
+└── LanguageServer/                   # language-server/dist/server.js 링크 (빌드 시)
+    └── server.js                     # webpack 단일 번들 (node_modules 불필요)
 
 tests/fixtures/
 └── sample.qtn                        # 종합 테스트 픽스처
@@ -76,9 +75,11 @@ DSL.md                                # QTN DSL 전체 문법 레퍼런스
 
 - **LSP 기능 확장은 항상 `language-server/src/`를 수정**한다
 - `language-server/`는 VSCode, JetBrains, Visual Studio 모두에서 공유하는 단일 Language Server이다
-- VSCode: Webpack으로 번들링 → `vscode-extension/dist/server.js` (단일 파일)
-- JetBrains: `out/` + `node_modules/` 통째로 플러그인에 복사
-- Visual Studio: `out/` + `node_modules/` 통째로 VSIX에 복사
+- 배포는 세 IDE 모두 **webpack 단일 번들** 하나를 공유한다: `npm run bundle:server` (루트) → `language-server/dist/server.js`
+  - VSCode: 번들이 `vscode-extension/dist/server.js`로 복사됨
+  - JetBrains: Gradle `prepareSandbox`가 `dist/`를 플러그인의 `language-server/out/`으로 복사
+  - Visual Studio: csproj가 `dist/server.js`를 `LanguageServer\server.js`로 링크
+  - node_modules는 어디에도 동봉하지 않는다 (의존성은 번들에 포함)
 - 새로운 LSP 기능(diagnostics, formatting, rename 등)을 추가할 때는 `language-server/src/`에 구현하면 모든 IDE에 자동 반영된다
 
 ## 명령어

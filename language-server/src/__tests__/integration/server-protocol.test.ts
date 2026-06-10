@@ -31,8 +31,11 @@ import {
   WorkspaceSymbolRequest,
   ShutdownRequest,
   ExitNotification,
+  PublishDiagnosticsNotification,
+  DiagnosticSeverity,
   type CompletionItem,
   type CompletionList,
+  type Diagnostic,
   type Hover,
   type Location,
   type DocumentSymbol,
@@ -182,5 +185,32 @@ describe('LSP protocol (real server.js over stdio)', () => {
       query: 'Weapon',
     })) as SymbolInformation[];
     expect(results.map((s) => s.name)).toContain('WeaponType');
+  });
+
+  it('publishes diagnostics for a document with errors', async () => {
+    const BROKEN_URI = 'file:///virtual/broken.qtn';
+
+    const received = new Promise<Diagnostic[]>((resolve) => {
+      connection.onNotification(PublishDiagnosticsNotification.type, (params) => {
+        if (params.uri === BROKEN_URI && params.diagnostics.length > 0) {
+          resolve(params.diagnostics);
+        }
+      });
+    });
+
+    // 문법 오류(닫는 brace 없음) + 미지 타입 참조를 모두 포함
+    connection.sendNotification(DidOpenTextDocumentNotification.type, {
+      textDocument: {
+        uri: BROKEN_URI,
+        languageId: 'qtn',
+        version: 1,
+        text: 'component Broken {\n  MissingType Health;\n',
+      },
+    });
+
+    const diagnostics = await received;
+    expect(diagnostics.every((d) => d.source === 'qtn')).toBe(true);
+    expect(diagnostics.some((d) => d.severity === DiagnosticSeverity.Error)).toBe(true);
+    expect(diagnostics.some((d) => d.message === "Unknown type 'MissingType'")).toBe(true);
   });
 });

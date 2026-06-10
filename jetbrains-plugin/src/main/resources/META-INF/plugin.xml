@@ -21,6 +21,7 @@
     <depends>org.jetbrains.plugins.textmate</depends>
 
     <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="QTN Language Server" displayType="BALLOON"/>
         <textmate.bundleProvider implementation="com.qtn.plugin.QtnTextMateBundleProvider"/>
         <platform.lsp.serverSupportProvider implementation="com.qtn.plugin.QtnLspServerSupportProvider"/>
         <additionalTextAttributes scheme="Darcula" file="colorSchemes/QtnDarcula.xml"/>

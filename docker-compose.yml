@@ -47,7 +47,9 @@ services:
     command: >
       bash -c "
         cp /workspace/shared/syntaxes/qtn.tmLanguage.json /workspace/jetbrains-plugin/src/main/resources/bundles/qtn.tmbundle/Syntaxes/qtn.tmLanguage.json &&
-        cd /workspace/language-server && npm ci --prefer-offline && npm run build &&
+        cd /workspace && npm ci --prefer-offline &&
+        cd /workspace/language-server && npm ci --prefer-offline &&
+        cd /workspace && npm run bundle:server &&
         cd /workspace/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
         mkdir -p /workspace/dist/jetbrains &&
         cp /workspace/jetbrains-plugin/build/distributions/*.zip /workspace/dist/jetbrains/
@@ -70,7 +72,7 @@ services:
         cd /workspace/language-server && npm ci --prefer-offline &&
         cd /workspace/vscode-extension && npx vsce package --no-dependencies &&
         echo '=== Build JetBrains ===' &&
-        cd /workspace/language-server && npm run build &&
+        cd /workspace && npm run bundle:server &&
         cd /workspace/jetbrains-plugin && ./gradlew buildPlugin --build-cache &&
         echo '=== Copy artifacts to dist ===' &&
         mkdir -p /workspace/dist/vscode /workspace/dist/jetbrains &&

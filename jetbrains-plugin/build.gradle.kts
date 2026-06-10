@@ -71,18 +71,18 @@ tasks {
         archiveVersion.set("")
     }
     prepareSandbox {
+        doFirst {
+            // webpack 번들은 의존성까지 한 파일에 들어 있어 node_modules를 동봉할 필요가 없다.
+            check(file("../language-server/dist/server.js").exists()) {
+                "language-server bundle not found — run 'npm run bundle:server' at repo root first"
+            }
+        }
         from("src/main/resources/bundles") {
             into("${intellijPlatform.projectName.get()}/bundles")
         }
-        // Bundle the QTN Language Server (compiled JS + dependencies)
-        from("../language-server/out") {
+        // 단일 webpack 번들 (QtnLspServerSupportProvider가 기대하는 out/ 경로 유지)
+        from("../language-server/dist") {
             into("${intellijPlatform.projectName.get()}/language-server/out")
-        }
-        from("../language-server/node_modules") {
-            into("${intellijPlatform.projectName.get()}/language-server/node_modules")
-        }
-        from("../language-server/package.json") {
-            into("${intellijPlatform.projectName.get()}/language-server")
         }
     }
 }

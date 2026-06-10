@@ -76,6 +76,7 @@ export type TypeKind = 'component' | 'struct' | 'enum' | 'flags' | 'union' | 'as
 export interface TypeDefinition extends QtnAstNode {
   kind: TypeKind;
   name: string;
+  nameRange?: SourceRange;  // range of the name token only (diagnostics 등 정밀 표시용)
   modifiers: string[];  // singleton, abstract
   fields: FieldDefinition[];
   enumMembers: EnumMemberDefinition[];  // for enum/flags
@@ -86,6 +87,7 @@ export interface TypeDefinition extends QtnAstNode {
 export interface EventDefinition extends QtnAstNode {
   kind: 'event';
   name: string;
+  nameRange?: SourceRange;
   modifiers: string[];  // synced, abstract, client, server
   parentName?: string;  // inheritance: event Foo : Bar
   parentNameRange?: SourceRange;
@@ -103,6 +105,7 @@ export interface ParameterDefinition extends QtnAstNode {
 export interface SignalDefinition extends QtnAstNode {
   kind: 'signal';
   name: string;
+  nameRange?: SourceRange;
   parameters: ParameterDefinition[];
 }
 
